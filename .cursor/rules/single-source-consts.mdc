@@ -1,0 +1,51 @@
+---
+description: Prefer shared consts/enums for repeated values (without overdoing)
+alwaysApply: true
+---
+
+# Single source of truth — consts & enums
+
+When a string, number, or status is used in more than one place (or will be), put it in a named const/enum/object. Prefer this over scattered magic strings.
+
+## Do
+
+```ts
+// ✅ GOOD — shared codes/status
+export const ErrorCode = {
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
+} as const;
+
+export const HttpStatus = {
+  OK: 200,
+  UNAUTHORIZED: 401,
+} as const;
+
+throw new UnauthorizedError(); // class wires code + status once
+```
+
+```ts
+// ✅ GOOD — domain roles, cookie names, route prefixes
+export const OrgRole = { ADMIN: 'admin', EMPLOYEE: 'employee' } as const;
+export const COOKIE_NAME = 'jwt';
+```
+
+## Don't overdo
+
+- One-off UI copy, log messages, or a value used once in a single function → leave inline
+- Don't invent enums for every prop or boolean
+- Don't duplicate the same const in web and api unless you extract a shared package
+- Prefer `as const` objects when you need a union type; use `enum` only when it clearly fits the team style (this repo leans `as const`)
+
+## Where to put them
+
+| Kind | Typical home |
+|------|----------------|
+| HTTP / API error codes | `apps/api/src/constants/` |
+| Auth cookie / JWT claims keys | next to tokens util or `constants/` |
+| Org roles, issue statuses | shared constants (or `packages/shared` later) |
+| Web-only UI keys | `apps/web/lib/` or feature folder |
+
+## Agent habit
+
+Before hardcoding a status code, error code, role, cookie name, or path segment: check for an existing const; if missing and it will be reused (or is part of the public API contract), add one.

@@ -1,6 +1,6 @@
 # Step 3 — Database (PostgreSQL)
 
-**Status:** Pending
+**Status:** Done (users table + Prisma; orgs/memberships deferred to step 5)
 
 ## Goal
 
@@ -15,9 +15,9 @@ Add PostgreSQL, migrations, and the core schema needed for auth + multi-tenant M
 
 | Decision | Recommendation |
 |----------|----------------|
-| ORM / query layer | Prisma **or** Drizzle (pick one; document in ARCHITECTURE) |
-| Migration tool | Same as ORM (Prisma migrate / Drizzle kit) |
-| IDs | UUID (`gen_random_uuid()`) for all primary keys |
+| ORM / query layer | **Prisma** (locked) |
+| Migration tool | Prisma migrate |
+| IDs | UUID (`gen_random_uuid()` / Prisma `@default(uuid())`) for all primary keys |
 | Soft delete | Optional later; MVP can use hard delete for issues |
 
 Update [ARCHITECTURE.md](../ARCHITECTURE.md) when the ORM choice is made.
@@ -85,7 +85,9 @@ Implement in this order:
 | `id` | UUID PK |
 | `organization_id` | FK → organizations |
 | `user_id` | FK → users |
-| `role` | `owner` \| `admin` \| `member` (start simple) |
+| `role` | `admin` \| `employee` (many admins per org OK) |
+
+Platform **super-admin** (SaaS owner) is not an org membership role — store on `users` (e.g. `is_super_admin`) or a dedicated platform role field.
 | unique | (`organization_id`, `user_id`) |
 
 ### 4. Domain tables (can land in this step or step 6)
@@ -121,17 +123,17 @@ Full rich Circle-like seed can wait until step 9.
 
 ## Done when
 
-- [ ] Postgres runs locally
-- [ ] `DATABASE_URL` configured
-- [ ] Migrations create users, organizations, memberships (+ teams/projects/issues if included)
-- [ ] Seed creates one demo org membership
-- [ ] `.env.example` updated
+- [x] Postgres runs locally
+- [x] `DATABASE_URL` configured
+- [x] Migrations create `users` (organizations, memberships, domain tables → step 5+)
+- [x] Seed creates super-admin `owner@relay.local`
+- [x] `.env.example` updated
 
-## Out of scope
+## Out of scope (still)
 
-- Auth routes (step 4)
+- Organizations / memberships tables (step 5)
 - Tenant middleware (step 5)
-- UI wiring
+- Issues / projects / teams tables (later)
 
 ## Next
 

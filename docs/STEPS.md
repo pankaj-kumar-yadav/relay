@@ -9,8 +9,8 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 ```text
 1. Monorepo          ✅  (done)
 2. Circle UI         ✅  (done)
-3. Database          →   Postgres + migrations + core tables
-4. Auth              →   register / login / session
+3. Database          ✅  (users + Prisma; orgs/memberships next in step 5)
+4. Auth              ✅  (JWT HttpOnly cookie + web login/register)
 5. Multi-tenant      →   orgs, memberships, tenant middleware
 6. Core API          →   issues (+ labels/statuses) CRUD
 7. Wire UI           →   replace Circle mocks with API
@@ -29,8 +29,8 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 
 - [x] Step 1 — Monorepo (pnpm + Turborepo + `apps/web` + `apps/api`)
 - [x] Step 2 — Circle UI in `apps/web`
-- [ ] Step 3 — PostgreSQL schema + migrations
-- [ ] Step 4 — Auth endpoints + web login flow
+- [x] Step 3 — PostgreSQL + Prisma `users` (orgs/memberships deferred to step 5)
+- [x] Step 4 — Auth endpoints + web login/register (JWT cookie)
 - [ ] Step 5 — Organizations + memberships + tenant guard
 - [ ] Step 6 — Issues API (CRUD, filters, rank)
 - [ ] Step 7 — UI wired to API (no mock dependence for MVP screens)

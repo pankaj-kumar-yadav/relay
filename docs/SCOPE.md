@@ -8,6 +8,9 @@ Multi-tenant project management for teams: issues, projects, and org membership 
 
 - Auth (register / login / session or JWT)
 - Organizations + memberships (multi-tenant)
+- Roles:
+  - **Super-admin** — single SaaS-owner role (platform-level; not an org membership)
+  - **Org roles** — each organization can have multiple **admins** and **employee** members
 - Issues CRUD (status, priority, assignee, ordering)
 - Projects (basic)
 - Teams (basic, if needed for Circle UI routes)

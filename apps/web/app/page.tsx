@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { isLoggedIn } from '@/lib/dummy-auth';
+import { getMe } from '@/lib/auth';
 
 const APP_HOME = '/lndev-ui/team/CORE/all';
 
@@ -10,7 +10,18 @@ export default function Home() {
    const router = useRouter();
 
    useEffect(() => {
-      router.replace(isLoggedIn() ? APP_HOME : '/login');
+      let cancelled = false;
+      getMe()
+         .then((user) => {
+            if (cancelled) return;
+            router.replace(user ? APP_HOME : '/login');
+         })
+         .catch(() => {
+            if (!cancelled) router.replace('/login');
+         });
+      return () => {
+         cancelled = true;
+      };
    }, [router]);
 
    return <div className="min-h-svh bg-background" />;

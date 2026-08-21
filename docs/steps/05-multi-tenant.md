@@ -25,7 +25,7 @@ If step 3 fails → `403 Forbidden` (or `404` if you prefer not to leak existenc
 
 | Method | Path | Behavior |
 |--------|------|----------|
-| `POST` | `/orgs` | Create org; add creator as `owner` |
+| `POST` | `/orgs` | Create org; add creator as `admin` |
 | `GET` | `/orgs` | List orgs for current user |
 | `GET` | `/orgs/:orgId` | Get org if member |
 | `POST` | `/orgs/:orgId/invites` | Create invite (email + role) — can stub token |
@@ -42,7 +42,7 @@ If step 3 fails → `403 Forbidden` (or `404` if you prefer not to leak existenc
 3. Loads org + membership
 4. Sets `req.org` and `req.membership` (include `role`)
 
-Optional later: `requireOrgRole('admin' | 'owner')` for settings.
+Optional later: `requireOrgRole('admin')` for settings; `requireSuperAdmin` for platform SaaS-owner actions.
 
 ## Data access pattern
 

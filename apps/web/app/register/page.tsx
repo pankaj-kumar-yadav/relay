@@ -7,16 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ApiError } from '@/lib/api';
-import { getMe, login } from '@/lib/auth';
+import { getMe, register } from '@/lib/auth';
 
 const APP_HOME = '/lndev-ui/team/CORE/all';
-const SEED_EMAIL = 'owner@relay.local';
-const SEED_PASSWORD = 'password';
 
-export default function LoginPage() {
+export default function RegisterPage() {
    const router = useRouter();
-   const [email, setEmail] = useState(SEED_EMAIL);
-   const [password, setPassword] = useState(SEED_PASSWORD);
+   const [name, setName] = useState('');
+   const [email, setEmail] = useState('');
+   const [password, setPassword] = useState('');
    const [error, setError] = useState<string | null>(null);
    const [submitting, setSubmitting] = useState(false);
    const [checking, setChecking] = useState(true);
@@ -45,11 +44,11 @@ export default function LoginPage() {
       setError(null);
       setSubmitting(true);
       try {
-         await login(email, password);
+         await register({ name, email, password });
          router.push(APP_HOME);
       } catch (err) {
          const message =
-            err instanceof ApiError ? err.message : 'Invalid email or password';
+            err instanceof ApiError ? err.message : 'Could not create account';
          setError(message);
          setSubmitting(false);
       }
@@ -67,10 +66,21 @@ export default function LoginPage() {
                   R
                </div>
                <h1 className="text-lg font-semibold tracking-tight">Relay</h1>
-               <p className="text-sm text-muted-foreground">Sign in to continue</p>
+               <p className="text-sm text-muted-foreground">Create an account</p>
             </div>
 
             <form onSubmit={onSubmit} className="flex flex-col gap-4">
+               <div className="flex flex-col gap-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                     id="name"
+                     type="text"
+                     autoComplete="name"
+                     required
+                     value={name}
+                     onChange={(e) => setName(e.target.value)}
+                  />
+               </div>
                <div className="flex flex-col gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -87,8 +97,9 @@ export default function LoginPage() {
                   <Input
                      id="password"
                      type="password"
-                     autoComplete="current-password"
+                     autoComplete="new-password"
                      required
+                     minLength={8}
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
                   />
@@ -97,17 +108,14 @@ export default function LoginPage() {
                {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
                <Button type="submit" className="w-full" disabled={submitting}>
-                  Continue
+                  Create account
                </Button>
             </form>
 
-            <p className="mt-6 text-center text-xs text-muted-foreground">
-               Seed: {SEED_EMAIL} / {SEED_PASSWORD}
-            </p>
-            <p className="mt-2 text-center text-sm text-muted-foreground">
-               No account?{' '}
-               <Link href="/register" className="text-foreground underline-offset-4 hover:underline">
-                  Register
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+               Already have an account?{' '}
+               <Link href="/login" className="text-foreground underline-offset-4 hover:underline">
+                  Sign in
                </Link>
             </p>
          </div>

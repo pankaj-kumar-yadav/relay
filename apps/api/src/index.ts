@@ -1,22 +1,30 @@
+import 'dotenv/config';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 
+import { assertAuthConfig, config } from '@/config.js';
+import { authRouter } from '@/routes/auth.js';
+
+assertAuthConfig();
+
 const app = express();
-const port = Number(process.env.PORT) || 4000;
-const webOrigin = process.env.WEB_ORIGIN || 'http://localhost:3000';
 
 app.use(
   cors({
-    origin: webOrigin,
+    origin: config.webOrigin,
     credentials: true,
   }),
 );
 app.use(express.json());
+app.use(cookieParser());
 
 app.get('/health', (_req, res) => {
   res.json({ ok: true, service: 'relay-api' });
 });
 
-app.listen(port, () => {
-  console.log(`API listening on http://localhost:${port}`);
+app.use('/auth', authRouter);
+
+app.listen(config.port, () => {
+  console.log(`API listening on http://localhost:${config.port}`);
 });

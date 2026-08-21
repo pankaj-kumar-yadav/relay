@@ -1,6 +1,6 @@
 # Step 4 — Authentication
 
-**Status:** Pending
+**Status:** Done (JWT HttpOnly cookie; web login/register wired)
 
 ## Goal
 
@@ -18,9 +18,7 @@ Users can register, log in, and call protected API routes. Web can store and sen
 | **HTTP-only cookie session** (recommended) | Safer XSS default, fits same-site web+api with CORS credentials | Needs cookie + CORS config |
 | Bearer JWT in memory/localStorage | Simple for mobile later | XSS risk if stored in JS-readable storage |
 
-**Recommendation for MVP:** API session cookie (`HttpOnly`, `Secure` in prod, `SameSite=Lax` or `None`+Secure if cross-site) **or** JWT in HttpOnly cookie.
-
-Document the final choice in [ARCHITECTURE.md](../ARCHITECTURE.md).
+**Choice for MVP:** JWT in HttpOnly cookie named `jwt` (ekalakar pattern). Documented in [ARCHITECTURE.md](../ARCHITECTURE.md).
 
 ## API endpoints (minimum)
 
@@ -81,9 +79,9 @@ Ensure:
 
 ## Done when
 
-- [ ] Register + login + logout + `/auth/me` work via HTTP client (Thunder Client / curl)
-- [ ] Web can log in and call `/auth/me`
-- [ ] Unauthenticated requests to a protected stub route return 401
+- [x] Register + login + logout + `/auth/me` work via HTTP client (Thunder Client / curl)
+- [x] Web can log in and call `/auth/me`
+- [x] Unauthenticated requests to a protected stub route return 401
 
 ## Out of scope
 

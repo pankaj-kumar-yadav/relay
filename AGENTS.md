@@ -21,6 +21,8 @@ Read these before changing code:
 - Never trust `orgId` from the URL alone — scope by authenticated membership
 - Do not add billing, SSO, or AI agent features until they appear in SCOPE
 - Prefer small, focused changes; match existing stack choices
+- Use path alias imports (`@/…`) as much as possible — see `.cursor/rules/alias-imports.mdc`
+- Prefer shared consts/`as const` objects for reused codes, statuses, and roles (don't overdo) — see `.cursor/rules/single-source-consts.mdc`
 
 ## Commands
 

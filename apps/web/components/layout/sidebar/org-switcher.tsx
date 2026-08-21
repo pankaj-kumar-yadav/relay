@@ -22,13 +22,17 @@ import { CreateNewIssue } from './create-new-issue';
 import { ThemeToggle } from '../theme-toggle';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { logout } from '@/lib/dummy-auth';
+import { logout } from '@/lib/auth';
 
 export function OrgSwitcher() {
    const router = useRouter();
 
-   function handleLogout() {
-      logout();
+   async function handleLogout() {
+      try {
+         await logout();
+      } catch {
+         // still leave the UI even if the API call fails
+      }
       router.push('/login');
    }
 
