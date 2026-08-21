@@ -23,6 +23,7 @@ Read these before changing code:
 - Prefer small, focused changes; match existing stack choices
 - Use path alias imports (`@/…`) as much as possible — see `.cursor/rules/alias-imports.mdc`
 - Prefer shared consts/`as const` objects for reused codes, statuses, and roles (don't overdo) — see `.cursor/rules/single-source-consts.mdc`
+- API JSON responses always use `{ success, message, data, error }` — see `.cursor/rules/api-response-envelope.mdc`
 
 ## Commands
 

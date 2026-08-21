@@ -64,12 +64,18 @@ export class InternalError extends ApiError {
 export function sendError(res: Response, err: unknown) {
   if (err instanceof ApiError) {
     return res.status(err.status).json({
+      success: false,
+      message: err.message,
+      data: null,
       error: { code: err.code, message: err.message },
     });
   }
 
   console.error(err);
   return res.status(HttpStatus.INTERNAL).json({
+    success: false,
+    message: 'Internal server error',
+    data: null,
     error: { code: ErrorCode.INTERNAL, message: 'Internal server error' },
   });
 }

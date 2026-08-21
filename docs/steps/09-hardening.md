@@ -27,10 +27,13 @@ Document credentials in `apps/api/README.md` (dev only).
 
 ## 2. Error handling
 
-Standardize API errors:
+Standardize API responses with the envelope (success responses use the same four keys with `error: null` and a non-null `data` object):
 
 ```json
 {
+  "success": false,
+  "message": "You are not a member of this organization",
+  "data": null,
   "error": {
     "code": "FORBIDDEN",
     "message": "You are not a member of this organization"

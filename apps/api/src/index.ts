@@ -5,6 +5,7 @@ import express from 'express';
 
 import { assertAuthConfig, config } from '@/config.js';
 import { authRouter } from '@/routes/auth.js';
+import { sendSuccess } from '@/utils/response.js';
 
 assertAuthConfig();
 
@@ -20,7 +21,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, service: 'relay-api' });
+  sendSuccess(res, {
+    message: 'OK',
+    data: { service: 'relay-api' },
+  });
 });
 
 app.use('/auth', authRouter);

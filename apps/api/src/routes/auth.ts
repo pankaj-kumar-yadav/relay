@@ -11,6 +11,7 @@ import {
   ValidationError,
 } from '@/utils/errors.js';
 import { hashPassword, verifyPassword } from '@/utils/passwords.js';
+import { sendSuccess } from '@/utils/response.js';
 import { clearToken, generateToken } from '@/utils/tokens.js';
 
 export const authRouter: Router = Router();
@@ -69,7 +70,11 @@ authRouter.post('/register', async (req, res) => {
     });
 
     generateToken(res, user.id);
-    res.status(HttpStatus.CREATED).json({ user: publicUser(user) });
+    sendSuccess(res, {
+      status: HttpStatus.CREATED,
+      message: 'Registered',
+      data: { user: publicUser(user) },
+    });
   } catch (err) {
     sendError(res, err);
   }
@@ -90,13 +95,16 @@ authRouter.post('/login', async (req, res) => {
     }
 
     generateToken(res, user.id);
-    res.status(HttpStatus.OK).json({
-      user: publicUser({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        isSuperAdmin: user.isSuperAdmin,
-      }),
+    sendSuccess(res, {
+      message: 'Logged in',
+      data: {
+        user: publicUser({
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          isSuperAdmin: user.isSuperAdmin,
+        }),
+      },
     });
   } catch (err) {
     sendError(res, err);
@@ -105,9 +113,9 @@ authRouter.post('/login', async (req, res) => {
 
 authRouter.post('/logout', (_req, res) => {
   clearToken(res);
-  res.status(HttpStatus.OK).json({ ok: true });
+  sendSuccess(res, { message: 'Logged out', data: {} });
 });
 
 authRouter.get('/me', requireAuth, (req, res) => {
-  res.status(HttpStatus.OK).json({ user: req.user });
+  sendSuccess(res, { data: { user: req.user } });
 });

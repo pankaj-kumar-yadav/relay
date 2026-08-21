@@ -34,6 +34,21 @@ Browser → apps/web (Next.js :3000)
 - Web sends `credentials: 'include'`; CORS allows `WEB_ORIGIN` with credentials
 - Passwords hashed with `bcryptjs`
 
+## API response shape
+
+Every JSON body from `apps/api`:
+
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": {},
+  "error": null
+}
+```
+
+On failure, `success` is `false`, `data` is `null`, and `error` is `{ "code", "message" }`. Helpers: `sendSuccess` / `sendError`. Web client unwraps `data`.
+
 ## Local ports
 
 | Service | Default |

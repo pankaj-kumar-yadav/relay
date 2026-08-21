@@ -11,7 +11,14 @@ export class ApiError extends Error {
   }
 }
 
-export async function api<T>(path: string, init?: RequestInit): Promise<T> {
+type ApiEnvelope<T> = {
+  success: boolean;
+  message: string;
+  data: T | null;
+  error: { code: string; message: string } | null;
+};
+
+export async function api<T extends object>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
     credentials: 'include',
@@ -21,15 +28,19 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
     },
   });
 
-  const body = await res.json().catch(() => ({}));
+  const body = (await res.json().catch(() => ({}))) as Partial<ApiEnvelope<T>>;
 
-  if (!res.ok) {
+  if (!res.ok || body.success === false) {
     throw new ApiError(
       res.status,
-      (body as { error?: { code?: string } })?.error?.code || 'ERROR',
-      (body as { error?: { message?: string } })?.error?.message || res.statusText,
+      body.error?.code || 'ERROR',
+      body.error?.message || body.message || res.statusText,
     );
   }
 
-  return body as T;
+  if (body.data == null) {
+    throw new ApiError(res.status, 'ERROR', body.message || 'Empty response data');
+  }
+
+  return body.data;
 }

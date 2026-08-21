@@ -30,7 +30,7 @@ export async function register(input: {
 }
 
 export async function logout(): Promise<void> {
-  await api<{ ok: boolean }>('/auth/logout', { method: 'POST' });
+  await api('/auth/logout', { method: 'POST' });
 }
 
 export async function getMe(): Promise<AuthUser | null> {

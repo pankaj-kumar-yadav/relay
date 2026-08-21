@@ -33,7 +33,7 @@ Users can register, log in, and call protected API routes. Web can store and sen
 
 - JSON body
 - Validation with Zod (or equivalent)
-- Consistent error shape, e.g. `{ "error": { "code": "INVALID_CREDENTIALS", "message": "..." } }`
+- Envelope: `{ "success", "message", "data", "error" }` — on failure `error` is `{ "code", "message" }` and `data` is `null`
 - Never return `password_hash`
 
 ## Middleware
