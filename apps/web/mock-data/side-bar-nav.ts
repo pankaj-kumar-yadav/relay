@@ -34,12 +34,17 @@ export const inboxItems = [
       url: '/lndev-ui/my-issues',
       icon: FolderKanban,
    },
-   {
-      name: 'Agent',
-      url: '/lndev-ui/agent',
-      icon: Bot,
-   },
 ];
+
+/**
+ * @deprecated AI agent is out of MVP scope (see docs/SCOPE.md). Kept for
+ * reference; not rendered in the sidebar.
+ */
+export const deprecatedAgentNavItem = {
+   name: 'Agent',
+   url: '/lndev-ui/agent',
+   icon: Bot,
+} as const;
 
 export const workspaceItems = [
    {

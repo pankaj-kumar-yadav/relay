@@ -21,8 +21,17 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui
 import { CreateNewIssue } from './create-new-issue';
 import { ThemeToggle } from '../theme-toggle';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { logout } from '@/lib/dummy-auth';
 
 export function OrgSwitcher() {
+   const router = useRouter();
+
+   function handleLogout() {
+      logout();
+      router.push('/login');
+   }
+
    return (
       <SidebarMenu>
          <SidebarMenuItem>
@@ -85,7 +94,7 @@ export function OrgSwitcher() {
                         </DropdownMenuSubContent>
                      </DropdownMenuPortal>
                   </DropdownMenuSub>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onSelect={handleLogout}>
                      Log out
                      <DropdownMenuShortcut>⌥⇧Q</DropdownMenuShortcut>
                   </DropdownMenuItem>

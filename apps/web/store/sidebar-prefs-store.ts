@@ -8,6 +8,7 @@ export type SidebarItemKey =
    | 'inbox'
    | 'reviews'
    | 'my-issues'
+   /** @deprecated AI agent is out of MVP scope; hidden from the sidebar UI. */
    | 'agent'
    | 'initiatives'
    | 'projects'
@@ -31,7 +32,8 @@ const DEFAULT_VISIBILITY: Record<SidebarItemKey, SidebarVisibility> = {
    'inbox': 'always',
    'reviews': 'always',
    'my-issues': 'always',
-   'agent': 'always',
+   /** @deprecated Hidden from UI; retained so persisted prefs stay valid. */
+   'agent': 'never',
    'initiatives': 'always',
    'projects': 'always',
    'views': 'always',
@@ -45,7 +47,7 @@ const DEFAULT_VISIBILITY: Record<SidebarItemKey, SidebarVisibility> = {
  * sidebar keeps its shape across sessions.
  */
 const DEFAULT_ORDER: Record<SidebarSection, SidebarItemKey[]> = {
-   personal: ['inbox', 'reviews', 'my-issues', 'agent'],
+   personal: ['inbox', 'reviews', 'my-issues'],
    workspace: ['initiatives', 'projects', 'views', 'teams', 'members'],
 };
 

@@ -23,7 +23,6 @@ const ITEM_KEYS: Record<string, SidebarItemKey> = {
    'Inbox': 'inbox',
    'Reviews': 'reviews',
    'My issues': 'my-issues',
-   'Agent': 'agent',
 };
 
 export function NavInbox() {
