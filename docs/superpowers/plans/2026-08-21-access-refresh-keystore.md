@@ -1,8 +1,10 @@
 # Access + Refresh Keystore Implementation Plan
 
+> **Status:** Implemented (historical plan). Spec: [2026-08-21-access-refresh-keystore-design.md](../specs/2026-08-21-access-refresh-keystore-design.md). Product docs: [ARCHITECTURE.md](../../ARCHITECTURE.md), [04-auth.md](../../steps/04-auth.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace Relay’s single 30d `jwt` cookie with HRMS-shaped dual JWT (`accessToken` 15m + `refreshToken` 1d) backed by a Prisma `KeyStore`, plus web one-shot auto-refresh.
+**Goal:** Replace Relay’s single 30d `jwt` cookie with HRMS-shaped dual JWT (`relay_accessToken` 15m + `relay_refreshToken` 1d) backed by a Prisma `KeyStore`, plus web one-shot auto-refresh.
 
 **Architecture:** On login/register, generate random primary/secondary keys, persist a `KeyStore` row, embed keys as JWT `prm`, set HttpOnly cookies. `requireAuth` validates access JWT and looks up an active keystore. `POST /auth/refresh` decodes (possibly expired) access + validates refresh, matches keystore, deletes it, and re-issues. Web `api.ts` retries once after refresh on `401`/`TOKEN_EXPIRED`.
 
@@ -13,7 +15,7 @@
 ## Global Constraints
 
 - Access TTL: **900** seconds (15m); refresh TTL: **86400** seconds (1d)
-- Cookies: `accessToken`, `refreshToken` (HttpOnly); stop issuing `jwt`
+- Cookies: `relay_accessToken`, `relay_refreshToken` (HttpOnly; `BRAND_SLUG` prefix); stop issuing `jwt`
 - Local cookie: `secure: false`, `sameSite: 'lax'`; prod: `secure: true`, `sameSite: 'none'`
 - JWT payload: `iss`, `aud`, `sub`, `prm`, `iat`, `exp` (HS256)
 - Env: `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` (clean cut off `JWT_SECRET`)

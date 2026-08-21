@@ -16,6 +16,17 @@ declare global {
         secondaryKey: string;
         status: boolean;
       };
+      org?: {
+        id: string;
+        name: string;
+        slug: string;
+      };
+      membership?: {
+        id: string;
+        role: string;
+        organizationId: string;
+        userId: string;
+      };
     }
   }
 }

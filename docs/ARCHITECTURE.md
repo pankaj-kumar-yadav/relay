@@ -21,6 +21,8 @@ Browser → apps/web (Next.js :3000)
 - Every domain row that belongs to an org includes `organization_id`
 - Resolve the current user from the session/token, then verify membership for the requested org
 - Never authorize solely from URL `orgId` / client-supplied tenant IDs
+- Membership via `memberships` join (not `organization_id` on `users`); public route id is org **slug**
+- Detail: [steps/05-multi-tenant.md](./steps/05-multi-tenant.md); design: [superpowers/specs/2026-08-21-organizations-memberships-design.md](./superpowers/specs/2026-08-21-organizations-memberships-design.md)
 
 ## Roles
 
@@ -29,13 +31,18 @@ Browser → apps/web (Next.js :3000)
 
 ## Auth
 
-- Dual JWT HttpOnly cookies: `accessToken` (15m) + `refreshToken` (1d)
-- Payload: `{ iss, aud, sub, prm, iat, exp }`; `prm` ties to Prisma `KeyStore` (primary/secondary keys)
+- Dual JWT HttpOnly cookies (brand-prefixed via `BRAND_SLUG`): `relay_accessToken` (15m) + `relay_refreshToken` (1d)
+- Payload: `{ iss, aud, sub, prm, iat, exp }` (HS256); `prm` binds to Prisma `KeyStore` (`primaryKey` on access, `secondaryKey` on refresh)
+- Login/register: create `KeyStore` row → set both cookies; logout: delete current keystore → clear cookies
+- `POST /auth/refresh`: decode (possibly expired) access + validate refresh → match keystore → delete → re-issue pair
+- `requireAuth`: validate access JWT → load user → require active keystore for `prm`
 - Endpoints: `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, `POST /auth/refresh`
-- Web sends `credentials: 'include'`; client auto-calls `/auth/refresh` once on expired access
+- Web (`apps/web/lib/api.ts`): `credentials: 'include'`; one-shot `/auth/refresh` then retry on `401` / `TOKEN_EXPIRED`
+- Cookie flags: local `secure: false`, `sameSite: 'lax'`; prod `secure: true`, `sameSite: 'none'`
 - CORS allows `WEB_ORIGIN` with credentials
 - Passwords hashed with `bcryptjs`
-- Env: `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE`
+- Env: `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` (optional `ACCESS_TOKEN_VALIDITY_SEC` / `REFRESH_TOKEN_VALIDITY_SEC`)
+- Detail: [steps/04-auth.md](./steps/04-auth.md); design: [superpowers/specs/2026-08-21-access-refresh-keystore-design.md](./superpowers/specs/2026-08-21-access-refresh-keystore-design.md)
 
 ## API response shape
 

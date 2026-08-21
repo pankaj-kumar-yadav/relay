@@ -1,6 +1,6 @@
 # Step 3 — Database (PostgreSQL)
 
-**Status:** Done (users table + Prisma; orgs/memberships deferred to step 5)
+**Status:** Done (users + `key_stores` via step 4 auth; orgs/memberships deferred to step 5)
 
 ## Goal
 
@@ -65,9 +65,23 @@ Implement in this order:
 |--------|--------|
 | `id` | UUID PK |
 | `email` | unique, lowercased |
-| `password_hash` | nullable if you add OAuth later |
+| `password_hash` | bcrypt hash; never returned in JSON |
 | `name` | display name |
+| `is_super_admin` | boolean, default `false` |
 | `created_at` / `updated_at` | timestamptz |
+
+### 1b. `key_stores` (added with step 4 auth)
+
+| Column | Notes |
+|--------|--------|
+| `id` | UUID PK |
+| `user_id` | FK → users (cascade delete) |
+| `primary_key` | embedded in access JWT `prm` |
+| `secondary_key` | embedded in refresh JWT `prm` |
+| `status` | boolean, default `true` |
+| `created_at` / `updated_at` | timestamptz |
+
+Indexes: `(user_id)`, `(user_id, primary_key, status)`, `(user_id, primary_key, secondary_key)`.
 
 ### 2. `organizations`
 
@@ -125,7 +139,7 @@ Full rich Circle-like seed can wait until step 9.
 
 - [x] Postgres runs locally
 - [x] `DATABASE_URL` configured
-- [x] Migrations create `users` (organizations, memberships, domain tables → step 5+)
+- [x] Migrations create `users` (+ `key_stores` with auth; organizations, memberships, domain tables → step 5+)
 - [x] Seed creates super-admin `owner@relay.local`
 - [x] `.env.example` updated
 

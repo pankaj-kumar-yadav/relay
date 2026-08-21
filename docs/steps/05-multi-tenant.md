@@ -1,6 +1,6 @@
 # Step 5 — Multi-tenant (organizations + memberships)
 
-**Status:** Pending
+**Status:** In progress (orgs + memberships + `requireOrgMember`; invites deferred)
 
 ## Goal
 
@@ -27,18 +27,18 @@ If step 3 fails → `403 Forbidden` (or `404` if you prefer not to leak existenc
 |--------|------|----------|
 | `POST` | `/orgs` | Create org; add creator as `admin` |
 | `GET` | `/orgs` | List orgs for current user |
-| `GET` | `/orgs/:orgId` | Get org if member |
-| `POST` | `/orgs/:orgId/invites` | Create invite (email + role) — can stub token |
-| `POST` | `/invites/:token/accept` | Accept invite → membership |
+| `GET` | `/orgs/:orgId` | Get org if member (`:orgId` = **slug**) |
+| `POST` | `/orgs/:orgId/invites` | Deferred — follow-up |
+| `POST` | `/invites/:token/accept` | Deferred — follow-up |
 
-`:orgId` may be UUID or `slug` — pick one public identifier and stick to it. Circle uses a string segment like `lndev-ui`; **slug** maps cleanly.
+Public org identifier for routes: **slug** (not UUID).
 
 ## Middleware
 
 `requireOrgMember`:
 
 1. Depends on `requireAuth`
-2. Reads `orgId` from params (or header if you add one)
+2. Reads `orgId` from params (slug)
 3. Loads org + membership
 4. Sets `req.org` and `req.membership` (include `role`)
 
@@ -76,7 +76,7 @@ Plan:
 
 Until step 7, UI can still show mocks, but org switcher/login should use real orgs when ready.
 
-## Invite MVP (acceptable stub)
+## Invite MVP (acceptable stub) — deferred
 
 - Generate random token, store hash + expiry on `invites` table
 - Log invite URL in server console in dev instead of sending email
@@ -84,17 +84,18 @@ Until step 7, UI can still show mocks, but org switcher/login should use real or
 
 ## Done when
 
-- [ ] User can create an org and see it in `GET /orgs`
-- [ ] Second user without membership gets 403 on org routes
-- [ ] Creating org auto-creates owner membership
-- [ ] All new org-scoped handlers use `requireOrgMember`
+- [x] User can create an org and see it in `GET /orgs`
+- [x] Second user without membership gets 403 on org routes
+- [x] Creating org auto-creates owner membership
+- [x] All new org-scoped handlers use `requireOrgMember`
+- [ ] Invites create/accept
 - [ ] Rule documented and followed in code reviews
 
 ## Test scenarios (manual)
 
 1. User A creates org `acme` → OK  
 2. User B calls `GET /orgs/acme/...` → 403  
-3. User A invites B → B accepts → B can read  
+3. User A invites B → B accepts → B can read (deferred)  
 4. Queries never return other orgs’ rows
 
 ## Next

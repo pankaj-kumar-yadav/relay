@@ -9,6 +9,7 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | [STEPS.md](./STEPS.md) | End-to-end implementation roadmap |
 | [steps/](./steps/) | Detailed instructions for each step |
 | [../AGENTS.md](../AGENTS.md) | Agent rules and commands |
+| [superpowers/specs/](./superpowers/specs/) | Design specs (auth KeyStore; orgs/memberships) |
 
 ## Step files
 
@@ -16,10 +17,10 @@ Canonical documentation for humans and agents. Read in this order when starting 
 |------|------|--------|
 | 0 | [00-overview.md](./steps/00-overview.md) | Reference |
 | 1 | [01-monorepo.md](./steps/01-monorepo.md) | Done |
-| 2 | [02-circle-ui.md](./steps/02-circle-ui.md) | Next |
-| 3 | [03-database.md](./steps/03-database.md) | Pending |
-| 4 | [04-auth.md](./steps/04-auth.md) | Pending |
-| 5 | [05-multi-tenant.md](./steps/05-multi-tenant.md) | Pending |
+| 2 | [02-circle-ui.md](./steps/02-circle-ui.md) | Done |
+| 3 | [03-database.md](./steps/03-database.md) | Done (users; KeyStore via step 4) |
+| 4 | [04-auth.md](./steps/04-auth.md) | Done |
+| 5 | [05-multi-tenant.md](./steps/05-multi-tenant.md) | In progress (orgs done; invites deferred) |
 | 6 | [06-core-api.md](./steps/06-core-api.md) | Pending |
 | 7 | [07-wire-ui.md](./steps/07-wire-ui.md) | Pending |
 | 8 | [08-projects-teams.md](./steps/08-projects-teams.md) | Pending |

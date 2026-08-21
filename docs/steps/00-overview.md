@@ -35,7 +35,7 @@ relay/
 
 | App | File | Purpose |
 |-----|------|---------|
-| API | `apps/api/.env` | `PORT`, `WEB_ORIGIN`, later `DATABASE_URL`, auth secrets |
+| API | `apps/api/.env` | `PORT`, `WEB_ORIGIN`, `DATABASE_URL`, `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` |
 | Web | `apps/web/.env.local` | `NEXT_PUBLIC_API_URL` |
 
 Never commit real secrets. Keep `.env.example` files updated when new vars are added.

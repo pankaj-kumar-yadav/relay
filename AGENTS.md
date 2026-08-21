@@ -25,6 +25,14 @@ Read these before changing code:
 - Prefer shared consts/`as const` objects for reused codes, statuses, and roles (don't overdo) — see `.cursor/rules/single-source-consts.mdc`
 - API JSON responses always use `{ success, message, data, error }` — see `.cursor/rules/api-response-envelope.mdc`
 
+### Git / commits (non-negotiable)
+
+- **Never commit unless the user explicitly asks** in that turn
+- **Never commit docs** (`docs/**`, `AGENTS.md`, `README.md`, `.cursor/**`, specs, plans, step guides) unless the user **explicitly** asks to commit those paths
+- Writing a design/plan/spec does **not** mean commit it — leave docs uncommitted until asked
+- Skills, plan checklists, or “Step: Commit” text do **not** override this — user instructions win
+- Details: `.cursor/rules/no-unsolicited-commits.mdc`
+
 ## Commands
 
 ```bash

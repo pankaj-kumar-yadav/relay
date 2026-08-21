@@ -60,8 +60,10 @@ Map:
 
 Ensure `.env.example` files list every required var:
 
-**API:** `PORT`, `WEB_ORIGIN`, `DATABASE_URL`, `SESSION_SECRET` (names may vary)  
+**API:** `PORT`, `WEB_ORIGIN`, `DATABASE_URL`, `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` (optional `ACCESS_TOKEN_VALIDITY_SEC`, `REFRESH_TOKEN_VALIDITY_SEC`)  
 **Web:** `NEXT_PUBLIC_API_URL`
+
+Auth already revokes sessions via `KeyStore` delete on logout/refresh; hardening here is rate limits and prod cookie/CORS notes (see [ARCHITECTURE.md](../ARCHITECTURE.md)).
 
 ## 5. CORS / production notes
 
@@ -75,7 +77,7 @@ Document in ARCHITECTURE:
 Run through and tick in PR description:
 
 - [ ] Register new user
-- [ ] Login / logout / `/auth/me`
+- [ ] Login / logout / `/auth/me` / `/auth/refresh` (session survives short access TTL)
 - [ ] Create organization
 - [ ] Create team + project
 - [ ] Create issue, edit status, reorder if supported

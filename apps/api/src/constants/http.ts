@@ -19,6 +19,7 @@ export const ErrorCode = {
   TOKEN_EXPIRED: 'TOKEN_EXPIRED',
   FORBIDDEN: 'FORBIDDEN',
   NOT_FOUND: 'NOT_FOUND',
+  SLUG_TAKEN: 'SLUG_TAKEN',
   INTERNAL: 'INTERNAL',
 } as const;
 

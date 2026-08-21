@@ -55,6 +55,12 @@ export class ForbiddenError extends ApiError {
   }
 }
 
+export class SlugTakenError extends ApiError {
+  constructor(message = 'Organization slug already taken') {
+    super(HttpStatus.CONFLICT, ErrorCode.SLUG_TAKEN, message);
+  }
+}
+
 export class InternalError extends ApiError {
   constructor(message = 'Internal server error') {
     super(HttpStatus.INTERNAL, ErrorCode.INTERNAL, message);

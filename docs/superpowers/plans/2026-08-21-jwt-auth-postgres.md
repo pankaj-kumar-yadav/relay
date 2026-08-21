@@ -1,5 +1,7 @@
 # JWT Auth + Postgres Implementation Plan
 
+> **Status:** Partially historical — Postgres/`users`/basic auth landed; single `jwt` cookie was later replaced by dual JWT + KeyStore. See [access-refresh-keystore plan](./2026-08-21-access-refresh-keystore.md) and [ARCHITECTURE.md](../../ARCHITECTURE.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add Postgres + Prisma `users` table and ekalakar-style JWT HttpOnly cookie auth on the API; wire web login/register to replace dummy localStorage auth.

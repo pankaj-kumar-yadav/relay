@@ -1,6 +1,7 @@
-export const COOKIE_ACCESS = 'accessToken';
-export const COOKIE_REFRESH = 'refreshToken';
-export const LEGACY_COOKIE_JWT = 'jwt';
+import { BRAND_SLUG } from '@/constants/brand.constants.js';
+
+export const COOKIE_ACCESS = `${BRAND_SLUG}_accessToken`;
+export const COOKIE_REFRESH = `${BRAND_SLUG}_refreshToken`;
 
 /** seconds */
 export const DEFAULT_ACCESS_TOKEN_VALIDITY_SEC = 900;

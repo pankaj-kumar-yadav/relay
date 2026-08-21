@@ -6,10 +6,18 @@
 
 Users can register, log in, and call protected API routes. Web can store and send the auth credential.
 
+## Implementation notes (as shipped)
+
+- Cookie names: `${BRAND_SLUG}_accessToken` / `${BRAND_SLUG}_refreshToken` → `relay_accessToken`, `relay_refreshToken`
+- Core modules: `apps/api/src/auth/*`, `apps/api/src/utils/jwt.ts`, `apps/api/src/middleware/requireAuth.ts`
+- Web auto-refresh: `apps/web/lib/api.ts`
+
+See design: [../superpowers/specs/2026-08-21-access-refresh-keystore-design.md](../superpowers/specs/2026-08-21-access-refresh-keystore-design.md)
+
 ## Prerequisites
 
-- Step 3 — `users` table exists
-- Password hashing library chosen (e.g. `argon2` or `bcrypt`)
+- Step 3 — `users` (+ `key_stores`) table exists
+- Password hashing: `bcryptjs`
 
 ## Decision: session vs JWT
 
@@ -18,7 +26,7 @@ Users can register, log in, and call protected API routes. Web can store and sen
 | **HTTP-only cookie session** (recommended) | Safer XSS default, fits same-site web+api with CORS credentials | Needs cookie + CORS config |
 | Bearer JWT in memory/localStorage | Simple for mobile later | XSS risk if stored in JS-readable storage |
 
-**Choice:** Dual JWT HttpOnly cookies — `accessToken` (15m) + `refreshToken` (1d) — with Prisma `KeyStore` (HRMS-shaped). Documented in [ARCHITECTURE.md](../ARCHITECTURE.md).
+**Choice:** Dual JWT HttpOnly cookies — `relay_accessToken` (15m) + `relay_refreshToken` (1d) — with Prisma `KeyStore` (HRMS-shaped). Documented in [ARCHITECTURE.md](../ARCHITECTURE.md).
 
 ## API endpoints (minimum)
 
@@ -41,7 +49,7 @@ Users can register, log in, and call protected API routes. Web can store and sen
 
 `requireAuth`:
 
-1. Validate `accessToken` cookie
+1. Validate `relay_accessToken` cookie
 2. Load user by JWT `sub`
 3. Require active `KeyStore` matching JWT `prm`
 4. Attach `req.user` (+ `req.keyStore`)

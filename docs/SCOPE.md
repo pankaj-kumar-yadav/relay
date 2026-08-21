@@ -6,7 +6,7 @@ Multi-tenant project management for teams: issues, projects, and org membership 
 
 ## MVP (in)
 
-- Auth (register / login / session or JWT)
+- Auth (register / login / logout / me / refresh; dual JWT HttpOnly cookies + KeyStore)
 - Organizations + memberships (multi-tenant)
 - Roles:
   - **Super-admin** — single SaaS-owner role (platform-level; not an org membership)
@@ -37,3 +37,9 @@ Multi-tenant project management for teams: issues, projects, and org membership 
 - Web: Next.js + TypeScript (+ Circle / shadcn UI)
 - API: Node.js + Express + TypeScript
 - DB: PostgreSQL
+
+## Agent process constraints
+
+- Do **not** create git commits unless the human explicitly asks
+- Do **not** commit documentation (`docs/**`, specs, plans, `AGENTS.md`, README, Cursor rules) unless the human explicitly asks to commit those files — drafting specs/plans is fine; committing them is not automatic
+- Product scope above still governs *what* to build; this section governs *how* agents may touch git

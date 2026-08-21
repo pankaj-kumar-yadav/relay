@@ -4,11 +4,7 @@ import type { Response } from 'express';
 import { createTokens } from '@/auth/authUtils.js';
 import { createKeyStore } from '@/auth/keyStore.js';
 import { config } from '@/config.js';
-import {
-  COOKIE_ACCESS,
-  COOKIE_REFRESH,
-  LEGACY_COOKIE_JWT,
-} from '@/constants/auth.js';
+import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.js';
 
 function cookieBase() {
   return {
@@ -45,5 +41,4 @@ export function clearAuthCookies(res: Response) {
   const base = cookieBase();
   res.cookie(COOKIE_ACCESS, '', { ...base, expires: new Date(0) });
   res.cookie(COOKIE_REFRESH, '', { ...base, expires: new Date(0) });
-  res.cookie(LEGACY_COOKIE_JWT, '', { ...base, expires: new Date(0) });
 }
