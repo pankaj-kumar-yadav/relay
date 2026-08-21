@@ -8,7 +8,7 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 
 ```text
 1. Monorepo          ✅  (done)
-2. Circle UI         →   drop starter into apps/web
+2. Circle UI         ✅  (done)
 3. Database          →   Postgres + migrations + core tables
 4. Auth              →   register / login / session
 5. Multi-tenant      →   orgs, memberships, tenant middleware
@@ -28,7 +28,7 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 ## Quick status checklist
 
 - [x] Step 1 — Monorepo (pnpm + Turborepo + `apps/web` + `apps/api`)
-- [ ] Step 2 — Circle UI in `apps/web`
+- [x] Step 2 — Circle UI in `apps/web`
 - [ ] Step 3 — PostgreSQL schema + migrations
 - [ ] Step 4 — Auth endpoints + web login flow
 - [ ] Step 5 — Organizations + memberships + tenant guard

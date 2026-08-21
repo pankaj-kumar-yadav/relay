@@ -1,6 +1,6 @@
 # Step 2 — Drop Circle UI into `apps/web`
 
-**Status:** Pending
+**Status:** Done
 
 ## Goal
 
@@ -97,11 +97,11 @@ Circle often uses Prettier with **3-space** indent. Relay root Prettier may diff
 
 ## Done when
 
-- [ ] `pnpm --filter @relay/web dev` shows Circle UI
-- [ ] `pnpm --filter @relay/web build` succeeds
-- [ ] Package name is `@relay/web`
-- [ ] `NEXT_PUBLIC_API_URL` exists (even if unused yet)
-- [ ] Mock data still powers the UI (expected at this step)
+- [x] `pnpm --filter @relay/web dev` shows Circle UI
+- [x] `pnpm --filter @relay/web build` succeeds
+- [x] Package name is `@relay/web`
+- [x] `NEXT_PUBLIC_API_URL` exists (even if unused yet)
+- [x] Mock data still powers the UI (expected at this step)
 
 ## Out of scope for this step
 
