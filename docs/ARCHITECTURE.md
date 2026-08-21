@@ -29,10 +29,13 @@ Browser → apps/web (Next.js :3000)
 
 ## Auth
 
-- JWT in HttpOnly cookie named `jwt` (payload `{ userId }`, 30d)
-- Endpoints: `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`
-- Web sends `credentials: 'include'`; CORS allows `WEB_ORIGIN` with credentials
+- Dual JWT HttpOnly cookies: `accessToken` (15m) + `refreshToken` (1d)
+- Payload: `{ iss, aud, sub, prm, iat, exp }`; `prm` ties to Prisma `KeyStore` (primary/secondary keys)
+- Endpoints: `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, `POST /auth/refresh`
+- Web sends `credentials: 'include'`; client auto-calls `/auth/refresh` once on expired access
+- CORS allows `WEB_ORIGIN` with credentials
 - Passwords hashed with `bcryptjs`
+- Env: `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE`
 
 ## API response shape
 

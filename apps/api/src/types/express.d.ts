@@ -9,6 +9,13 @@ declare global {
         name: string;
         isSuperAdmin: boolean;
       };
+      keyStore?: {
+        id: string;
+        userId: string;
+        primaryKey: string;
+        secondaryKey: string;
+        status: boolean;
+      };
     }
   }
 }

@@ -1,6 +1,6 @@
 # Step 4 — Authentication
 
-**Status:** Done (JWT HttpOnly cookie; web login/register wired)
+**Status:** Done (access + refresh JWT + KeyStore; web login/register + auto-refresh)
 
 ## Goal
 
@@ -18,32 +18,34 @@ Users can register, log in, and call protected API routes. Web can store and sen
 | **HTTP-only cookie session** (recommended) | Safer XSS default, fits same-site web+api with CORS credentials | Needs cookie + CORS config |
 | Bearer JWT in memory/localStorage | Simple for mobile later | XSS risk if stored in JS-readable storage |
 
-**Choice for MVP:** JWT in HttpOnly cookie named `jwt` (ekalakar pattern). Documented in [ARCHITECTURE.md](../ARCHITECTURE.md).
+**Choice:** Dual JWT HttpOnly cookies — `accessToken` (15m) + `refreshToken` (1d) — with Prisma `KeyStore` (HRMS-shaped). Documented in [ARCHITECTURE.md](../ARCHITECTURE.md).
 
 ## API endpoints (minimum)
 
 | Method | Path | Auth | Behavior |
 |--------|------|------|----------|
-| `POST` | `/auth/register` | public | email, password, name → create user (and optionally first org later) |
-| `POST` | `/auth/login` | public | verify password → set session/cookie |
-| `POST` | `/auth/logout` | auth | clear session |
+| `POST` | `/auth/register` | public | email, password, name → create user + set cookies |
+| `POST` | `/auth/login` | public | verify password → set cookies |
+| `POST` | `/auth/logout` | auth | delete keystore + clear cookies |
 | `GET` | `/auth/me` | auth | current user profile |
+| `POST` | `/auth/refresh` | cookies | rotate keystore + issue new token pair |
 
 ### Request/response conventions
 
 - JSON body
 - Validation with Zod (or equivalent)
 - Envelope: `{ "success", "message", "data", "error" }` — on failure `error` is `{ "code", "message" }` and `data` is `null`
-- Never return `password_hash`
+- Never return `password_hash` or keystore keys
 
 ## Middleware
 
 `requireAuth`:
 
-1. Read session/token from cookie or `Authorization` header
-2. Load user
-3. Attach `req.user = { id, email, name }`
-4. `401` if missing/invalid
+1. Validate `accessToken` cookie
+2. Load user by JWT `sub`
+3. Require active `KeyStore` matching JWT `prm`
+4. Attach `req.user` (+ `req.keyStore`)
+5. `401` / `TOKEN_EXPIRED` if missing/invalid
 
 ## Web work (minimal)
 
@@ -51,6 +53,7 @@ Users can register, log in, and call protected API routes. Web can store and sen
 2. Client API helper that:
    - uses `NEXT_PUBLIC_API_URL`
    - sends `credentials: 'include'` if cookies
+   - on `401` / `TOKEN_EXPIRED`, calls `/auth/refresh` once and retries
 3. After login, redirect into app shell (even if still mock data)
 
 Do **not** block on replacing all Circle mocks in this step.
@@ -62,7 +65,9 @@ API already allows `WEB_ORIGIN`. For cookies:
 ```env
 # apps/api/.env
 WEB_ORIGIN=http://localhost:3000
-SESSION_SECRET=change-me-to-long-random
+TOKEN_SECRET=change-me-to-long-random
+TOKEN_ISSUER=relay
+TOKEN_AUDIENCE=relay-web
 ```
 
 Ensure:
@@ -72,15 +77,17 @@ Ensure:
 
 ## Security checklist
 
-- [ ] Passwords hashed (never plaintext)
+- [x] Passwords hashed (never plaintext)
 - [ ] Rate-limit login/register (basic is enough for MVP)
-- [ ] Generic error on bad login (don’t leak whether email exists) — optional but preferred
-- [ ] `SESSION_SECRET` / JWT secret only in env
+- [x] Generic error on bad login (don’t leak whether email exists)
+- [x] `TOKEN_SECRET` / issuer / audience only in env
+- [x] Logout revokes keystore server-side
 
 ## Done when
 
 - [x] Register + login + logout + `/auth/me` work via HTTP client (Thunder Client / curl)
-- [x] Web can log in and call `/auth/me`
+- [x] `/auth/refresh` rotates tokens + keystore
+- [x] Web can log in and call `/auth/me` (with auto-refresh)
 - [x] Unauthenticated requests to a protected stub route return 401
 
 ## Out of scope

@@ -8,13 +8,30 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  email        String   @unique
-  passwordHash String   @map("password_hash")
+  id           String     @id @default(uuid()) @db.Uuid
+  email        String     @unique
+  passwordHash String     @map("password_hash")
   name         String
-  isSuperAdmin Boolean  @default(false) @map("is_super_admin")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  isSuperAdmin Boolean    @default(false) @map("is_super_admin")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  keyStores    KeyStore[]
 
   @@map("users")
+}
+
+model KeyStore {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  primaryKey   String   @map("primary_key")
+  secondaryKey String   @map("secondary_key")
+  status       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, primaryKey, status])
+  @@index([userId, primaryKey, secondaryKey])
+  @@map("key_stores")
 }

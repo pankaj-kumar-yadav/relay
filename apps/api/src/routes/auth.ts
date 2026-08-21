@@ -1,6 +1,14 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
+import { validateTokenData } from '@/auth/authUtils.js';
+import {
+  deleteKeyStoreById,
+  findKeyStoreByKeys,
+} from '@/auth/keyStore.js';
+import { clearAuthCookies, createAndSetTokens } from '@/auth/tokenHelpers.js';
+import { config } from '@/config.js';
+import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.js';
 import { HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/requireAuth.js';
@@ -8,11 +16,12 @@ import {
   EmailTakenError,
   InvalidCredentialsError,
   sendError,
+  UnauthorizedError,
   ValidationError,
 } from '@/utils/errors.js';
+import JWT from '@/utils/jwt.js';
 import { hashPassword, verifyPassword } from '@/utils/passwords.js';
 import { sendSuccess } from '@/utils/response.js';
-import { clearToken, generateToken } from '@/utils/tokens.js';
 
 export const authRouter: Router = Router();
 
@@ -69,7 +78,7 @@ authRouter.post('/register', async (req, res) => {
       },
     });
 
-    generateToken(res, user.id);
+    await createAndSetTokens(res, user.id);
     sendSuccess(res, {
       status: HttpStatus.CREATED,
       message: 'Registered',
@@ -94,7 +103,7 @@ authRouter.post('/login', async (req, res) => {
       throw new InvalidCredentialsError();
     }
 
-    generateToken(res, user.id);
+    await createAndSetTokens(res, user.id);
     sendSuccess(res, {
       message: 'Logged in',
       data: {
@@ -111,11 +120,65 @@ authRouter.post('/login', async (req, res) => {
   }
 });
 
-authRouter.post('/logout', (_req, res) => {
-  clearToken(res);
-  sendSuccess(res, { message: 'Logged out', data: {} });
+authRouter.post('/logout', requireAuth, async (req, res) => {
+  try {
+    if (req.keyStore) {
+      await deleteKeyStoreById(req.keyStore.id);
+    }
+    clearAuthCookies(res);
+    sendSuccess(res, { message: 'Logged out', data: {} });
+  } catch (err) {
+    sendError(res, err);
+  }
 });
 
 authRouter.get('/me', requireAuth, (req, res) => {
   sendSuccess(res, { data: { user: req.user } });
+});
+
+authRouter.post('/refresh', async (req, res) => {
+  try {
+    const accessToken = req.cookies?.[COOKIE_ACCESS] as string | undefined;
+    const refreshToken =
+      (req.cookies?.[COOKIE_REFRESH] as string | undefined) ||
+      (typeof req.body?.refreshToken === 'string' ? req.body.refreshToken : undefined);
+
+    if (!accessToken || !refreshToken) {
+      throw new UnauthorizedError('Not authorized, missing tokens');
+    }
+
+    const accessPayload = await JWT.decode(accessToken);
+    validateTokenData(accessPayload);
+
+    const user = await prisma.user.findUnique({
+      where: { id: accessPayload.sub },
+      select: { id: true },
+    });
+    if (!user) {
+      throw new UnauthorizedError('Not authorized, user not found');
+    }
+
+    const refreshPayload = await JWT.validate(refreshToken, config.tokenInfo.secret);
+    validateTokenData(refreshPayload);
+
+    if (accessPayload.sub !== refreshPayload.sub) {
+      throw new UnauthorizedError('Invalid access token');
+    }
+
+    const keyStore = await findKeyStoreByKeys(
+      user.id,
+      accessPayload.prm,
+      refreshPayload.prm,
+    );
+    if (!keyStore) {
+      throw new UnauthorizedError('Invalid access token');
+    }
+
+    await deleteKeyStoreById(keyStore.id);
+    await createAndSetTokens(res, user.id);
+
+    sendSuccess(res, { message: 'Access token refreshed', data: {} });
+  } catch (err) {
+    sendError(res, err);
+  }
 });
