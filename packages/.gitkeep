@@ -1,0 +1,4 @@
+# Shared packages
+
+Add workspace packages here when web and api need shared types or configs
+(e.g. `typescript-config`, `eslint-config`, `shared`).
