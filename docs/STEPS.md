@@ -11,7 +11,7 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 2. Circle UI         ✅  (done)
 3. Database          ✅  (users + key_stores; orgs/memberships next in step 5)
 4. Auth              ✅  (access+refresh JWT, KeyStore, web login/register + auto-refresh)
-5. Multi-tenant      →   orgs + memberships + requireOrgMember (invites deferred)
+5. Multi-tenant      ✅  (orgs + memberships + requireOrgMember + invites)
 6. Core API          →   issues (+ labels/statuses) CRUD
 7. Wire UI           →   replace Circle mocks with API
 8. Projects/Teams    →   expand domain to match UI routes
@@ -31,7 +31,7 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 - [x] Step 2 — Circle UI in `apps/web`
 - [x] Step 3 — PostgreSQL + Prisma `users` + `key_stores` (orgs/memberships deferred to step 5)
 - [x] Step 4 — Auth endpoints + web login/register (dual JWT + KeyStore)
-- [x] Step 5 — Organizations + memberships + tenant guard (invites still pending)
+- [x] Step 5 — Organizations + memberships + tenant guard + invites
 - [ ] Step 6 — Issues API (CRUD, filters, rank)
 - [ ] Step 7 — UI wired to API (no mock dependence for MVP screens)
 - [ ] Step 8 — Projects + teams API + UI wiring

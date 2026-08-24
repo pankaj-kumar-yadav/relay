@@ -1,6 +1,6 @@
 # Step 5 — Multi-tenant (organizations + memberships)
 
-**Status:** In progress (orgs + memberships + `requireOrgMember`; invites deferred)
+**Status:** Done
 
 ## Goal
 
@@ -28,8 +28,8 @@ If step 3 fails → `403 Forbidden` (or `404` if you prefer not to leak existenc
 | `POST` | `/orgs` | Create org; add creator as `admin` |
 | `GET` | `/orgs` | List orgs for current user |
 | `GET` | `/orgs/:orgId` | Get org if member (`:orgId` = **slug**) |
-| `POST` | `/orgs/:orgId/invites` | Deferred — follow-up |
-| `POST` | `/invites/:token/accept` | Deferred — follow-up |
+| `POST` | `/orgs/:orgId/invites` | Admin creates invite (`email`, optional `role`); returns `token` once; logs URL in non-prod |
+| `POST` | `/invites/:token/accept` | Auth user whose email matches invite → membership |
 
 Public org identifier for routes: **slug** (not UUID).
 
@@ -42,7 +42,9 @@ Public org identifier for routes: **slug** (not UUID).
 3. Loads org + membership
 4. Sets `req.org` and `req.membership` (include `role`)
 
-Optional later: `requireOrgRole('admin')` for settings; `requireSuperAdmin` for platform SaaS-owner actions.
+`requireOrgRole(...roles)` — after `requireOrgMember`; invite create uses `admin`.
+
+Optional later: `requireSuperAdmin` for platform SaaS-owner actions.
 
 ## Data access pattern
 
@@ -76,11 +78,11 @@ Plan:
 
 Until step 7, UI can still show mocks, but org switcher/login should use real orgs when ready.
 
-## Invite MVP (acceptable stub) — deferred
+## Invite MVP (stub)
 
-- Generate random token, store hash + expiry on `invites` table
-- Log invite URL in server console in dev instead of sending email
-- Accept endpoint creates membership
+- Generate random token, store **hash** + expiry on `invites` table
+- Log invite URL in server console in non-prod; also return raw `token` once in create response
+- Accept requires auth, matching email, unexpired unused invite → creates membership
 
 ## Done when
 
@@ -88,14 +90,14 @@ Until step 7, UI can still show mocks, but org switcher/login should use real or
 - [x] Second user without membership gets 403 on org routes
 - [x] Creating org auto-creates owner membership
 - [x] All new org-scoped handlers use `requireOrgMember`
-- [ ] Invites create/accept
-- [ ] Rule documented and followed in code reviews
+- [x] Invites create/accept
+- [x] Rule documented (ARCHITECTURE + this step) and followed in handlers
 
 ## Test scenarios (manual)
 
 1. User A creates org `acme` → OK  
 2. User B calls `GET /orgs/acme/...` → 403  
-3. User A invites B → B accepts → B can read (deferred)  
+3. User A invites B → B accepts → B can read  
 4. Queries never return other orgs’ rows
 
 ## Next

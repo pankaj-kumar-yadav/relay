@@ -22,6 +22,8 @@ Browser → apps/web (Next.js :3000)
 - Resolve the current user from the session/token, then verify membership for the requested org
 - Never authorize solely from URL `orgId` / client-supplied tenant IDs
 - Membership via `memberships` join (not `organization_id` on `users`); public route id is org **slug**
+- Org-scoped handlers: `requireAuth` → `requireOrgMember` → query with `req.org.id` (never raw route/body org ids alone)
+- Invites: admin `POST /orgs/:slug/invites`; accept `POST /invites/:token/accept` (email must match)
 - Detail: [steps/05-multi-tenant.md](./steps/05-multi-tenant.md); design: [superpowers/specs/2026-08-21-organizations-memberships-design.md](./superpowers/specs/2026-08-21-organizations-memberships-design.md)
 
 ## Roles

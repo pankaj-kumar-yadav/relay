@@ -30,7 +30,7 @@ const SEED_ACCOUNTS = [
    },
 ] as const;
 
-const DEFAULT_SEED = SEED_ACCOUNTS[0];
+const DEFAULT_SEED = SEED_ACCOUNTS[2];
 
 export default function LoginPage() {
    const router = useRouter();

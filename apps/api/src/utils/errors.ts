@@ -61,6 +61,12 @@ export class SlugTakenError extends ApiError {
   }
 }
 
+export class AlreadyMemberError extends ApiError {
+  constructor(message = 'Already a member of this organization') {
+    super(HttpStatus.CONFLICT, ErrorCode.ALREADY_MEMBER, message);
+  }
+}
+
 export class RateLimitError extends ApiError {
   constructor(message = 'Too many attempts, try again later') {
     super(HttpStatus.TOO_MANY_REQUESTS, ErrorCode.RATE_LIMITED, message);

@@ -5,6 +5,7 @@ import express from 'express';
 
 import { assertAuthConfig, config } from '@/config.js';
 import { authRouter } from '@/routes/auth.js';
+import { invitesRouter } from '@/routes/invites.js';
 import { orgsRouter } from '@/routes/orgs.js';
 import { sendSuccess } from '@/utils/response.js';
 
@@ -34,6 +35,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/auth', authRouter);
 app.use('/orgs', orgsRouter);
+app.use('/invites', invitesRouter);
 
 app.listen(config.port, () => {
   console.log(`API listening on http://localhost:${config.port}`);

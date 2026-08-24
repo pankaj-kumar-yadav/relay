@@ -7,6 +7,7 @@ import { OrgRole } from '@/constants/org.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/requireAuth.js';
 import { requireOrgMember } from '@/middleware/requireOrgMember.js';
+import { orgsInvitesRouter } from '@/routes/invites.js';
 import {
   sendError,
   SlugTakenError,
@@ -112,3 +113,5 @@ orgsRouter.get('/:orgId', requireOrgMember, (req, res) => {
     },
   });
 });
+
+orgsRouter.use('/:orgId/invites', orgsInvitesRouter);
