@@ -132,7 +132,7 @@ authRouter.post('/logout', requireAuth, async (req, res) => {
   }
 });
 
-authRouter.get('/me', requireAuth, (req, res) => {
+authRouter.get('/session', requireAuth, (req, res) => {
   sendSuccess(res, { data: { user: req.user } });
 });
 

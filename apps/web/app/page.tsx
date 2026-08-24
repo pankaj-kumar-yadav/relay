@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getMe } from '@/lib/auth';
+import { getSession } from '@/lib/auth';
 
 const APP_HOME = '/lndev-ui/team/CORE/all';
 
@@ -11,7 +11,7 @@ export default function Home() {
 
    useEffect(() => {
       let cancelled = false;
-      getMe()
+      getSession()
          .then((user) => {
             if (cancelled) return;
             router.replace(user ? APP_HOME : '/login');

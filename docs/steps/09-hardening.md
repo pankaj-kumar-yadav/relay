@@ -77,7 +77,7 @@ Document in ARCHITECTURE:
 Run through and tick in PR description:
 
 - [ ] Register new user
-- [ ] Login / logout / `/auth/me` / `/auth/refresh` (session survives short access TTL)
+- [ ] Login / logout / `/auth/session` / `/auth/refresh` (session survives short access TTL)
 - [ ] Create organization
 - [ ] Create team + project
 - [ ] Create issue, edit status, reorder if supported

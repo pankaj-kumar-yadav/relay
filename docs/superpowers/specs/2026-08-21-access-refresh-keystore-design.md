@@ -80,7 +80,7 @@ Algorithm: HS256 via `TOKEN_SECRET`.
 | `POST` | `/auth/register` | public | create user → `createAndSetTokens` → `{ user }` |
 | `POST` | `/auth/login` | public | verify password → `createAndSetTokens` → `{ user }` |
 | `POST` | `/auth/logout` | access required | delete current keystore → clear both cookies |
-| `GET` | `/auth/me` | access required | `{ user }` |
+| `GET` | `/auth/session` | access required | `{ user }` |
 | `POST` | `/auth/refresh` | cookies | see flow below |
 
 Envelope: `{ success, message, data, error }`. User payload: `id`, `email`, `name`, `isSuperAdmin`. Never return password hash or keystore keys.
@@ -148,7 +148,7 @@ TOKEN_AUDIENCE=relay-web
 | `apps/api/src/auth/tokenHelpers.ts` | `createAndSetTokens`, `clearAuthCookies` |
 | `apps/api/src/auth/keyStore.ts` | create / find / delete helpers |
 | `apps/api/src/middleware/requireAuth.ts` | protect |
-| `apps/api/src/routes/auth.ts` | register/login/logout/me/refresh |
+| `apps/api/src/routes/auth.ts` | register/login/logout/session/refresh |
 | `apps/api/src/types/express.d.ts` | `req.user`, `req.keyStore` |
 
 ### Web
@@ -156,7 +156,7 @@ TOKEN_AUDIENCE=relay-web
 | Path | Role |
 |------|------|
 | `apps/web/lib/api.ts` | one-shot refresh + retry on `401` / `TOKEN_EXPIRED` |
-| `apps/web/lib/auth.ts` | `login`, `register`, `logout`, `getMe` |
+| `apps/web/lib/auth.ts` | `login`, `register`, `logout`, `getSession` |
 
 Skip refresh/retry for `/auth/refresh`, `/auth/login`, `/auth/register`.
 
@@ -171,9 +171,9 @@ Skip refresh/retry for `/auth/refresh`, `/auth/login`, `/auth/register`.
 
 - [x] Migrate Prisma: `KeyStore` exists
 - [x] Register/login set access + refresh cookies and a keystore row
-- [x] `/auth/me` works with valid access; expired access returns `TOKEN_EXPIRED` / 401
+- [x] `/auth/session` works with valid access; expired access returns `TOKEN_EXPIRED` / 401
 - [x] `/auth/refresh` rotates keystore and cookies
 - [x] Web client auto-refreshes once and retries
-- [x] Logout deletes keystore and clears cookies; subsequent `/auth/me` is 401
+- [x] Logout deletes keystore and clears cookies; subsequent `/auth/session` is 401
 - [x] Legacy `jwt` cookie no longer issued
 - [x] ARCHITECTURE.md / step docs updated

@@ -33,9 +33,9 @@ export async function logout(): Promise<void> {
   await api('/auth/logout', { method: 'POST' });
 }
 
-export async function getMe(): Promise<AuthUser | null> {
+export async function getSession(): Promise<AuthUser | null> {
   try {
-    const data = await api<UserResponse>('/auth/me');
+    const data = await api<UserResponse>('/auth/session');
     return data.user;
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) {

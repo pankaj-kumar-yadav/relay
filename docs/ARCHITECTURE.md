@@ -36,7 +36,7 @@ Browser → apps/web (Next.js :3000)
 - Login/register: create `KeyStore` row → set both cookies; logout: delete current keystore → clear cookies
 - `POST /auth/refresh`: decode (possibly expired) access + validate refresh → match keystore → delete → re-issue pair
 - `requireAuth`: validate access JWT → load user → require active keystore for `prm`
-- Endpoints: `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, `POST /auth/refresh`
+- Endpoints: `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/session`, `POST /auth/refresh`
 - Web (`apps/web/lib/api.ts`): `credentials: 'include'`; one-shot `/auth/refresh` then retry on `401` / `TOKEN_EXPIRED`
 - Cookie flags: local `secure: false`, `sameSite: 'lax'`; prod `secure: true`, `sameSite: 'none'`
 - CORS allows `WEB_ORIGIN` with credentials

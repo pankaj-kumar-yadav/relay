@@ -7,23 +7,42 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ApiError } from '@/lib/api';
-import { getMe, login } from '@/lib/auth';
+import { getSession, login } from '@/lib/auth';
 
 const APP_HOME = '/lndev-ui/team/CORE/all';
-const SEED_EMAIL = 'owner@relay.local';
 const SEED_PASSWORD = 'password';
+
+const SEED_ACCOUNTS = [
+   {
+      label: 'Super-admin · acme',
+      email: 'owner@relay.local',
+      password: SEED_PASSWORD,
+   },
+   {
+      label: 'Admin · techap-solutions',
+      email: 'admin@techap.local',
+      password: SEED_PASSWORD,
+   },
+   {
+      label: 'Employee · techap-solutions',
+      email: 'employee@techap.local',
+      password: SEED_PASSWORD,
+   },
+] as const;
+
+const DEFAULT_SEED = SEED_ACCOUNTS[0];
 
 export default function LoginPage() {
    const router = useRouter();
-   const [email, setEmail] = useState(SEED_EMAIL);
-   const [password, setPassword] = useState(SEED_PASSWORD);
+   const [email, setEmail] = useState(DEFAULT_SEED.email);
+   const [password, setPassword] = useState(DEFAULT_SEED.password);
    const [error, setError] = useState<string | null>(null);
    const [submitting, setSubmitting] = useState(false);
    const [checking, setChecking] = useState(true);
 
    useEffect(() => {
       let cancelled = false;
-      getMe()
+      getSession()
          .then((user) => {
             if (cancelled) return;
             if (user) {
@@ -101,10 +120,29 @@ export default function LoginPage() {
                </Button>
             </form>
 
-            <p className="mt-6 text-center text-xs text-muted-foreground">
-               Seed: {SEED_EMAIL} / {SEED_PASSWORD}
-            </p>
-            <p className="mt-2 text-center text-sm text-muted-foreground">
+            <div className="mt-6 flex flex-col gap-2">
+               <p className="text-center text-xs text-muted-foreground">
+                  Prefill seed account (password: {SEED_PASSWORD})
+               </p>
+               <div className="flex flex-col gap-1.5">
+                  {SEED_ACCOUNTS.map((account) => (
+                     <button
+                        key={account.email}
+                        type="button"
+                        className="rounded-md border border-border px-3 py-2 text-left text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        onClick={() => {
+                           setEmail(account.email);
+                           setPassword(account.password);
+                           setError(null);
+                        }}
+                     >
+                        <span className="font-medium text-foreground">{account.label}</span>
+                        <span className="mt-0.5 block">{account.email}</span>
+                     </button>
+                  ))}
+               </div>
+            </div>
+            <p className="mt-4 text-center text-sm text-muted-foreground">
                No account?{' '}
                <Link href="/register" className="text-foreground underline-offset-4 hover:underline">
                   Register

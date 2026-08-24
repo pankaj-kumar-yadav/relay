@@ -35,7 +35,7 @@ See design: [../superpowers/specs/2026-08-21-access-refresh-keystore-design.md](
 | `POST` | `/auth/register` | public | email, password, name → create user + set cookies |
 | `POST` | `/auth/login` | public | verify password → set cookies |
 | `POST` | `/auth/logout` | auth | delete keystore + clear cookies |
-| `GET` | `/auth/me` | auth | current user profile |
+| `GET` | `/auth/session` | auth | current user profile |
 | `POST` | `/auth/refresh` | cookies | rotate keystore + issue new token pair |
 
 ### Request/response conventions
@@ -93,9 +93,9 @@ Ensure:
 
 ## Done when
 
-- [x] Register + login + logout + `/auth/me` work via HTTP client (Thunder Client / curl)
+- [x] Register + login + logout + `/auth/session` work via HTTP client (Thunder Client / curl)
 - [x] `/auth/refresh` rotates tokens + keystore
-- [x] Web can log in and call `/auth/me` (with auto-refresh)
+- [x] Web can log in and call `/auth/session` (with auto-refresh)
 - [x] Unauthenticated requests to a protected stub route return 401
 
 ## Out of scope
