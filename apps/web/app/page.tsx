@@ -2,27 +2,32 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSession } from '@/lib/auth';
-
-const APP_HOME = '/lndev-ui/team/CORE/all';
+import { useSession } from '@/hooks/use-session';
+import { useResolveHomePath } from '@/hooks/use-orgs';
 
 export default function Home() {
-   const router = useRouter();
+  const router = useRouter();
+  const { data: user, isFetched, isError } = useSession();
+  const { mutateAsync: resolveHomePath } = useResolveHomePath();
 
-   useEffect(() => {
-      let cancelled = false;
-      getSession()
-         .then((user) => {
-            if (cancelled) return;
-            router.replace(user ? APP_HOME : '/login');
-         })
-         .catch(() => {
-            if (!cancelled) router.replace('/login');
-         });
-      return () => {
-         cancelled = true;
-      };
-   }, [router]);
+  useEffect(() => {
+    if (!isFetched) return;
+    if (!user || isError) {
+      router.replace('/login');
+      return;
+    }
+    let cancelled = false;
+    resolveHomePath()
+      .then((path) => {
+        if (!cancelled) router.replace(path);
+      })
+      .catch(() => {
+        if (!cancelled) router.replace('/login');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isFetched, isError, user, router, resolveHomePath]);
 
-   return <div className="min-h-svh bg-background" />;
+  return <div className="min-h-svh bg-background" />;
 }

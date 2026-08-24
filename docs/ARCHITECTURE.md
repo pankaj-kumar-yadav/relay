@@ -12,6 +12,8 @@ Browser → apps/web (Next.js :3000)
 
 - **Monorepo**: pnpm workspaces + Turborepo at repo root
 - **Web**: UI only; `NEXT_PUBLIC_API_URL` points at the API
+- **Web HTTP**: `apps/web/services/*.service.ts` is the only place that calls `api()`; HTTP fns are named `*Api`; UI reads/writes server state with TanStack Query
+- **Constants**: named consts/enums live only in `constants/*.constant.ts` (`apps/api/src/constants/`, `apps/web/constants/`); web imports those files instead of hardcoding domain codes
 - **API**: auth, tenancy, business logic, DB access
 - **ORM**: Prisma (PostgreSQL)
 - **Shared packages**: optional later (`packages/shared` for Zod/types)

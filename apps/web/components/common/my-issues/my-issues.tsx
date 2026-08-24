@@ -8,12 +8,14 @@ import { SearchIssues } from '@/components/common/issues/search-issues';
 import { BreakdownPanel } from './breakdown-panel';
 import { displayOrderedStatus } from '@/mock-data/status';
 import { useFilterStore } from '@/store/filter-store';
+import { useIssuesList } from '@/hooks/use-issues';
 import { useIssuesStore } from '@/store/issues-store';
 import { useRightPanelStore } from '@/store/right-panel-store';
 import { useSearchStore } from '@/store/search-store';
 import { useViewStore } from '@/store/view-store';
+import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
-import { scopeMyIssues, useMyIssuesTab } from './use-my-issues';
+import { useMyIssuesTab } from './use-my-issues';
 
 /**
  * "My issues" body — the exact same machinery as the team issue views
@@ -21,6 +23,7 @@ import { scopeMyIssues, useMyIssuesTab } from './use-my-issues';
  * current tab (Assigned / Created / Subscribed / Activity).
  */
 export default function MyIssues() {
+   const { orgId } = useParams<{ orgId: string }>();
    const [tab] = useMyIssuesTab();
    const { isSearchOpen, searchQuery } = useSearchStore();
    const { viewType } = useViewStore();
@@ -28,10 +31,15 @@ export default function MyIssues() {
    const { issues } = useIssuesStore();
    const { openPanel } = useRightPanelStore();
 
+   useIssuesList(orgId, { assigneeId: 'me' });
+
    const isSearching = isSearchOpen && searchQuery.trim() !== '';
    const isViewTypeGrid = viewType === 'grid';
 
-   const scopedIssues = useMemo(() => scopeMyIssues(issues, tab), [issues, tab]);
+   const scopedIssues = useMemo(
+      () => (tab === 'assigned' ? issues : []),
+      [issues, tab],
+   );
 
    const displayedIssues = useMemo(
       () => applyIssueFilters(scopedIssues, filters),

@@ -2,7 +2,9 @@ import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 
+import { DEFAULT_ISSUE_PRIORITY, DEFAULT_ISSUE_STATUS, DEFAULT_TEAM_KEY, DEFAULT_TEAM_NAME } from '../src/constants/issue.js';
 import { OrgRole } from '../src/constants/org.js';
+import { rankBetween } from '../src/utils/issueRank.js';
 
 const prisma = new PrismaClient();
 
@@ -38,6 +40,23 @@ async function upsertOrg(input: { name: string; slug: string }) {
   });
 }
 
+async function upsertTeam(input: {
+  organizationId: string;
+  key: string;
+  name: string;
+}) {
+  return prisma.team.upsert({
+    where: {
+      organizationId_key: {
+        organizationId: input.organizationId,
+        key: input.key,
+      },
+    },
+    update: { name: input.name },
+    create: input,
+  });
+}
+
 async function upsertMembership(input: {
   organizationId: string;
   userId: string;
@@ -68,6 +87,11 @@ async function main() {
     userId: owner.id,
     role: OrgRole.ADMIN,
   });
+  await upsertTeam({
+    organizationId: acme.id,
+    key: DEFAULT_TEAM_KEY,
+    name: DEFAULT_TEAM_NAME,
+  });
 
   const techapAdmin = await upsertUser({
     email: 'admin@techap.local',
@@ -92,6 +116,31 @@ async function main() {
     userId: techapEmployee.id,
     role: OrgRole.EMPLOYEE,
   });
+  const techapTeam = await upsertTeam({
+    organizationId: techap.id,
+    key: DEFAULT_TEAM_KEY,
+    name: DEFAULT_TEAM_NAME,
+  });
+
+  const existingIssue = await prisma.issue.findFirst({
+    where: { teamId: techapTeam.id, number: 1 },
+    select: { id: true },
+  });
+  if (!existingIssue) {
+    await prisma.issue.create({
+      data: {
+        organizationId: techap.id,
+        teamId: techapTeam.id,
+        number: 1,
+        title: 'Welcome to Relay',
+        description: 'This is a seeded issue. Edit or create more from the UI.',
+        status: DEFAULT_ISSUE_STATUS,
+        priority: DEFAULT_ISSUE_PRIORITY,
+        assigneeId: techapEmployee.id,
+        rank: rankBetween(null, null),
+      },
+    });
+  }
 
   console.log(`Seeded owner@relay.local / ${SEED_PASSWORD} (is_super_admin=true) → acme (${OrgRole.ADMIN})`);
   console.log(`Seeded admin@techap.local / ${SEED_PASSWORD} → techap-solutions (${OrgRole.ADMIN})`);

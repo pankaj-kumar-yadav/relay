@@ -14,7 +14,7 @@ import { IssueRefRow } from './content-blocks';
 
 interface IssuePropertiesPanelProps {
    issue: Issue;
-   detail: IssueDetail;
+   detail?: IssueDetail;
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -46,7 +46,7 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
                   <span className="text-sm">{issue.priority.name}</span>
                </div>
                <div className="flex items-center gap-2 mt-0.5">
-                  <AssigneeUser user={issue.assignee} />
+                  <AssigneeUser user={issue.assignee} issueId={issue.id} />
                   <span className="text-sm">{issue.assignee ? issue.assignee.name : 'Assign'}</span>
                </div>
                {cycle && (
@@ -73,7 +73,7 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
                   <issue.project.icon className="size-4 text-muted-foreground shrink-0" />
                   <span className="truncate">{issue.project.name}</span>
                </div>
-               {detail.milestone && (
+               {detail?.milestone && (
                   <div className="flex items-center gap-2 text-sm mt-1.5 pl-6 text-muted-foreground">
                      <span className="size-2 rotate-45 border border-amber-400 shrink-0" />
                      <span className="truncate">{detail.milestone}</span>
@@ -82,7 +82,7 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
             </Section>
          )}
 
-         {detail.blockedByIds && detail.blockedByIds.length > 0 && (
+         {detail?.blockedByIds && detail.blockedByIds.length > 0 && (
             <Section title="Blocked by">
                <div className="flex flex-col">
                   {detail.blockedByIds.map((identifier) => (
@@ -95,7 +95,7 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
             </Section>
          )}
 
-         {detail.relatedIds && detail.relatedIds.length > 0 && (
+         {detail?.relatedIds && detail.relatedIds.length > 0 && (
             <Section title="Related">
                <div className="flex flex-col">
                   {detail.relatedIds.map((identifier) => (
@@ -105,7 +105,7 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
             </Section>
          )}
 
-         {detail.prLinks && detail.prLinks.length > 0 && (
+         {detail?.prLinks && detail.prLinks.length > 0 && (
             <Section title="Diffs">
                <div className="flex flex-col gap-1">
                   {detail.prLinks.map((pr) => (

@@ -1,24 +1,26 @@
 'use client';
 
-import { users as allUsers } from '@/mock-data/users';
+import { useMembers } from '@/hooks/use-members';
 import MemberLine from './member-line';
+import { mapMemberToUser } from '@/lib/mappers';
 import { useMembersFilterStore } from '@/store/members-filter-store';
 import { ArrowDown } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 
 export default function Members() {
+   const { orgId } = useParams<{ orgId: string }>();
+   const { data: members = [] } = useMembers(orgId);
    const { filters, sort } = useMembersFilterStore();
 
    const displayed = useMemo(() => {
-      let list = allUsers.slice();
+      let list = members.map(mapMemberToUser);
 
-      // filter by role (called Status in UI)
       if (filters.role.length > 0) {
          const roles = new Set(filters.role);
          list = list.filter((u) => roles.has(u.role));
       }
 
-      // sorting
       const compare = (a: (typeof list)[number], b: (typeof list)[number]) => {
          switch (sort) {
             case 'name-asc':
@@ -29,17 +31,13 @@ export default function Members() {
                return new Date(a.joinedDate).getTime() - new Date(b.joinedDate).getTime();
             case 'joined-desc':
                return new Date(b.joinedDate).getTime() - new Date(a.joinedDate).getTime();
-            case 'teams-asc':
-               return a.teamIds.length - b.teamIds.length;
-            case 'teams-desc':
-               return b.teamIds.length - a.teamIds.length;
             default:
                return 0;
          }
       };
 
       return list.sort(compare);
-   }, [filters, sort]);
+   }, [members, filters, sort]);
 
    return (
       <div className="w-full">

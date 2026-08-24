@@ -6,8 +6,6 @@ import { useParams, usePathname } from 'next/navigation';
 
 const TEAM_TABS = [
    { label: 'Overview', segment: 'overview' },
-   { label: 'Documents', segment: 'documents' },
-   { label: 'Members', segment: 'members' },
 ];
 
 export default function HeaderTabs() {

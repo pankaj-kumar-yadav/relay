@@ -8,12 +8,12 @@ Add enough **teams** and **projects** API + UI wiring so Circle’s navigation a
 
 ## Prerequisites
 
-- Steps 6–7 done for issues
-- Tables `teams` / `projects` migrated (from step 3 or add now)
+- Step 6 done for issues + default team (`GET /orgs/:slug/teams` already exists)
+- `projects` table migrated here if skipped in step 6
 
 ## Why this is a separate step
 
-Issues can ship with a single default team. Circle’s sidebar and routes expect teams/projects early — implement once issues path is proven.
+Step 6 only needs a **default team** so issue routes resolve. Full teams/projects CRUD and the remaining project/team pages land here.
 
 ## Teams API
 

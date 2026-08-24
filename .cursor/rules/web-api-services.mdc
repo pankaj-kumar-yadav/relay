@@ -1,0 +1,58 @@
+---
+description: Frontend API calls live only in *.service.ts as *Api fns; UI consumes them via TanStack Query
+alwaysApply: true
+---
+
+# Web API services + TanStack Query
+
+`apps/web` talks to the API through **service files only**. That is the single source of truth for HTTP paths, methods, and request/response types. Components, pages, and stores never call `api()` / `fetch` themselves.
+
+## Layout
+
+| Kind | Home |
+|------|------|
+| HTTP wrappers | `apps/web/services/<domain>.service.ts` |
+| Transport (envelope unwrap, cookies, refresh) | `apps/web/lib/api.ts` only |
+| Server state | TanStack Query (`useQuery` / `useMutation`) |
+
+One domain per file: `issues.service.ts`, `orgs.service.ts`, `members.service.ts`.
+
+## Naming — `Api` suffix
+
+Every function that hits the network **must** end with `Api` (camelCase, not `API`): `listIssuesApi`, `createIssueApi`, `getSessionApi`.
+
+Do **not** suffix hooks (`useCreateIssue`), store/UI helpers (`deleteIssue`, `getIssueById`), types, or non-HTTP utils (`teamHomePath`, `toQuery`).
+
+## Do
+
+```ts
+// apps/web/services/issues.service.ts
+import { api } from '@/lib/api';
+
+export function listIssuesApi(orgSlug: string) {
+  return api<{ issues: ApiIssue[] }>(`/orgs/${orgSlug}/issues`);
+}
+```
+
+```ts
+// hook — consume the service via TanStack Query
+const { data } = useQuery({
+  queryKey: ['issues', orgSlug],
+  queryFn: () => listIssuesApi(orgSlug),
+});
+```
+
+## Don't
+
+```ts
+await api(`/orgs/${orgSlug}/issues`); // in a component, page, or store
+export function listIssues() {}      // HTTP fn missing Api suffix
+export function listIssuesAPI() {}   // shouty acronym — use Api
+```
+
+## Agent habit
+
+- New endpoint → `*.service.ts` function named `*Api`, then wire UI with TanStack Query
+- Services stay HTTP-only (no React, no `useQuery`)
+- Query keys include org/resource ids so caches stay tenant-scoped
+- Zustand is for UI state only, not API caching

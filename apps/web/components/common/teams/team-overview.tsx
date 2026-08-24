@@ -2,10 +2,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { documentFolders } from '@/mock-data/documents';
-import { teams } from '@/mock-data/teams';
-import { RiDonutChartFill } from '@remixicon/react';
-import { Box, CopyMinus, Layers, Plus, Settings, SquareStack } from 'lucide-react';
+import { useTeams } from '@/hooks/use-teams';
+import { CopyMinus, Plus, Settings, SquareStack } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -15,18 +13,18 @@ import { useParams } from 'next/navigation';
  */
 export default function TeamOverview() {
    const { orgId, teamId } = useParams<{ orgId: string; teamId: string }>();
-   const team = teams.find((t) => t.id === teamId) ?? teams[0];
-
-   const pinnedDocuments = documentFolders
-      .flatMap((folder) => folder.documents)
-      .filter((doc) => doc.pinned);
+   const { data: apiTeams = [] } = useTeams(orgId);
+   const apiTeam = apiTeams.find((t) => t.key === teamId) ?? apiTeams[0];
+   const team = {
+      id: apiTeam?.key ?? teamId,
+      name: apiTeam?.name ?? teamId,
+      icon: '🛠️',
+      members: [] as { id: string; name: string; avatarUrl: string }[],
+   };
 
    const goToLinks = [
       { label: 'Team settings', icon: Settings, href: `/${orgId}/settings` },
       { label: 'Issues', icon: CopyMinus, href: `/${orgId}/team/${team.id}/all` },
-      { label: 'Cycles', icon: RiDonutChartFill, href: `/${orgId}/team/${team.id}/cycles` },
-      { label: 'Projects', icon: Box, href: `/${orgId}/projects` },
-      { label: 'Views', icon: Layers, href: '#' },
    ];
 
    return (
@@ -56,19 +54,7 @@ export default function TeamOverview() {
                </div>
 
                <div className="mt-4 flex flex-col gap-1">
-                  {pinnedDocuments.length === 0 && (
-                     <p className="text-sm text-muted-foreground">No resources yet.</p>
-                  )}
-                  {pinnedDocuments.map((doc) => (
-                     <Link
-                        key={doc.id}
-                        href={`/${orgId}/team/${team.id}/documents`}
-                        className="flex items-center gap-2 py-1.5 px-2 -mx-2 rounded-md hover:bg-sidebar/50 text-sm"
-                     >
-                        <span className="text-base leading-none">{doc.icon}</span>
-                        <span className="font-medium">{doc.name}</span>
-                     </Link>
-                  ))}
+                  <p className="text-sm text-muted-foreground">No resources yet.</p>
                </div>
             </div>
          </div>

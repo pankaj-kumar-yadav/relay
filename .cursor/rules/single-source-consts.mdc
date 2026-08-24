@@ -1,51 +1,47 @@
 ---
-description: Prefer shared consts/enums for repeated values (without overdoing)
+description: Named consts/enums live only in constants/*.constant.ts (API + web)
 alwaysApply: true
 ---
 
 # Single source of truth — consts & enums
 
-When a string, number, or status is used in more than one place (or will be), put it in a named const/enum/object. Prefer this over scattered magic strings.
+Reusable strings, numbers, roles, statuses, and codes belong in a **constants file**, not inline in routes, services, or components. The frontend **imports** those files; it does not re-hardcode the values.
 
-## Do
+## Location & naming
 
-```ts
-// ✅ GOOD — shared codes/status
-export const ErrorCode = {
-  UNAUTHORIZED: 'UNAUTHORIZED',
-  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
-} as const;
+| App | Folder | File name |
+|-----|--------|-----------|
+| API | `apps/api/src/constants/` | `<domain>.constant.ts` |
+| Web | `apps/web/constants/` | `<domain>.constant.ts` |
 
-export const HttpStatus = {
-  OK: 200,
-  UNAUTHORIZED: 401,
-} as const;
-
-throw new UnauthorizedError(); // class wires code + status once
-```
+Examples: `org.constant.ts`, `issue.constant.ts`. Not `org.ts`, not `org.constants.ts`, and not inside `lib/`, `services/`, or a component.
 
 ```ts
-// ✅ GOOD — domain roles, cookie names, route prefixes
+// ✅ GOOD — apps/web/constants/org.constant.ts
 export const OrgRole = { ADMIN: 'admin', EMPLOYEE: 'employee' } as const;
-export const COOKIE_NAME = 'jwt';
+export type OrgRoleValue = (typeof OrgRole)[keyof typeof OrgRole];
 ```
+
+```ts
+// ✅ GOOD — import on the client
+import { OrgRole } from '@/constants/org.constant';
+if (member.role === OrgRole.ADMIN) { /* … */ }
+```
+
+```ts
+// ❌ BAD — magic string in a component / service
+if (member.role === 'admin') { /* … */ }
+```
+
+Prefer `as const` objects (this repo’s default). Use `enum` only when it clearly fits.
 
 ## Don't overdo
 
-- One-off UI copy, log messages, or a value used once in a single function → leave inline
+- One-off UI copy, log messages, or a value used once → leave inline
 - Don't invent enums for every prop or boolean
-- Don't duplicate the same const in web and api unless you extract a shared package
-- Prefer `as const` objects when you need a union type; use `enum` only when it clearly fits the team style (this repo leans `as const`)
-
-## Where to put them
-
-| Kind | Typical home |
-|------|----------------|
-| HTTP / API error codes | `apps/api/src/constants/` |
-| Auth cookie / JWT claims keys | next to tokens util or `constants/` |
-| Org roles, issue statuses | shared constants (or `packages/shared` later) |
-| Web-only UI keys | `apps/web/lib/` or feature folder |
+- Until `packages/shared` exists, domain values used on both sides (roles, issue status) are mirrored in **both** constant folders with the **same keys and values** — don't invent a second spelling
+- New files use `*.constant.ts`; rename older API files (`org.ts`, `brand.constants.ts`) when you next touch them
 
 ## Agent habit
 
-Before hardcoding a status code, error code, role, cookie name, or path segment: check for an existing const; if missing and it will be reused (or is part of the public API contract), add one.
+Before hardcoding a role, status, error code, cookie name, or path segment: add or reuse `*.constant.ts`, then import it (including on the web client).

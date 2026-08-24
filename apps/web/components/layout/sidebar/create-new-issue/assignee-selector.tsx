@@ -11,10 +11,13 @@ import {
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useIssuesStore } from '@/store/issues-store';
-import { User, users } from '@/mock-data/users';
+import { User } from '@/mock-data/users';
 import { CheckIcon, UserCircle } from 'lucide-react';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useMembers } from '@/hooks/use-members';
+import { mapMemberToUser } from '@/lib/mappers';
+import { useParams } from 'next/navigation';
 
 interface AssigneeSelectorProps {
    assignee: User | null;
@@ -27,6 +30,9 @@ export function AssigneeSelector({ assignee, onChange }: AssigneeSelectorProps) 
    const [value, setValue] = useState<string | null>(assignee?.id || null);
 
    const { filterByAssignee } = useIssuesStore();
+   const { orgId } = useParams<{ orgId: string }>();
+   const { data: members = [] } = useMembers(orgId);
+   const users = useMemo(() => members.map(mapMemberToUser), [members]);
 
    useEffect(() => {
       setValue(assignee?.id || null);
@@ -105,9 +111,7 @@ export function AssigneeSelector({ assignee, onChange }: AssigneeSelectorProps) 
                               {filterByAssignee(null).length}
                            </span>
                         </CommandItem>
-                        {users
-                           .filter((user) => user.teamIds.includes('CORE'))
-                           .map((user) => (
+                        {users.map((user) => (
                               <CommandItem
                                  key={user.id}
                                  value={user.id}

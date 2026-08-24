@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ApiError } from '@/lib/api';
-import { getSession, login } from '@/lib/auth';
+import { useLogin, useSession } from '@/hooks/use-session';
+import { useResolveHomePath } from '@/hooks/use-orgs';
 
-const APP_HOME = '/lndev-ui/team/CORE/all';
 const SEED_PASSWORD = 'password';
 
 const SEED_ACCOUNTS = [
@@ -30,47 +30,51 @@ const SEED_ACCOUNTS = [
    },
 ] as const;
 
+function nextPath() {
+   if (typeof window === 'undefined') return null;
+   const next = new URLSearchParams(window.location.search).get('next');
+   if (!next || !next.startsWith('/') || next.startsWith('//')) return null;
+   return next;
+}
+
 const DEFAULT_SEED = SEED_ACCOUNTS[2];
 
 export default function LoginPage() {
    const router = useRouter();
-   const [email, setEmail] = useState(DEFAULT_SEED.email);
-   const [password, setPassword] = useState(DEFAULT_SEED.password);
+   const [email, setEmail] = useState<string>(DEFAULT_SEED.email);
+   const [password, setPassword] = useState<string>(DEFAULT_SEED.password);
    const [error, setError] = useState<string | null>(null);
-   const [submitting, setSubmitting] = useState(false);
-   const [checking, setChecking] = useState(true);
+   const { data: user, isFetched } = useSession();
+   const loginMutation = useLogin();
+   const { mutateAsync: resolveHomePath, isPending: resolvingHome } = useResolveHomePath();
+   const submitting = loginMutation.isPending || resolvingHome;
+   const checking = !isFetched || Boolean(user);
 
    useEffect(() => {
+      if (!isFetched || !user) return;
       let cancelled = false;
-      getSession()
-         .then((user) => {
-            if (cancelled) return;
-            if (user) {
-               router.replace(APP_HOME);
-               return;
-            }
-            setChecking(false);
+      resolveHomePath()
+         .then((path) => {
+            if (!cancelled) router.replace(nextPath() ?? path);
          })
          .catch(() => {
-            if (!cancelled) setChecking(false);
+            if (!cancelled) router.replace('/new');
          });
       return () => {
          cancelled = true;
       };
-   }, [router]);
+   }, [isFetched, user, router, resolveHomePath]);
 
    async function onSubmit(e: FormEvent<HTMLFormElement>) {
       e.preventDefault();
       setError(null);
-      setSubmitting(true);
       try {
-         await login(email, password);
-         router.push(APP_HOME);
+         await loginMutation.mutateAsync({ email, password });
+         router.push(nextPath() ?? (await resolveHomePath()));
       } catch (err) {
          const message =
             err instanceof ApiError ? err.message : 'Invalid email or password';
          setError(message);
-         setSubmitting(false);
       }
    }
 

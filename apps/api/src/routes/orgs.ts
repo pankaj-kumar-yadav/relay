@@ -7,7 +7,11 @@ import { OrgRole } from '@/constants/org.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/requireAuth.js';
 import { requireOrgMember } from '@/middleware/requireOrgMember.js';
+import { issuesRouter } from '@/routes/issues.js';
+import { membersRouter } from '@/routes/members.js';
 import { orgsInvitesRouter } from '@/routes/invites.js';
+import { teamsRouter } from '@/routes/teams.js';
+import { createDefaultTeam, publicTeam } from '@/utils/teams.js';
 import {
   sendError,
   SlugTakenError,
@@ -44,7 +48,7 @@ orgsRouter.post('/', async (req, res) => {
     const { name, slug } = parsed.data;
     const userId = req.user!.id;
 
-    const org = await prisma.$transaction(async (tx) => {
+    const { org, team } = await prisma.$transaction(async (tx) => {
       try {
         const created = await tx.organization.create({
           data: { name, slug },
@@ -57,7 +61,8 @@ orgsRouter.post('/', async (req, res) => {
             role: OrgRole.ADMIN,
           },
         });
-        return created;
+        const defaultTeam = await createDefaultTeam(tx, created.id);
+        return { org: created, team: defaultTeam };
       } catch (err) {
         if (
           err instanceof Prisma.PrismaClientKnownRequestError &&
@@ -72,7 +77,11 @@ orgsRouter.post('/', async (req, res) => {
     sendSuccess(res, {
       status: HttpStatus.CREATED,
       message: 'Organization created',
-      data: { organization: publicOrg(org), role: OrgRole.ADMIN },
+      data: {
+        organization: publicOrg(org),
+        role: OrgRole.ADMIN,
+        team: publicTeam(team),
+      },
     });
   } catch (err) {
     sendError(res, err);
@@ -115,3 +124,6 @@ orgsRouter.get('/:orgId', requireOrgMember, (req, res) => {
 });
 
 orgsRouter.use('/:orgId/invites', orgsInvitesRouter);
+orgsRouter.use('/:orgId/teams', teamsRouter);
+orgsRouter.use('/:orgId/members', membersRouter);
+orgsRouter.use('/:orgId/issues', issuesRouter);

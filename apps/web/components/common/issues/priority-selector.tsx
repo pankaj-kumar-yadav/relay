@@ -10,6 +10,7 @@ import {
    CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useIssueMutations } from '@/hooks/use-issues';
 import { useIssuesStore } from '@/store/issues-store';
 import { priorities, Priority } from '@/mock-data/priorities';
 import { CheckIcon } from 'lucide-react';
@@ -25,7 +26,8 @@ export function PrioritySelector({ priority, issueId }: PrioritySelectorProps) {
    const [open, setOpen] = useState<boolean>(false);
    const [value, setValue] = useState<string>(priority.id);
 
-   const { filterByPriority, updateIssuePriority } = useIssuesStore();
+   const { updateIssuePriority } = useIssueMutations();
+   const { filterByPriority } = useIssuesStore();
 
    useEffect(() => {
       setValue(priority.id);

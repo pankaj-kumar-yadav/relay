@@ -34,6 +34,7 @@ import {
    Clipboard,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { useIssueMutations } from '@/hooks/use-issues';
 import { useIssuesStore } from '@/store/issues-store';
 import { status } from '@/mock-data/status';
 import { priorities } from '@/mock-data/priorities';
@@ -50,16 +51,9 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
    const [isSubscribed, setIsSubscribed] = useState(false);
    const [isFavorite, setIsFavorite] = useState(false);
 
-   const {
-      updateIssueStatus,
-      updateIssuePriority,
-      updateIssueAssignee,
-      addIssueLabel,
-      removeIssueLabel,
-      updateIssueProject,
-      updateIssue,
-      getIssueById,
-   } = useIssuesStore();
+   const { updateIssueStatus, updateIssuePriority, updateIssueAssignee } = useIssueMutations();
+   const { addIssueLabel, removeIssueLabel, updateIssueProject, updateIssue, getIssueById } =
+      useIssuesStore();
 
    const handleStatusChange = (statusId: string) => {
       if (!issueId) return;

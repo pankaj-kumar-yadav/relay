@@ -22,8 +22,9 @@ Read these before changing code:
 - Do not add billing, SSO, or AI agent features until they appear in SCOPE
 - Prefer small, focused changes; match existing stack choices
 - Use path alias imports (`@/…`) as much as possible — see `.cursor/rules/alias-imports.mdc`
-- Prefer shared consts/`as const` objects for reused codes, statuses, and roles (don't overdo) — see `.cursor/rules/single-source-consts.mdc`
+- Named consts/enums live only in `constants/*.constant.ts` (`apps/api/src/constants/`, `apps/web/constants/`); the web client imports those files — see `.cursor/rules/single-source-consts.mdc`
 - API JSON responses always use `{ success, message, data, error }` — see `.cursor/rules/api-response-envelope.mdc`
+- Web HTTP lives only in `apps/web/services/*.service.ts`; each HTTP function is named `*Api` (`listIssuesApi`); UI consumes those with TanStack Query — see `.cursor/rules/web-api-services.mdc`
 
 ### Git / commits (non-negotiable)
 
@@ -40,4 +41,5 @@ pnpm install
 pnpm dev
 pnpm --filter @relay/web dev
 pnpm --filter @relay/api dev
+pnpm db:studio
 ```

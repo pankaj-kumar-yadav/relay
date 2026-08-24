@@ -15,9 +15,10 @@ model User {
   isSuperAdmin Boolean      @default(false) @map("is_super_admin")
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
-  keyStores    KeyStore[]
-  memberships  Membership[]
-  invitesSent  Invite[]     @relation("InvitesSent")
+  keyStores      KeyStore[]
+  memberships    Membership[]
+  invitesSent    Invite[]     @relation("InvitesSent")
+  assignedIssues Issue[]      @relation("IssueAssignee")
 
   @@map("users")
 }
@@ -46,6 +47,8 @@ model Organization {
   updatedAt   DateTime     @updatedAt @map("updated_at")
   memberships Membership[]
   invites     Invite[]
+  teams       Team[]
+  issues      Issue[]
 
   @@map("organizations")
 }
@@ -82,4 +85,45 @@ model Invite {
   @@index([organizationId])
   @@index([email])
   @@map("invites")
+}
+
+model Team {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  key            String
+  name           String
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  issues         Issue[]
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+  @@map("teams")
+}
+
+model Issue {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  teamId         String       @map("team_id") @db.Uuid
+  projectId      String?      @map("project_id") @db.Uuid
+  number         Int
+  title          String
+  description    String?
+  status         String
+  priority       String
+  assigneeId     String?      @map("assignee_id") @db.Uuid
+  rank           String
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  team           Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  assignee       User?        @relation("IssueAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@unique([teamId, number])
+  @@index([organizationId])
+  @@index([organizationId, teamId])
+  @@index([assigneeId])
+  @@index([organizationId, rank])
+  @@map("issues")
 }

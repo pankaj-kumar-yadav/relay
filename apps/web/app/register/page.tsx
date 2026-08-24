@@ -7,9 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ApiError } from '@/lib/api';
-import { getSession, register } from '@/lib/auth';
-
-const APP_HOME = '/lndev-ui/team/CORE/all';
+import { useRegister, useSession } from '@/hooks/use-session';
+import { useResolveHomePath } from '@/hooks/use-orgs';
 
 export default function RegisterPage() {
    const router = useRouter();
@@ -17,40 +16,37 @@ export default function RegisterPage() {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [error, setError] = useState<string | null>(null);
-   const [submitting, setSubmitting] = useState(false);
-   const [checking, setChecking] = useState(true);
+   const { data: user, isFetched } = useSession();
+   const registerMutation = useRegister();
+   const { mutateAsync: resolveHomePath, isPending: resolvingHome } = useResolveHomePath();
+   const submitting = registerMutation.isPending || resolvingHome;
+   const checking = !isFetched || Boolean(user);
 
    useEffect(() => {
+      if (!isFetched || !user) return;
       let cancelled = false;
-      getSession()
-         .then((user) => {
-            if (cancelled) return;
-            if (user) {
-               router.replace(APP_HOME);
-               return;
-            }
-            setChecking(false);
+      resolveHomePath()
+         .then((path) => {
+            if (!cancelled) router.replace(path);
          })
          .catch(() => {
-            if (!cancelled) setChecking(false);
+            if (!cancelled) router.replace('/new');
          });
       return () => {
          cancelled = true;
       };
-   }, [router]);
+   }, [isFetched, user, router, resolveHomePath]);
 
    async function onSubmit(e: FormEvent<HTMLFormElement>) {
       e.preventDefault();
       setError(null);
-      setSubmitting(true);
       try {
-         await register({ name, email, password });
-         router.push(APP_HOME);
+         await registerMutation.mutateAsync({ name, email, password });
+         router.push(await resolveHomePath());
       } catch (err) {
          const message =
             err instanceof ApiError ? err.message : 'Could not create account';
          setError(message);
-         setSubmitting(false);
       }
    }
 

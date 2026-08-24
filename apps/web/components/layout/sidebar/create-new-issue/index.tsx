@@ -10,41 +10,29 @@ import { useState, useEffect, useCallback } from 'react';
 import { Issue } from '@/mock-data/issues';
 import { priorities } from '@/mock-data/priorities';
 import { status } from '@/mock-data/status';
-import { useIssuesStore } from '@/store/issues-store';
 import { useCreateIssueStore } from '@/store/create-issue-store';
 import { toast } from 'sonner';
-import { v4 as uuidv4 } from 'uuid';
 import { StatusSelector } from './status-selector';
 import { PrioritySelector } from './priority-selector';
 import { AssigneeSelector } from './assignee-selector';
-import { ProjectSelector } from './project-selector';
-import { LabelSelector } from './label-selector';
-import { ranks } from '@/mock-data/issues';
 import { DialogTitle } from '@radix-ui/react-dialog';
+import { useCreateIssue } from '@/hooks/use-issues';
+import { useTeams } from '@/hooks/use-teams';
+import { DEFAULT_TEAM_KEY } from '@/lib/paths';
+import { useParams } from 'next/navigation';
 
 export function CreateNewIssue() {
    const [createMore, setCreateMore] = useState<boolean>(false);
    const { isOpen, defaultStatus, openModal, closeModal } = useCreateIssueStore();
-   const { addIssue, getAllIssues } = useIssuesStore();
+   const { orgId, teamId } = useParams<{ orgId: string; teamId?: string }>();
+   const { data: teams = [] } = useTeams(orgId);
+   const createIssueMutation = useCreateIssue();
+   const teamKey = teamId ?? teams[0]?.key ?? DEFAULT_TEAM_KEY;
 
-   const generateUniqueIdentifier = useCallback(() => {
-      const identifiers = getAllIssues().map((issue) => issue.identifier);
-      let identifier = Math.floor(Math.random() * 999)
-         .toString()
-         .padStart(3, '0');
-      while (identifiers.includes(`LNUI-${identifier}`)) {
-         identifier = Math.floor(Math.random() * 999)
-            .toString()
-            .padStart(3, '0');
-      }
-      return identifier;
-   }, [getAllIssues]);
-
-   const createDefaultData = useCallback(() => {
-      const identifier = generateUniqueIdentifier();
+   const createDefaultData = useCallback((): Issue => {
       return {
-         id: uuidv4(),
-         identifier: `LNUI-${identifier}`,
+         id: 'new',
+         identifier: '',
          title: '',
          description: '',
          status: defaultStatus || status.find((s) => s.id === 'to-do')!,
@@ -55,9 +43,9 @@ export function CreateNewIssue() {
          cycleId: '',
          project: undefined,
          subissues: [],
-         rank: ranks[ranks.length - 1],
+         rank: '',
       };
-   }, [defaultStatus, generateUniqueIdentifier]);
+   }, [defaultStatus]);
 
    const [addIssueForm, setAddIssueForm] = useState<Issue>(createDefaultData());
 
@@ -65,17 +53,32 @@ export function CreateNewIssue() {
       setAddIssueForm(createDefaultData());
    }, [createDefaultData]);
 
-   const createIssue = () => {
+   const createIssue = async () => {
       if (!addIssueForm.title) {
          toast.error('Title is required');
          return;
       }
-      toast.success('Issue created');
-      addIssue(addIssueForm);
-      if (!createMore) {
-         closeModal();
+      if (!orgId) {
+         toast.error('No organization selected');
+         return;
       }
-      setAddIssueForm(createDefaultData());
+      try {
+         await createIssueMutation.mutateAsync({
+            title: addIssueForm.title,
+            description: addIssueForm.description,
+            status: addIssueForm.status.id,
+            priority: addIssueForm.priority.id,
+            assigneeId: addIssueForm.assignee?.id ?? null,
+            teamId: teamKey,
+         });
+         toast.success('Issue created');
+         if (!createMore) {
+            closeModal();
+         }
+         setAddIssueForm(createDefaultData());
+      } catch {
+         toast.error('Could not create issue');
+      }
    };
 
    return (
@@ -91,7 +94,7 @@ export function CreateNewIssue() {
                   <div className="flex items-center px-4 pt-4 gap-2">
                      <Button size="sm" variant="outline" className="gap-1.5">
                         <Heart className="size-4 text-orange-500 fill-orange-500" />
-                        <span className="font-medium">CORE</span>
+                        <span className="font-medium">{teamKey}</span>
                      </Button>
                   </div>
                </DialogTitle>
@@ -133,18 +136,6 @@ export function CreateNewIssue() {
                         setAddIssueForm({ ...addIssueForm, assignee: newAssignee })
                      }
                   />
-                  <ProjectSelector
-                     project={addIssueForm.project}
-                     onChange={(newProject) =>
-                        setAddIssueForm({ ...addIssueForm, project: newProject })
-                     }
-                  />
-                  <LabelSelector
-                     selectedLabels={addIssueForm.labels}
-                     onChange={(newLabels) =>
-                        setAddIssueForm({ ...addIssueForm, labels: newLabels })
-                     }
-                  />
                </div>
             </div>
             <div className="flex items-center justify-between py-2.5 px-4 w-full border-t">
@@ -158,12 +149,7 @@ export function CreateNewIssue() {
                      <Label htmlFor="create-more">Create more</Label>
                   </div>
                </div>
-               <Button
-                  size="sm"
-                  onClick={() => {
-                     createIssue();
-                  }}
-               >
+               <Button size="sm" onClick={() => void createIssue()}>
                   Create issue
                </Button>
             </div>

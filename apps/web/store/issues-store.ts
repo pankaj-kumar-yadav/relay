@@ -1,4 +1,4 @@
-import { groupIssuesByStatus, Issue, issues as mockIssues } from '@/mock-data/issues';
+import { groupIssuesByStatus, Issue } from '@/mock-data/issues';
 import { LabelInterface } from '@/mock-data/labels';
 import { Priority } from '@/mock-data/priorities';
 import { Project } from '@/mock-data/projects';
@@ -17,12 +17,11 @@ interface FilterOptions {
 }
 
 interface IssuesState {
-   // Data
    issues: Issue[];
    issuesByStatus: Record<string, Issue[]>;
 
-   //
    getAllIssues: () => Issue[];
+   setIssues: (issues: Issue[]) => void;
 
    // Actions
    addIssue: (issue: Issue) => void;
@@ -60,17 +59,25 @@ interface IssuesState {
 }
 
 export const useIssuesStore = create<IssuesState>((set, get) => ({
-   // Initial state
-   issues: mockIssues.sort((a, b) => b.rank.localeCompare(a.rank)),
-   issuesByStatus: groupIssuesByStatus(mockIssues),
+   issues: [],
+   issuesByStatus: {},
 
-   //
    getAllIssues: () => get().issues,
+
+   setIssues: (issues) => {
+      set({
+         issues,
+         issuesByStatus: groupIssuesByStatus(issues),
+      });
+   },
 
    // Actions
    addIssue: (issue: Issue) => {
       set((state) => {
-         const newIssues = [...state.issues, issue];
+         const exists = state.issues.some((item) => item.id === issue.id);
+         const newIssues = exists
+            ? state.issues.map((item) => (item.id === issue.id ? issue : item))
+            : [...state.issues, issue];
          return {
             issues: newIssues,
             issuesByStatus: groupIssuesByStatus(newIssues),

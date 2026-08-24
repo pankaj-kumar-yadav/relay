@@ -2,6 +2,7 @@
 
 import { Issue } from '@/mock-data/issues';
 import { getStatusesByCategory, StatusCategory, displayOrderedStatus } from '@/mock-data/status';
+import { useIssuesList } from '@/hooks/use-issues';
 import { useFilterStore } from '@/store/filter-store';
 import { useIssuesStore } from '@/store/issues-store';
 import { applyIssueFilters } from './issue-filter-columns';
@@ -9,6 +10,7 @@ import { IssueFilterBar } from './issue-filter-bar';
 import { useRightPanelStore } from '@/store/right-panel-store';
 import { useSearchStore } from '@/store/search-store';
 import { useViewStore } from '@/store/view-store';
+import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 import { GroupedIssuesView } from './grouped-issues-view';
 import { InsightsPanel } from './insights-panel';
@@ -23,11 +25,17 @@ interface AllIssuesProps {
 }
 
 export default function AllIssues({ categories }: AllIssuesProps) {
+   const { orgId, teamId } = useParams<{ orgId: string; teamId: string }>();
    const { isSearchOpen, searchQuery } = useSearchStore();
    const { viewType } = useViewStore();
    const { filters } = useFilterStore();
    const { issues } = useIssuesStore();
    const { openPanel } = useRightPanelStore();
+
+   useIssuesList(orgId, {
+      teamId,
+      statusCategory: categories?.join(','),
+   });
 
    const isSearching = isSearchOpen && searchQuery.trim() !== '';
    const isViewTypeGrid = viewType === 'grid';

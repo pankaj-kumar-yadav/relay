@@ -2,7 +2,7 @@
 
 import { Issue } from '@/mock-data/issues';
 import { Status } from '@/mock-data/status';
-import { useIssuesStore } from '@/store/issues-store';
+import { useIssueMutations } from '@/hooks/use-issues';
 import { useViewStore } from '@/store/view-store';
 import { useCreateIssueStore } from '@/store/create-issue-store';
 import { cn } from '@/lib/utils';
@@ -98,7 +98,7 @@ export function GroupIssues({ group, issues, count }: GroupIssuesProps) {
 
 const IssueGridList: FC<{ issues: Issue[]; status?: Status }> = ({ issues, status }) => {
    const ref = useRef<HTMLDivElement>(null);
-   const { updateIssueStatus } = useIssuesStore();
+   const { updateIssueStatus } = useIssueMutations();
 
    // Set up drop functionality to accept only issue items.
    const [{ isOver }, drop] = useDrop(() => ({

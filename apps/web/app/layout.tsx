@@ -53,6 +53,7 @@ export const metadata: Metadata = {
    keywords: ['ui', 'lndev', 'components', 'template'],
 };
 
+import { QueryProvider } from '@/components/layout/query-provider';
 import { ThemeProvider } from '@/components/layout/theme-provider';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
@@ -71,10 +72,12 @@ export default function RootLayout({
             suppressHydrationWarning
          >
             <NuqsAdapter>
-               <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-                  {children}
-                  <Toaster />
-               </ThemeProvider>
+               <QueryProvider>
+                  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+                     {children}
+                     <Toaster />
+                  </ThemeProvider>
+               </QueryProvider>
             </NuqsAdapter>
          </body>
       </html>

@@ -12,9 +12,9 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 3. Database          ✅  (users + key_stores; orgs/memberships next in step 5)
 4. Auth              ✅  (access+refresh JWT, KeyStore, web login/register + auto-refresh)
 5. Multi-tenant      ✅  (orgs + memberships + requireOrgMember + invites)
-6. Core API          →   issues (+ labels/statuses) CRUD
-7. Wire UI           →   replace Circle mocks with API
-8. Projects/Teams    →   expand domain to match UI routes
+6. Core screens      ✅  (shell + issues + members; API+UI)
+7. Wire UI           →   leftover Circle routes (hide or keep mock)
+8. Projects/Teams    →   full teams/projects CRUD + remaining pages
 9. Hardening         →   validation, errors, seed, basic tests
 ```
 
@@ -32,9 +32,9 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 - [x] Step 3 — PostgreSQL + Prisma `users` + `key_stores` (orgs/memberships deferred to step 5)
 - [x] Step 4 — Auth endpoints + web login/register (dual JWT + KeyStore)
 - [x] Step 5 — Organizations + memberships + tenant guard + invites
-- [ ] Step 6 — Issues API (CRUD, filters, rank)
-- [ ] Step 7 — UI wired to API (no mock dependence for MVP screens)
-- [ ] Step 8 — Projects + teams API + UI wiring
+- [x] Step 6 — Core screens (login/org shell, issues list/detail, members)
+- [ ] Step 7 — Leftover Circle routes (hide or keep mock)
+- [ ] Step 8 — Projects + teams API + remaining pages
 - [ ] Step 9 — Hardening (seed, errors, CORS/prod notes, smoke tests)
 
 ## Suggested order of reading for a new agent

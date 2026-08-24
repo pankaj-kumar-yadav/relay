@@ -60,6 +60,22 @@ Seed user:
 pnpm --filter @relay/api dev
 ```
 
+## 6) Prisma Studio (browse data)
+
+From repo root (Postgres must be running):
+
+```bash
+pnpm db:studio
+```
+
+Opens at [http://localhost:5555](http://localhost:5555). Uses `DATABASE_URL` from `apps/api/.env`.
+
+Same command via the API package:
+
+```bash
+pnpm --filter @relay/api db:studio
+```
+
 ## Useful commands
 
 Check DB container status:

@@ -117,9 +117,10 @@ Statuses/priorities: start as **enums or lookup tables**. Match Circle naming wh
 ## Migration workflow
 
 ```bash
-# examples — adjust to chosen tool
 pnpm --filter @relay/api db:migrate
-pnpm --filter @relay/api db:generate   # if Prisma
+pnpm --filter @relay/api db:generate
+pnpm --filter @relay/api db:seed
+pnpm db:studio   # Prisma Studio — browse tables at http://localhost:5555
 ```
 
 Document exact scripts in `apps/api/package.json` when added.

@@ -92,10 +92,10 @@ orgsInvitesRouter.post(
         },
       });
 
-      const invitePath = `/invites/${token}/accept`;
+      const invitePath = `/invite/${token}`;
       if (!config.isProduction) {
         console.log(
-          `[invite] ${email} → ${config.webOrigin}${invitePath} (POST ${invitePath})`,
+          `[invite] ${email} → ${config.webOrigin}${invitePath} (POST /invites/${token}/accept)`,
         );
       }
 

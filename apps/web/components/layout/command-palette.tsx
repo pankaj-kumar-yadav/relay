@@ -19,6 +19,7 @@ import { teams } from '@/mock-data/teams';
 import { users } from '@/mock-data/users';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCreateIssueStore } from '@/store/create-issue-store';
+import { useIssueMutations } from '@/hooks/use-issues';
 import { useIssuesStore } from '@/store/issues-store';
 import {
    Box,
@@ -85,7 +86,9 @@ export function CommandPalette() {
 
    const pathname = usePathname();
    const router = useRouter();
-   const { issues, updateIssueStatus, updateIssuePriority, updateIssueAssignee, addIssueLabel, removeIssueLabel, updateIssueProject, updateIssue } = useIssuesStore();
+   const { issues, addIssueLabel, removeIssueLabel, updateIssueProject, updateIssue } =
+      useIssuesStore();
+   const { updateIssueStatus, updateIssuePriority, updateIssueAssignee } = useIssueMutations();
    const { openModal } = useCreateIssueStore();
 
    const orgId = pathname.split('/')[1] || 'lndev-ui';
