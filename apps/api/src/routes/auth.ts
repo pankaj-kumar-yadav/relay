@@ -11,6 +11,7 @@ import { config } from '@/config.js';
 import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.js';
 import { HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
+import { loginRateLimit, registerRateLimit } from '@/middleware/authRateLimit.js';
 import { requireAuth } from '@/middleware/requireAuth.js';
 import {
   EmailTakenError,
@@ -50,7 +51,7 @@ function publicUser(user: {
   };
 }
 
-authRouter.post('/register', async (req, res) => {
+authRouter.post('/register', registerRateLimit, async (req, res) => {
   try {
     const parsed = registerSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -89,7 +90,7 @@ authRouter.post('/register', async (req, res) => {
   }
 });
 
-authRouter.post('/login', async (req, res) => {
+authRouter.post('/login', loginRateLimit, async (req, res) => {
   try {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {

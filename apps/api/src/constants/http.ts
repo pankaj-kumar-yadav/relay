@@ -6,6 +6,7 @@ export const HttpStatus = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
+  TOO_MANY_REQUESTS: 429,
   INTERNAL: 500,
 } as const;
 
@@ -20,6 +21,7 @@ export const ErrorCode = {
   FORBIDDEN: 'FORBIDDEN',
   NOT_FOUND: 'NOT_FOUND',
   SLUG_TAKEN: 'SLUG_TAKEN',
+  RATE_LIMITED: 'RATE_LIMITED',
   INTERNAL: 'INTERNAL',
 } as const;
 

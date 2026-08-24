@@ -61,6 +61,12 @@ export class SlugTakenError extends ApiError {
   }
 }
 
+export class RateLimitError extends ApiError {
+  constructor(message = 'Too many attempts, try again later') {
+    super(HttpStatus.TOO_MANY_REQUESTS, ErrorCode.RATE_LIMITED, message);
+  }
+}
+
 export class InternalError extends ApiError {
   constructor(message = 'Internal server error') {
     super(HttpStatus.INTERNAL, ErrorCode.INTERNAL, message);

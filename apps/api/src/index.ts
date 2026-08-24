@@ -12,6 +12,10 @@ assertAuthConfig();
 
 const app = express();
 
+if (config.trustProxy) {
+  app.set('trust proxy', 1);
+}
+
 app.use(
   cors({
     origin: config.webOrigin,

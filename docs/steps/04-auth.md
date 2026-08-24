@@ -9,8 +9,12 @@ Users can register, log in, and call protected API routes. Web can store and sen
 ## Implementation notes (as shipped)
 
 - Cookie names: `${BRAND_SLUG}_accessToken` / `${BRAND_SLUG}_refreshToken` → `relay_accessToken`, `relay_refreshToken`
-- Core modules: `apps/api/src/auth/*`, `apps/api/src/utils/jwt.ts`, `apps/api/src/middleware/requireAuth.ts`
+- Core modules: `apps/api/src/auth/*`, `apps/api/src/utils/jwt.ts`, `apps/api/src/middleware/requireAuth.ts`, `apps/api/src/middleware/authRateLimit.ts`
 - Web auto-refresh: `apps/web/lib/api.ts`
+- Rate limits (separate buckets, IETF `RateLimit` headers + `Retry-After`):
+  - `POST /auth/login`: 5 **failed** attempts / 15 min per IP (`skipSuccessfulRequests`)
+  - `POST /auth/register`: 3 attempts / hour per IP (success and failure)
+- Behind a reverse proxy, set `TRUST_PROXY=1` so client IPs are trusted from `X-Forwarded-For`
 
 See design: [../superpowers/specs/2026-08-21-access-refresh-keystore-design.md](../superpowers/specs/2026-08-21-access-refresh-keystore-design.md)
 
@@ -86,7 +90,7 @@ Ensure:
 ## Security checklist
 
 - [x] Passwords hashed (never plaintext)
-- [ ] Rate-limit login/register (basic is enough for MVP)
+- [x] Rate-limit login/register (basic is enough for MVP)
 - [x] Generic error on bad login (don’t leak whether email exists)
 - [x] `TOKEN_SECRET` / issuer / audience only in env
 - [x] Logout revokes keystore server-side

@@ -54,7 +54,7 @@ Map:
 
 - Zod (or equivalent) on all write endpoints
 - Request size limits on Express
-- Basic rate limit on `/auth/login` and `/auth/register`
+- Separate rate limits on `/auth/login` and `/auth/register` (shipped in step 4)
 
 ## 4. Config and secrets
 

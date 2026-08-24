@@ -8,6 +8,7 @@ export const config = {
   webOrigin: process.env.WEB_ORIGIN || 'http://localhost:3000',
   databaseUrl: process.env.DATABASE_URL ?? '',
   isProduction: process.env.NODE_ENV === 'production',
+  trustProxy: process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true',
   tokenInfo: {
     secret: process.env.TOKEN_SECRET ?? '',
     issuer: process.env.TOKEN_ISSUER ?? '',
