@@ -1,7 +1,10 @@
 'use client';
 
 import { CyclePlayIcon } from '@/components/common/cycles/cycle-line';
+import { ProjectSelector } from '@/components/layout/sidebar/create-new-issue/project-selector';
+import { TeamSelector } from '@/components/layout/sidebar/create-new-issue/team-selector';
 import { Button } from '@/components/ui/button';
+import { useIssueMutations } from '@/hooks/use-issues';
 import { getCycleById } from '@/mock-data/cycles';
 import { IssueDetail } from '@/mock-data/issue-details';
 import { Issue } from '@/mock-data/issues';
@@ -32,6 +35,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  */
 export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProps) {
    const cycle = issue.cycleId ? getCycleById(issue.cycleId) : undefined;
+   const { updateIssueProject, updateIssueTeam } = useIssueMutations();
+   const teamKey = issue.identifier.split('-')[0] ?? issue.project?.teamId ?? '';
 
    return (
       <div className="flex flex-col gap-7">
@@ -55,6 +60,12 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
                      <span className="text-sm">{cycle.name}</span>
                   </div>
                )}
+               <div className="flex items-center gap-1.5 mt-0.5">
+                  <TeamSelector
+                     teamKey={teamKey}
+                     onChange={(team) => updateIssueTeam(issue.id, team.key)}
+                  />
+               </div>
             </div>
          </Section>
 
@@ -67,20 +78,19 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
             </div>
          </Section>
 
-         {issue.project && (
-            <Section title="Project">
-               <div className="flex items-center gap-2 text-sm">
-                  <issue.project.icon className="size-4 text-muted-foreground shrink-0" />
-                  <span className="truncate">{issue.project.name}</span>
+         <Section title="Project">
+            <ProjectSelector
+               project={issue.project}
+               teamKey={teamKey}
+               onChange={(project) => updateIssueProject(issue.id, project)}
+            />
+            {detail?.milestone && (
+               <div className="flex items-center gap-2 text-sm mt-1.5 pl-6 text-muted-foreground">
+                  <span className="size-2 rotate-45 border border-amber-400 shrink-0" />
+                  <span className="truncate">{detail.milestone}</span>
                </div>
-               {detail?.milestone && (
-                  <div className="flex items-center gap-2 text-sm mt-1.5 pl-6 text-muted-foreground">
-                     <span className="size-2 rotate-45 border border-amber-400 shrink-0" />
-                     <span className="truncate">{detail.milestone}</span>
-                  </div>
-               )}
-            </Section>
-         )}
+            )}
+         </Section>
 
          {detail?.blockedByIds && detail.blockedByIds.length > 0 && (
             <Section title="Blocked by">

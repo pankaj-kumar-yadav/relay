@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { getCyclesByTeam } from '@/mock-data/cycles';
 import { status } from '@/mock-data/status';
-import { teams } from '@/mock-data/teams';
+import { useTeams } from '@/hooks/use-teams';
 import {
    Bot,
    ChevronRight,
@@ -31,15 +31,27 @@ interface TeamSettingsProps {
 /** Per-team settings page (general, workflow, AI and danger zone). */
 export default function TeamSettings({ teamId }: TeamSettingsProps) {
    const { orgId } = useParams<{ orgId: string }>();
-   const team = teams.find((candidate) => candidate.id === teamId);
+   const { data: apiTeams = [], isLoading } = useTeams(orgId);
+   const apiTeam = apiTeams.find((candidate) => candidate.key === teamId || candidate.id === teamId);
 
-   if (!team) {
+   if (isLoading) {
+      return <div className="h-full" />;
+   }
+
+   if (!apiTeam) {
       return (
          <div className="max-w-2xl mx-auto px-6 py-10">
             <h1 className="text-2xl font-medium">Team not found</h1>
          </div>
       );
    }
+
+   const team = {
+      id: apiTeam.key,
+      name: apiTeam.name,
+      icon: '🛠️',
+      members: [] as { id: string }[],
+   };
 
    const cycles = getCyclesByTeam(team.id);
 

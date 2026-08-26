@@ -2,6 +2,7 @@
 
 import {
    ContactRound,
+   FolderKanban,
    LayoutList,
    LucideIcon,
    MoreHorizontal,
@@ -43,6 +44,7 @@ interface WorkspaceNavItem {
 
 const WORKSPACE_NAV: WorkspaceNavItem[] = [
    { key: 'teams', name: 'Teams', icon: ContactRound, url: '/teams' },
+   { key: 'projects', name: 'Projects', icon: FolderKanban, url: '/projects' },
    { key: 'members', name: 'Members', icon: UserRound, url: '/members' },
 ];
 

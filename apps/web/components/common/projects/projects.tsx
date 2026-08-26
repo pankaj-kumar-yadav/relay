@@ -2,13 +2,15 @@
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { projects as allProjects, Project } from '@/mock-data/projects';
-import { teams } from '@/mock-data/teams';
+import { Project } from '@/mock-data/projects';
+import { useProjects } from '@/hooks/use-projects';
+import { useTeams } from '@/hooks/use-teams';
 import { useProjectsFilterStore } from '@/store/projects-filter-store';
 import { useProjectsDisplayStore } from '@/store/projects-display-store';
 import { useRightPanelStore } from '@/store/right-panel-store';
 import { BarChart3 } from 'lucide-react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 import { Filter } from '@/components/layout/headers/projects/filter';
 import ProjectsBoard from './projects-board';
@@ -41,6 +43,9 @@ const CLOSED_CATEGORIES = new Set(['completed', 'canceled']);
  * options, views, insights) is scoped to that team's projects.
  */
 export default function Projects({ teamId }: { teamId?: string }) {
+   const { orgId } = useParams<{ orgId: string }>();
+   const { data: allProjects = [] } = useProjects(orgId, { teamId });
+   const { data: teams = [] } = useTeams(orgId);
    const { filters } = useProjectsFilterStore();
    const { viewTypes, grouping, ordering, closedProjects, showEmptyGroups } =
       useProjectsDisplayStore();
@@ -51,9 +56,6 @@ export default function Projects({ teamId }: { teamId?: string }) {
    const displayed = useMemo(() => {
       let list = allProjects.slice();
 
-      if (teamId) {
-         list = list.filter((project) => project.teamId === teamId);
-      }
       if (tab === 'active') {
          list = list.filter((project) => ACTIVE_CATEGORIES.has(project.status.category));
       }
@@ -81,7 +83,7 @@ export default function Projects({ teamId }: { teamId?: string }) {
          }
       };
       return list.sort(compare);
-   }, [tab, closedProjects, filters, ordering, teamId]);
+   }, [allProjects, tab, closedProjects, filters, ordering]);
 
    const groups = useMemo<ProjectGroup[]>(() => {
       if (grouping === 'none') {
@@ -89,13 +91,13 @@ export default function Projects({ teamId }: { teamId?: string }) {
       }
       return teams
          .map((team) => ({
-            id: team.id,
+            id: team.key,
             name: team.name,
-            icon: team.icon,
-            projects: displayed.filter((project) => project.teamId === team.id),
+            icon: team.key.slice(0, 1),
+            projects: displayed.filter((project) => project.teamId === team.key),
          }))
          .filter((group) => showEmptyGroups || group.projects.length > 0);
-   }, [displayed, grouping, showEmptyGroups]);
+   }, [displayed, grouping, showEmptyGroups, teams]);
 
    return (
       <div className="w-full h-full flex flex-col overflow-hidden">

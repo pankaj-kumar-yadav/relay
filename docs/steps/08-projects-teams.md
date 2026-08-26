@@ -1,6 +1,6 @@
 # Step 8 — Projects and teams
 
-**Status:** Pending
+**Status:** Done
 
 ## Goal
 
@@ -28,6 +28,7 @@ Rules:
 
 - `key` unique per org (e.g. `CORE`) — used in URLs like Circle’s `[teamId]`
 - All queries scoped by `organization_id`
+- `:teamId` is UUID or key; any org member may create/update (same as issues)
 
 ## Projects API
 
@@ -47,23 +48,23 @@ Skip Circle’s rich project activity/milestones until after MVP.
 
 - Creating/updating an issue can set `team_id` / `project_id`
 - List filters already planned in step 6 — ensure they work with real FKs
-- Deleting a project: null out `issues.project_id` or block delete if issues exist — pick one and document
+- **Deleting a project nulls `issues.project_id`** (`ON DELETE SET NULL`). Delete always succeeds; issues keep their team.
 
 ## UI wiring
 
-1. Sidebar teams/projects from API  
-2. Team home / project list pages  
-3. Create project modal → `POST`  
-4. Issue properties panel: project + team selectors from API  
+1. Sidebar teams/projects from API
+2. Team home / project list pages
+3. Create project modal → `POST`
+4. Issue properties panel: project + team selectors from API
 
 Leave overview/activity tabs as static or hidden if backend isn’t ready.
 
 ## Done when
 
-- [ ] At least one team + project per demo org
-- [ ] Issues can be assigned to a project/team and filtered
-- [ ] Circle routes using `teamId` resolve against real keys/ids
-- [ ] Non-members still blocked
+- [x] At least one team + project per demo org
+- [x] Issues can be assigned to a project/team and filtered
+- [x] Circle routes using `teamId` resolve against real keys/ids
+- [x] Non-members still blocked
 
 ## Explicitly later
 

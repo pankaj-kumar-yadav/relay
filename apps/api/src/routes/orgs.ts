@@ -10,6 +10,7 @@ import { requireOrgMember } from '@/middleware/requireOrgMember.js';
 import { issuesRouter } from '@/routes/issues.js';
 import { membersRouter } from '@/routes/members.js';
 import { orgsInvitesRouter } from '@/routes/invites.js';
+import { projectsRouter } from '@/routes/projects.js';
 import { teamsRouter } from '@/routes/teams.js';
 import { createDefaultTeam, publicTeam } from '@/utils/teams.js';
 import {
@@ -125,5 +126,6 @@ orgsRouter.get('/:orgId', requireOrgMember, (req, res) => {
 
 orgsRouter.use('/:orgId/invites', orgsInvitesRouter);
 orgsRouter.use('/:orgId/teams', teamsRouter);
+orgsRouter.use('/:orgId/projects', projectsRouter);
 orgsRouter.use('/:orgId/members', membersRouter);
 orgsRouter.use('/:orgId/issues', issuesRouter);

@@ -35,7 +35,7 @@ const DEFAULT_VISIBILITY: Record<SidebarItemKey, SidebarVisibility> = {
    /** @deprecated Hidden from UI; retained so persisted prefs stay valid. */
    'agent': 'never',
    'initiatives': 'never',
-   'projects': 'never',
+   'projects': 'always',
    'views': 'never',
    'teams': 'always',
    'members': 'always',
@@ -48,7 +48,7 @@ const DEFAULT_VISIBILITY: Record<SidebarItemKey, SidebarVisibility> = {
  */
 const DEFAULT_ORDER: Record<SidebarSection, SidebarItemKey[]> = {
    personal: ['my-issues'],
-   workspace: ['teams', 'members'],
+   workspace: ['teams', 'projects', 'members'],
 };
 
 export const useSidebarPrefsStore = create<SidebarPrefsState>()(
@@ -69,7 +69,20 @@ export const useSidebarPrefsStore = create<SidebarPrefsState>()(
                return { order: { ...state.order, [section]: keys } };
             }),
       }),
-      { name: 'sidebar-prefs' }
+      {
+         name: 'sidebar-prefs',
+         version: 1,
+         migrate: (persisted, version) => {
+            const state = persisted as SidebarPrefsState;
+            if (version < 1) {
+               return {
+                  ...state,
+                  visibility: { ...state.visibility, projects: 'always' },
+               };
+            }
+            return state;
+         },
+      },
    )
 );
 

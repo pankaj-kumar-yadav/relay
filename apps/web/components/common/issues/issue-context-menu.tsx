@@ -1,3 +1,5 @@
+'use client';
+
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
    ContextMenuContent,
@@ -35,13 +37,14 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useIssueMutations } from '@/hooks/use-issues';
+import { useProjects } from '@/hooks/use-projects';
 import { useIssuesStore } from '@/store/issues-store';
 import { status } from '@/mock-data/status';
 import { priorities } from '@/mock-data/priorities';
 import { users } from '@/mock-data/users';
 import { labels } from '@/mock-data/labels';
-import { projects } from '@/mock-data/projects';
 import { toast } from 'sonner';
+import { useParams } from 'next/navigation';
 
 interface IssueContextMenuProps {
    issueId?: string;
@@ -51,9 +54,11 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
    const [isSubscribed, setIsSubscribed] = useState(false);
    const [isFavorite, setIsFavorite] = useState(false);
 
-   const { updateIssueStatus, updateIssuePriority, updateIssueAssignee } = useIssueMutations();
-   const { addIssueLabel, removeIssueLabel, updateIssueProject, updateIssue, getIssueById } =
-      useIssuesStore();
+   const { updateIssueStatus, updateIssuePriority, updateIssueAssignee, updateIssueProject } =
+      useIssueMutations();
+   const { addIssueLabel, removeIssueLabel, updateIssue, getIssueById } = useIssuesStore();
+   const { orgId } = useParams<{ orgId: string }>();
+   const { data: projects = [] } = useProjects(orgId);
 
    const handleStatusChange = (statusId: string) => {
       if (!issueId) return;

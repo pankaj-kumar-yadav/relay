@@ -10,37 +10,44 @@ import {
    CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useIssuesStore } from '@/store/issues-store';
-import { Project, projects } from '@/mock-data/projects';
+import { useProjects } from '@/hooks/use-projects';
+import { Project } from '@/mock-data/projects';
 import { Box, CheckIcon, FolderIcon } from 'lucide-react';
-import { useEffect, useId, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useEffect, useId, useMemo, useState } from 'react';
 
 interface ProjectSelectorProps {
    project: Project | undefined;
    onChange: (project: Project | undefined) => void;
+   teamKey?: string;
 }
 
-export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
+export function ProjectSelector({ project, onChange, teamKey }: ProjectSelectorProps) {
    const id = useId();
-   const [open, setOpen] = useState<boolean>(false);
+   const { orgId } = useParams<{ orgId: string }>();
+   const [open, setOpen] = useState(false);
    const [value, setValue] = useState<string | undefined>(project?.id);
+   const { data: projects = [] } = useProjects(orgId, { teamId: teamKey });
 
-   const { filterByProject } = useIssuesStore();
+   const options = useMemo(
+      () => (teamKey ? projects.filter((item) => item.teamId === teamKey) : projects),
+      [projects, teamKey],
+   );
 
    useEffect(() => {
       setValue(project?.id);
    }, [project]);
+
+   const selected = options.find((item) => item.id === value) ?? project;
 
    const handleProjectChange = (projectId: string) => {
       if (projectId === 'no-project') {
          setValue(undefined);
          onChange(undefined);
       } else {
+         const next = options.find((item) => item.id === projectId);
          setValue(projectId);
-         const newProject = projects.find((p) => p.id === projectId);
-         if (newProject) {
-            onChange(newProject);
-         }
+         if (next) onChange(next);
       }
       setOpen(false);
    };
@@ -57,19 +64,12 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
                   role="combobox"
                   aria-expanded={open}
                >
-                  {value ? (
-                     (() => {
-                        const selectedProject = projects.find((p) => p.id === value);
-                        if (selectedProject) {
-                           const Icon = selectedProject.icon;
-                           return <Icon className="size-4" />;
-                        }
-                        return <Box className="size-4" />;
-                     })()
+                  {selected ? (
+                     <selected.icon className="size-4" />
                   ) : (
                      <Box className="size-4" />
                   )}
-                  <span>{value ? projects.find((p) => p.id === value)?.name : 'No project'}</span>
+                  <span>{selected?.name ?? 'No project'}</span>
                </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -92,21 +92,18 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
                            </div>
                            {value === undefined && <CheckIcon size={16} className="ml-auto" />}
                         </CommandItem>
-                        {projects.map((project) => (
+                        {options.map((item) => (
                            <CommandItem
-                              key={project.id}
-                              value={project.id}
-                              onSelect={() => handleProjectChange(project.id)}
+                              key={item.id}
+                              value={`${item.name} ${item.id}`}
+                              onSelect={() => handleProjectChange(item.id)}
                               className="flex items-center justify-between"
                            >
                               <div className="flex items-center gap-2">
-                                 <project.icon className="size-4" />
-                                 {project.name}
+                                 <item.icon className="size-4" />
+                                 {item.name}
                               </div>
-                              {value === project.id && <CheckIcon size={16} className="ml-auto" />}
-                              <span className="text-muted-foreground text-xs">
-                                 {filterByProject(project.id).length}
-                              </span>
+                              {value === item.id && <CheckIcon size={16} className="ml-auto" />}
                            </CommandItem>
                         ))}
                      </CommandGroup>

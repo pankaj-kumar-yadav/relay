@@ -16,6 +16,7 @@ export type ApiIssue = {
   priority: string;
   rank: string;
   projectId: string | null;
+  project: { id: string; name: string } | null;
   team: { id: string; key: string; name: string };
   assignee: ApiAssignee;
   createdAt: string;
@@ -41,6 +42,7 @@ export type CreateIssueInput = {
   priority?: string;
   assigneeId?: string | null;
   teamId?: string;
+  projectId?: string | null;
 };
 
 export type PatchIssueInput = {
@@ -52,6 +54,8 @@ export type PatchIssueInput = {
   rank?: string;
   beforeIssueId?: string;
   afterIssueId?: string;
+  teamId?: string;
+  projectId?: string | null;
 };
 
 function toQuery(params: IssueListQuery) {

@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Heart } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { RiEditLine } from '@remixicon/react';
@@ -15,11 +14,14 @@ import { toast } from 'sonner';
 import { StatusSelector } from './status-selector';
 import { PrioritySelector } from './priority-selector';
 import { AssigneeSelector } from './assignee-selector';
+import { ProjectSelector } from './project-selector';
+import { TeamSelector } from './team-selector';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { useCreateIssue } from '@/hooks/use-issues';
 import { useTeams } from '@/hooks/use-teams';
 import { DEFAULT_TEAM_KEY } from '@/lib/paths';
 import { useParams } from 'next/navigation';
+import type { TeamSummary } from '@/services/teams.service';
 
 export function CreateNewIssue() {
    const [createMore, setCreateMore] = useState<boolean>(false);
@@ -27,7 +29,13 @@ export function CreateNewIssue() {
    const { orgId, teamId } = useParams<{ orgId: string; teamId?: string }>();
    const { data: teams = [] } = useTeams(orgId);
    const createIssueMutation = useCreateIssue();
-   const teamKey = teamId ?? teams[0]?.key ?? DEFAULT_TEAM_KEY;
+   const [selectedTeamKey, setSelectedTeamKey] = useState(
+      teamId ?? teams[0]?.key ?? DEFAULT_TEAM_KEY,
+   );
+
+   useEffect(() => {
+      setSelectedTeamKey(teamId ?? teams[0]?.key ?? DEFAULT_TEAM_KEY);
+   }, [teamId, teams]);
 
    const createDefaultData = useCallback((): Issue => {
       return {
@@ -69,7 +77,8 @@ export function CreateNewIssue() {
             status: addIssueForm.status.id,
             priority: addIssueForm.priority.id,
             assigneeId: addIssueForm.assignee?.id ?? null,
-            teamId: teamKey,
+            teamId: selectedTeamKey,
+            projectId: addIssueForm.project?.id ?? null,
          });
          toast.success('Issue created');
          if (!createMore) {
@@ -92,10 +101,15 @@ export function CreateNewIssue() {
             <DialogHeader>
                <DialogTitle>
                   <div className="flex items-center px-4 pt-4 gap-2">
-                     <Button size="sm" variant="outline" className="gap-1.5">
-                        <Heart className="size-4 text-orange-500 fill-orange-500" />
-                        <span className="font-medium">{teamKey}</span>
-                     </Button>
+                     <TeamSelector
+                        teamKey={selectedTeamKey}
+                        onChange={(team: TeamSummary) => {
+                           setSelectedTeamKey(team.key);
+                           if (addIssueForm.project && addIssueForm.project.teamId !== team.key) {
+                              setAddIssueForm({ ...addIssueForm, project: undefined });
+                           }
+                        }}
+                     />
                   </div>
                </DialogTitle>
             </DialogHeader>
@@ -134,6 +148,13 @@ export function CreateNewIssue() {
                      assignee={addIssueForm.assignee}
                      onChange={(newAssignee) =>
                         setAddIssueForm({ ...addIssueForm, assignee: newAssignee })
+                     }
+                  />
+                  <ProjectSelector
+                     project={addIssueForm.project}
+                     teamKey={selectedTeamKey}
+                     onChange={(newProject) =>
+                        setAddIssueForm({ ...addIssueForm, project: newProject })
                      }
                   />
                </div>

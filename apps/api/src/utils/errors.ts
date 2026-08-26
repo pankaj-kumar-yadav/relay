@@ -61,6 +61,12 @@ export class SlugTakenError extends ApiError {
   }
 }
 
+export class TeamKeyTakenError extends ApiError {
+  constructor(message = 'Team key already taken') {
+    super(HttpStatus.CONFLICT, ErrorCode.TEAM_KEY_TAKEN, message);
+  }
+}
+
 export class AlreadyMemberError extends ApiError {
   constructor(message = 'Already a member of this organization') {
     super(HttpStatus.CONFLICT, ErrorCode.ALREADY_MEMBER, message);

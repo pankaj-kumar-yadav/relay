@@ -1,11 +1,14 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { CreateProjectButton } from '@/components/common/projects/create-project-modal';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { projects } from '@/mock-data/projects';
-import { Plus } from 'lucide-react';
+import { useProjects } from '@/hooks/use-projects';
+import { useParams } from 'next/navigation';
 
 export default function HeaderNav() {
+   const { orgId, teamId } = useParams<{ orgId: string; teamId?: string }>();
+   const { data: projects = [] } = useProjects(orgId, { teamId });
+
    return (
       <div className="w-full flex justify-between items-center border-b py-1.5 px-6 h-10">
          <div className="flex items-center gap-2">
@@ -16,10 +19,7 @@ export default function HeaderNav() {
             </div>
          </div>
          <div className="flex items-center gap-2">
-            <Button className="relative" size="xs" variant="secondary">
-               <Plus className="size-4" />
-               <span className="hidden sm:inline ml-1">Create project</span>
-            </Button>
+            <CreateProjectButton defaultTeamKey={teamId} />
          </div>
       </div>
    );

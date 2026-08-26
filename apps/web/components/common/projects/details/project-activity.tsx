@@ -17,11 +17,13 @@ import {
    projectUpdateHealthColor,
    projectUpdateHealthLabel,
 } from '@/mock-data/project-details';
-import { getProjectById } from '@/mock-data/projects';
+import { useProject } from '@/hooks/use-projects';
 import { useIssuesStore } from '@/store/issues-store';
 import { useProjectUpdatesStore } from '@/store/project-updates-store';
 import { format, parseISO } from 'date-fns';
 import { Paperclip, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { ProjectSidePanel } from './project-side-panel';
 
@@ -66,12 +68,13 @@ function UpdateCard({ update }: { update: ProjectUpdate }) {
 
 /** Project "Activity" tab: update composer + monthly timeline. */
 export default function ProjectActivity({ projectId }: ProjectActivityProps) {
-   const project = getProjectById(projectId)!;
+   const { orgId } = useParams<{ orgId: string }>();
+   const { data: project, isLoading, isError } = useProject(orgId, projectId);
    const detail = getProjectDetail(projectId);
    const { issues: allIssues } = useIssuesStore();
    const issues = useMemo(
-      () => allIssues.filter((issue) => issue.project?.id === project.id),
-      [allIssues, project.id]
+      () => allIssues.filter((issue) => issue.project?.id === projectId),
+      [allIssues, projectId],
    );
    const { postedUpdates, postUpdate } = useProjectUpdatesStore();
    const [mode, setMode] = useState<'comment' | 'update'>('update');
@@ -79,8 +82,8 @@ export default function ProjectActivity({ projectId }: ProjectActivityProps) {
    const [text, setText] = useState('');
 
    const updates = useMemo<ProjectUpdate[]>(
-      () => [...(postedUpdates[project.id] ?? []), ...detail.updates],
-      [postedUpdates, project.id, detail.updates]
+      () => [...(postedUpdates[projectId] ?? []), ...detail.updates],
+      [postedUpdates, projectId, detail.updates],
    );
 
    const updatesByMonth = useMemo(() => {
@@ -100,6 +103,21 @@ export default function ProjectActivity({ projectId }: ProjectActivityProps) {
                  100
            )
          : 0;
+
+   if (isLoading) {
+      return <div className="h-full" />;
+   }
+
+   if (!project || isError) {
+      return (
+         <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-muted-foreground">
+            <p>Project not found.</p>
+            <Link href={`/${orgId}/projects`} className="underline">
+               Back to projects
+            </Link>
+         </div>
+      );
+   }
 
    const handlePost = () => {
       if (text.trim() === '') return;

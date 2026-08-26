@@ -118,6 +118,13 @@ export function useIssueMutations() {
       updateIssue(issueId, { assignee });
       patch.mutate({ issueId, input: { assigneeId: assignee?.id ?? null } });
     },
+    updateIssueProject: (issueId: string, project: Issue['project']) => {
+      updateIssue(issueId, { project });
+      patch.mutate({ issueId, input: { projectId: project?.id ?? null } });
+    },
+    updateIssueTeam: (issueId: string, teamId: string) => {
+      patch.mutate({ issueId, input: { teamId } });
+    },
     patchIssueFields: (issueId: string, fields: Partial<Issue>, input: PatchIssueInput) => {
       updateIssue(issueId, fields);
       patch.mutate({ issueId, input });

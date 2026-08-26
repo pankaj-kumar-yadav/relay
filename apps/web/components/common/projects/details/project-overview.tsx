@@ -3,9 +3,10 @@
 import { ContentBlocks } from '@/components/common/issues/details/content-blocks';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getProjectDetail } from '@/mock-data/project-details';
-import { getProjectById } from '@/mock-data/projects';
+import { useIssuesList } from '@/hooks/use-issues';
+import { useProject } from '@/hooks/use-projects';
+import { useTeams } from '@/hooks/use-teams';
 import { useIssuesStore } from '@/store/issues-store';
-import { teams } from '@/mock-data/teams';
 import { format, parseISO } from 'date-fns';
 import { ArrowRight, ChevronDown, FileText, PenLine, Plus } from 'lucide-react';
 import Link from 'next/link';
@@ -22,18 +23,35 @@ const formatDay = (iso?: string) => (iso ? format(parseISO(iso), 'MMM do') : 'â€
 
 /** Project "Overview" tab: description column + properties side panel. */
 export default function ProjectOverview({ projectId }: ProjectOverviewProps) {
-   const project = getProjectById(projectId)!;
+   const { orgId } = useParams<{ orgId: string }>();
+   const { data: project, isLoading, isError } = useProject(orgId, projectId);
+   const { data: teams = [] } = useTeams(orgId);
    const detail = getProjectDetail(projectId);
    const { issues: allIssues } = useIssuesStore();
+   useIssuesList(orgId, { projectId });
    const issues = useMemo(
-      () => allIssues.filter((issue) => issue.project?.id === project.id),
-      [allIssues, project.id]
+      () => allIssues.filter((issue) => issue.project?.id === projectId),
+      [allIssues, projectId],
    );
 
-   const { orgId } = useParams<{ orgId: string }>();
-   const team = teams.find((candidate) => candidate.id === project.teamId);
+   const team = teams.find((candidate) => candidate.key === project?.teamId);
    const scrollRef = useRef<HTMLDivElement>(null);
    const outlineItems = useMemo(() => getOutlineItems(detail.description), [detail.description]);
+
+   if (isLoading) {
+      return <div className="h-full" />;
+   }
+
+   if (!project || isError) {
+      return (
+         <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-muted-foreground">
+            <p>Project not found.</p>
+            <Link href={`/${orgId}/projects`} className="underline">
+               Back to projects
+            </Link>
+         </div>
+      );
+   }
 
    return (
       <div className="w-full h-full flex overflow-hidden">
@@ -75,7 +93,7 @@ export default function ProjectOverview({ projectId }: ProjectOverviewProps) {
                         </span>
                         {team && (
                            <span className="inline-flex items-center gap-1.5">
-                              {team.icon} {team.name}
+                              {team.key} {team.name}
                            </span>
                         )}
                      </div>

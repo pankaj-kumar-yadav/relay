@@ -7,3 +7,11 @@ export function teamHomePath(orgSlug: string, teamKey: string) {
 export function issuePath(orgSlug: string, identifier: string) {
   return `/${orgSlug}/issue/${identifier}`;
 }
+
+export function projectIssuesPath(orgSlug: string, projectId: string) {
+  return `/${orgSlug}/project/${projectId}/issues`;
+}
+
+export function projectsPath(orgSlug: string) {
+  return `/${orgSlug}/projects`;
+}

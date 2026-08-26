@@ -13,11 +13,27 @@ import { useParams } from 'next/navigation';
  */
 export default function TeamOverview() {
    const { orgId, teamId } = useParams<{ orgId: string; teamId: string }>();
-   const { data: apiTeams = [] } = useTeams(orgId);
-   const apiTeam = apiTeams.find((t) => t.key === teamId) ?? apiTeams[0];
+   const { data: apiTeams = [], isLoading } = useTeams(orgId);
+   const apiTeam = apiTeams.find((t) => t.key === teamId);
+
+   if (isLoading) {
+      return <div className="h-full" />;
+   }
+
+   if (!apiTeam) {
+      return (
+         <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-muted-foreground">
+            <p>Team {teamId} not found.</p>
+            <Link href={`/${orgId}/teams`} className="underline">
+               Back to teams
+            </Link>
+         </div>
+      );
+   }
+
    const team = {
-      id: apiTeam?.key ?? teamId,
-      name: apiTeam?.name ?? teamId,
+      id: apiTeam.key,
+      name: apiTeam.name,
       icon: '🛠️',
       members: [] as { id: string; name: string; avatarUrl: string }[],
    };

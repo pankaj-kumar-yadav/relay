@@ -24,14 +24,12 @@ import {
 import { rankBetween } from '@/utils/issueRank.js';
 import { issueIdentifier, parseIssueRef } from '@/utils/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
-import { ensureDefaultTeam } from '@/utils/teams.js';
+import { assertProjectOnTeam } from '@/utils/projects.js';
+import { ensureDefaultTeam, findTeam } from '@/utils/teams.js';
 
 export const issuesRouter: Router = Router({ mergeParams: true });
 
 issuesRouter.use(requireAuth, requireOrgMember);
-
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const issueSelect = {
   id: true,
@@ -45,6 +43,7 @@ const issueSelect = {
   createdAt: true,
   updatedAt: true,
   team: { select: { id: true, key: true, name: true } },
+  project: { select: { id: true, name: true, teamId: true } },
   assignee: { select: { id: true, name: true, email: true } },
 } satisfies Prisma.IssueSelect;
 
@@ -61,24 +60,14 @@ function publicIssue(issue: IssueRow) {
     priority: issue.priority,
     rank: issue.rank,
     projectId: issue.projectId,
+    project: issue.project
+      ? { id: issue.project.id, name: issue.project.name }
+      : null,
     team: issue.team,
     assignee: issue.assignee,
     createdAt: issue.createdAt.toISOString(),
     updatedAt: issue.updatedAt.toISOString(),
   };
-}
-
-async function findTeam(organizationId: string, teamId: string) {
-  if (UUID_RE.test(teamId)) {
-    return prisma.team.findFirst({
-      where: { id: teamId, organizationId },
-      select: { id: true, key: true, name: true },
-    });
-  }
-  return prisma.team.findFirst({
-    where: { organizationId, key: teamId.toUpperCase() },
-    select: { id: true, key: true, name: true },
-  });
 }
 
 async function loadIssue(organizationId: string, rawId: string) {
@@ -282,6 +271,12 @@ issuesRouter.post('/', async (req, res) => {
       throw new NotFoundError('Team not found');
     }
 
+    let resolvedProjectId: string | null = null;
+    if (projectId) {
+      const project = await assertProjectOnTeam(organizationId, projectId, team.id);
+      resolvedProjectId = project.id;
+    }
+
     const issue = await prisma.$transaction(async (tx) => {
       const last = await tx.issue.findFirst({
         where: { teamId: team.id },
@@ -304,7 +299,7 @@ issuesRouter.post('/', async (req, res) => {
           status: status ?? DEFAULT_ISSUE_STATUS,
           priority: priority ?? DEFAULT_ISSUE_PRIORITY,
           assigneeId: assigneeId ?? null,
-          projectId: projectId ?? null,
+          projectId: resolvedProjectId,
           rank: rankBetween(lastRanked?.rank ?? null, null),
         },
         select: issueSelect,
@@ -364,6 +359,33 @@ issuesRouter.patch('/:issueId', async (req, res) => {
       teamId = team.id;
     }
 
+    const effectiveTeamId = teamId ?? existing.team.id;
+    let nextProjectId: string | null | undefined;
+    if (data.projectId !== undefined) {
+      if (data.projectId === null) {
+        nextProjectId = null;
+      } else {
+        const project = await assertProjectOnTeam(
+          organizationId,
+          data.projectId,
+          effectiveTeamId,
+        );
+        nextProjectId = project.id;
+      }
+    } else if (teamId && existing.project && existing.project.teamId !== teamId) {
+      nextProjectId = null;
+    }
+
+    let nextNumber: number | undefined;
+    if (teamId && teamId !== existing.team.id) {
+      const last = await prisma.issue.findFirst({
+        where: { teamId },
+        orderBy: { number: 'desc' },
+        select: { number: true },
+      });
+      nextNumber = (last?.number ?? 0) + 1;
+    }
+
     let rank = data.rank;
     if (data.beforeIssueId || data.afterIssueId) {
       const before = data.beforeIssueId
@@ -389,8 +411,9 @@ issuesRouter.patch('/:issueId', async (req, res) => {
         ...(data.status !== undefined ? { status: data.status } : {}),
         ...(data.priority !== undefined ? { priority: data.priority } : {}),
         ...(data.assigneeId !== undefined ? { assigneeId: data.assigneeId } : {}),
-        ...(data.projectId !== undefined ? { projectId: data.projectId } : {}),
+        ...(nextProjectId !== undefined ? { projectId: nextProjectId } : {}),
         ...(teamId ? { teamId } : {}),
+        ...(nextNumber !== undefined ? { number: nextNumber } : {}),
         ...(rank ? { rank } : {}),
       },
       select: issueSelect,

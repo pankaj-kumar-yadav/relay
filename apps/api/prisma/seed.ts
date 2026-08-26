@@ -7,6 +7,10 @@ import {
   DEFAULT_TEAM_KEY,
   DEFAULT_TEAM_NAME,
 } from '../src/constants/issue.js';
+import {
+  DEFAULT_PROJECT_HEALTH,
+  DEFAULT_PROJECT_STATUS,
+} from '../src/constants/project.constant.js';
 import { OrgRole, type OrgRoleValue } from '../src/constants/org.js';
 import { SEED_PASSWORD, SeedEmail, SeedOrgSlug } from '../src/constants/seed.constant.js';
 import { rankBetween } from '../src/utils/issueRank.js';
@@ -135,6 +139,35 @@ async function syncTeams(
   return upserted;
 }
 
+async function upsertProject(input: {
+  organizationId: string;
+  teamId: string;
+  name: string;
+  status?: string;
+  health?: string;
+}) {
+  const existing = await prisma.project.findFirst({
+    where: {
+      organizationId: input.organizationId,
+      teamId: input.teamId,
+      name: input.name,
+    },
+    select: { id: true },
+  });
+  if (existing) return existing;
+
+  return prisma.project.create({
+    data: {
+      organizationId: input.organizationId,
+      teamId: input.teamId,
+      name: input.name,
+      status: input.status ?? DEFAULT_PROJECT_STATUS,
+      health: input.health ?? DEFAULT_PROJECT_HEALTH,
+    },
+    select: { id: true },
+  });
+}
+
 async function seedMembers(
   organizationId: string,
   members: SeedMember[],
@@ -162,12 +195,21 @@ async function ensureWelcomeIssue(input: {
   teamId: string;
   assigneeId: string;
   title: string;
+  projectId?: string;
 }) {
   const existingIssue = await prisma.issue.findFirst({
     where: { teamId: input.teamId, number: 1 },
     select: { id: true },
   });
-  if (existingIssue) return;
+  if (existingIssue) {
+    if (input.projectId) {
+      await prisma.issue.update({
+        where: { id: existingIssue.id },
+        data: { projectId: input.projectId },
+      });
+    }
+    return;
+  }
 
   await prisma.issue.create({
     data: {
@@ -179,6 +221,7 @@ async function ensureWelcomeIssue(input: {
       status: DEFAULT_ISSUE_STATUS,
       priority: DEFAULT_ISSUE_PRIORITY,
       assigneeId: input.assigneeId,
+      projectId: input.projectId ?? null,
       rank: rankBetween(null, null),
     },
   });
@@ -200,7 +243,14 @@ async function main() {
     userId: owner.id,
     role: OrgRole.ADMIN,
   });
-  await syncTeams(acme.id, [{ key: DEFAULT_TEAM_KEY, name: DEFAULT_TEAM_NAME }]);
+  const acmeTeams = await syncTeams(acme.id, [
+    { key: DEFAULT_TEAM_KEY, name: DEFAULT_TEAM_NAME },
+  ]);
+  await upsertProject({
+    organizationId: acme.id,
+    teamId: acmeTeams[0].id,
+    name: 'Acme Launch',
+  });
 
   const techap = await upsertOrg({
     name: 'Techap Solutions',
@@ -208,6 +258,16 @@ async function main() {
   });
   const techapMembers = await seedMembers(techap.id, TECHAP_MEMBERS, passwordHash);
   const techapTeams = await syncTeams(techap.id, PRODUCT_TEAMS);
+  const techapLms = await upsertProject({
+    organizationId: techap.id,
+    teamId: techapTeams[0].id,
+    name: 'LMS Platform',
+  });
+  await upsertProject({
+    organizationId: techap.id,
+    teamId: techapTeams[1].id,
+    name: 'Continuum Mobile',
+  });
   const techapEmployee = techapMembers.find((member) => member.role === OrgRole.EMPLOYEE);
   if (techapEmployee) {
     await ensureWelcomeIssue({
@@ -215,12 +275,18 @@ async function main() {
       teamId: techapTeams[0].id,
       assigneeId: techapEmployee.id,
       title: 'Welcome to Techap Solutions',
+      projectId: techapLms.id,
     });
   }
 
   const stratxg = await upsertOrg({ name: 'StratXG', slug: SeedOrgSlug.STRATXG });
   const stratxgMembers = await seedMembers(stratxg.id, STRATXG_MEMBERS, passwordHash);
   const stratxgTeams = await syncTeams(stratxg.id, PRODUCT_TEAMS);
+  const stratxgLms = await upsertProject({
+    organizationId: stratxg.id,
+    teamId: stratxgTeams[0].id,
+    name: 'LMS Platform',
+  });
   const stratxgEmployee = stratxgMembers.find((member) => member.role === OrgRole.EMPLOYEE);
   if (stratxgEmployee) {
     await ensureWelcomeIssue({
@@ -228,6 +294,7 @@ async function main() {
       teamId: stratxgTeams[0].id,
       assigneeId: stratxgEmployee.id,
       title: 'Welcome to StratXG',
+      projectId: stratxgLms.id,
     });
   }
 

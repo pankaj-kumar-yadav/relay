@@ -52,6 +52,7 @@ export const deprecatedAgentSidebarItem: ItemConfig = {
 
 export const WORKSPACE_ITEMS: ItemConfig[] = [
    { key: 'teams', label: 'Teams', icon: ContactRound },
+   { key: 'projects', label: 'Projects', icon: FolderKanban },
    { key: 'members', label: 'Members', icon: UserRound },
 ];
 
