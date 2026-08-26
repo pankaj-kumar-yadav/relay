@@ -2,6 +2,7 @@
 
 import { Issue } from '@/mock-data/issues';
 import { getCycleById } from '@/mock-data/cycles';
+import { issuePath } from '@/lib/paths';
 import { useDisplaySettingsStore } from '@/store/display-settings-store';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -42,7 +43,7 @@ export function IssueLine({ issue, layoutId = false }: { issue: Issue; layoutId?
                   )}
                </div>
                <Link
-                  href={`/${orgId ?? 'lndev-ui'}/issue/${issue.identifier}`}
+                  href={issuePath(orgId, issue.identifier)}
                   className="min-w-0 flex items-center justify-start mr-1 ml-0.5"
                >
                   <span className="text-xs sm:text-sm font-medium sm:font-semibold truncate">

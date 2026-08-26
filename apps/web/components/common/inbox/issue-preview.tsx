@@ -6,6 +6,7 @@ import { LabelBadge } from '@/components/common/issues/label-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { issuePath } from '@/lib/paths';
 import { getNotificationIcon } from '@/lib/notification-utils';
 import { getIssueDetail } from '@/mock-data/issue-details';
 import { InboxItem } from '@/mock-data/inbox';
@@ -74,7 +75,7 @@ export default function IssuePreview({ notification, onMarkAsRead }: IssuePrevie
                   </Button>
                )}
                <Button variant="ghost" size="xs" asChild>
-                  <Link href={`/${orgId ?? 'lndev-ui'}/issue/${displayIssue.identifier}`}>
+                  <Link href={issuePath(orgId, displayIssue.identifier)}>
                      Open
                      <ArrowUpRight className="size-3.5 ml-0.5" />
                   </Link>

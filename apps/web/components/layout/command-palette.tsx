@@ -18,6 +18,7 @@ import { status as allStatus } from '@/mock-data/status';
 import { teams } from '@/mock-data/teams';
 import { users } from '@/mock-data/users';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useCommandPaletteStore } from '@/store/command-palette-store';
 import { useCreateIssueStore } from '@/store/create-issue-store';
 import { useIssueMutations } from '@/hooks/use-issues';
 import { useIssuesStore } from '@/store/issues-store';
@@ -29,11 +30,9 @@ import {
    Clipboard,
    ClipboardList,
    ClipboardType,
-   Compass,
    ContactRound,
    FileText,
    GitBranch,
-   Inbox,
    Layers,
    Link2,
    PackagePlus,
@@ -45,7 +44,7 @@ import {
    UserRoundPlus,
    Users,
 } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -78,7 +77,7 @@ function Keys({ keys }: { keys: string[] }) {
 
 /** ⌘K command palette — Linear-style, aware of the issue in context. */
 export function CommandPalette() {
-   const [open, setOpen] = useState(false);
+   const { isOpen, open: openPalette, close: closePalette, toggle } = useCommandPaletteStore();
    const [route, setRoute] = useState<PaletteRoute>('root');
    const [query, setQuery] = useState('');
    /** When true, the issue context chip was dismissed with ⌫. */
@@ -86,12 +85,11 @@ export function CommandPalette() {
 
    const pathname = usePathname();
    const router = useRouter();
+   const { orgId } = useParams<{ orgId: string }>();
    const { issues, addIssueLabel, removeIssueLabel, updateIssueProject, updateIssue } =
       useIssuesStore();
    const { updateIssueStatus, updateIssuePriority, updateIssueAssignee } = useIssueMutations();
    const { openModal } = useCreateIssueStore();
-
-   const orgId = pathname.split('/')[1] || 'lndev-ui';
 
    const contextIssue = useMemo<Issue | undefined>(() => {
       const match = pathname.match(/^\/[^/]+\/issue\/([^/]+)/);
@@ -108,24 +106,22 @@ export function CommandPalette() {
    }, []);
 
    const close = useCallback(() => {
-      setOpen(false);
+      closePalette();
       reset();
-   }, [reset]);
+   }, [closePalette, reset]);
 
    // ⌘K / Ctrl+K
    useEffect(() => {
       const onKeyDown = (event: KeyboardEvent) => {
          if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
             event.preventDefault();
-            setOpen((value) => {
-               if (value) reset();
-               return !value;
-            });
+            if (isOpen) reset();
+            toggle();
          }
       };
       window.addEventListener('keydown', onKeyDown);
       return () => window.removeEventListener('keydown', onKeyDown);
-   }, [reset]);
+   }, [isOpen, reset, toggle]);
 
    const copy = useCallback(
       async (label: string, text: string) => {
@@ -152,6 +148,7 @@ export function CommandPalette() {
       : '';
 
    const go = (path: string) => {
+      if (!orgId) return;
       router.push(`/${orgId}${path}`);
       close();
    };
@@ -180,10 +177,10 @@ export function CommandPalette() {
 
    return (
       <Dialog
-         open={open}
+         open={isOpen}
          onOpenChange={(value) => {
-            setOpen(value);
-            if (!value) reset();
+            if (value) openPalette();
+            else close();
          }}
       >
          <DialogContent
@@ -357,26 +354,9 @@ export function CommandPalette() {
                      </CommandItem>
                   </CommandGroup>
                   <CommandGroup heading="Go to">
-                     <CommandItem onSelect={() => go('/inbox')}>
-                        <Inbox className="text-muted-foreground" /> Inbox
-                        <Keys keys={['G', 'I']} />
-                     </CommandItem>
                      <CommandItem onSelect={() => go('/my-issues')}>
                         <ClipboardList className="text-muted-foreground" /> My issues
                         <Keys keys={['G', 'M']} />
-                     </CommandItem>
-                     <CommandItem onSelect={() => go('/reviews')}>
-                        <GitBranch className="text-muted-foreground" /> Reviews
-                     </CommandItem>
-                     <CommandItem onSelect={() => go('/initiatives')}>
-                        <Compass className="text-muted-foreground" /> Initiatives
-                     </CommandItem>
-                     <CommandItem onSelect={() => go('/projects')}>
-                        <Box className="text-muted-foreground" /> Projects
-                        <Keys keys={['G', 'P']} />
-                     </CommandItem>
-                     <CommandItem onSelect={() => go('/views')}>
-                        <Layers className="text-muted-foreground" /> Views
                      </CommandItem>
                      <CommandItem onSelect={() => go('/teams')}>
                         <ContactRound className="text-muted-foreground" /> Teams

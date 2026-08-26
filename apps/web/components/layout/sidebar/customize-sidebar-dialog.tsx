@@ -18,16 +18,11 @@ import {
 } from '@/store/sidebar-prefs-store';
 import {
    Bot,
-   Box,
    Check,
    ChevronDown,
-   Compass,
    ContactRound,
    FolderKanban,
-   GitPullRequestArrow,
    GripVertical,
-   Inbox,
-   Layers,
    LucideIcon,
    UserRound,
 } from 'lucide-react';
@@ -42,8 +37,6 @@ interface ItemConfig {
 }
 
 export const PERSONAL_ITEMS: ItemConfig[] = [
-   { key: 'inbox', label: 'Inbox', icon: Inbox, badged: true },
-   { key: 'reviews', label: 'Reviews', icon: GitPullRequestArrow, badged: true },
    { key: 'my-issues', label: 'My issues', icon: FolderKanban },
 ];
 
@@ -58,9 +51,6 @@ export const deprecatedAgentSidebarItem: ItemConfig = {
 };
 
 export const WORKSPACE_ITEMS: ItemConfig[] = [
-   { key: 'initiatives', label: 'Initiatives', icon: Compass },
-   { key: 'projects', label: 'Projects', icon: Box },
-   { key: 'views', label: 'Views', icon: Layers },
    { key: 'teams', label: 'Teams', icon: ContactRound },
    { key: 'members', label: 'Members', icon: UserRound },
 ];

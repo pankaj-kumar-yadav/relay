@@ -1,6 +1,6 @@
 # Step 7 — Leftover Circle routes
 
-**Status:** Pending
+**Status:** Done
 
 ## Goal
 
@@ -31,9 +31,9 @@ Circle’s own guide describes mock → API migration — follow that structure 
 
 ## Done when
 
-- [ ] Step 6 screens still hit the API after a hard refresh
-- [ ] Out of MVP nav items hidden or clearly inert
-- [ ] No remaining `lndev-ui` in live nav links
+- [x] Step 6 screens still hit the API after a hard refresh
+- [x] Out of MVP nav items hidden or clearly inert
+- [x] No remaining `lndev-ui` in live nav links
 
 ## Out of scope
 
