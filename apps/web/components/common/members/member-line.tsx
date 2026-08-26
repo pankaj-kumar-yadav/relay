@@ -1,9 +1,10 @@
 'use client';
 
+import { formatJoinedLabel } from '@/constants/date.constant';
+import { profilePath } from '@/constants/org.constant';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { User } from '@/mock-data/users';
-import { format, parseISO } from 'date-fns';
 import { SquareUser } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -19,12 +20,6 @@ const displayNameOf = (user: User) =>
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(' ');
 
-/** Linear-style joined date: current year → "Mar 17", otherwise "Oct 2023". */
-const joinedLabel = (iso: string) => {
-   const date = parseISO(iso);
-   return date.getFullYear() === 2026 ? format(date, 'MMM d') : format(date, 'MMM yyyy');
-};
-
 const hashString = (value: string): number => {
    let hash = 0;
    for (let i = 0; i < value.length; i++) hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
@@ -39,7 +34,7 @@ export default function MemberLine({ user }: MemberLineProps) {
 
    return (
       <Link
-         href={`/${orgId}/profiles/${user.id}`}
+         href={profilePath(orgId, user.id)}
          className="w-full flex items-center py-2.5 px-6 border-b hover:bg-sidebar/50 border-muted-foreground/5 text-sm last:border-b-0"
       >
          {/* Name */}
@@ -76,7 +71,7 @@ export default function MemberLine({ user }: MemberLineProps) {
 
          {/* Joined */}
          <div className="hidden lg:block w-[100px] shrink-0 text-xs text-muted-foreground">
-            {joinedLabel(user.joinedDate)}
+            {formatJoinedLabel(user.joinedDate)}
          </div>
 
          {/* Teams */}

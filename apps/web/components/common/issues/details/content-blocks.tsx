@@ -1,6 +1,6 @@
 'use client';
 
-import { issuePath } from '@/lib/paths';
+import { issuePath } from '@/constants/issue.constant';
 import { cn } from '@/lib/utils';
 import { ContentBlock } from '@/mock-data/issue-details';
 import { useIssuesStore } from '@/store/issues-store';

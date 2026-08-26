@@ -1,5 +1,7 @@
 'use client';
 
+import { issuePath } from '@/constants/issue.constant';
+import { reviewPath } from '@/constants/workspace.constant';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getReviewById } from '@/mock-data/reviews';
@@ -42,7 +44,7 @@ export function ReviewDetail({
       <div className="h-full flex flex-col overflow-hidden">
          <div className="flex items-center gap-2 px-4 h-10 border-b shrink-0 min-w-0">
             <Link
-               href={`/${orgId}/issue/${review.resolves.identifier}`}
+               href={issuePath(orgId, review.resolves.identifier)}
                className="flex items-center gap-1.5 shrink-0 hover:opacity-80"
             >
                <IssueCheckIcon />
@@ -62,7 +64,7 @@ export function ReviewDetail({
                {SECTION_TABS.map((tab) => (
                   <Link
                      key={tab.key}
-                     href={`/${orgId}/review/${review.id}${tab.path}`}
+                     href={reviewPath(orgId, review.id, tab.path)}
                      className={cn(
                         'px-2.5 py-1 rounded-md border text-xs font-medium transition-colors',
                         section === tab.key

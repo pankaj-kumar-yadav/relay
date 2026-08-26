@@ -19,18 +19,11 @@ import {
    SelectValue,
 } from '@/components/ui/select';
 import { ApiError } from '@/lib/api';
-import { AUTH_SOCIAL_PROVIDERS } from '@/constants/auth.constant';
+import { AppRoute, AUTH_SOCIAL_PROVIDERS, nextPathFromSearch } from '@/constants/auth.constant';
 import { BRAND_NAME } from '@/constants/brand.constant';
 import { SEED_ACCOUNTS, SEED_PASSWORD } from '@/constants/seed.constant';
 import { useLogin, useSession } from '@/hooks/use-session';
 import { useResolveHomePath } from '@/hooks/use-orgs';
-
-function nextPath() {
-   if (typeof window === 'undefined') return null;
-   const next = new URLSearchParams(window.location.search).get('next');
-   if (!next || !next.startsWith('/') || next.startsWith('//')) return null;
-   return next;
-}
 
 export default function LoginPage() {
    const router = useRouter();
@@ -49,10 +42,10 @@ export default function LoginPage() {
       let cancelled = false;
       resolveHomePath()
          .then((path) => {
-            if (!cancelled) router.replace(nextPath() ?? path);
+            if (!cancelled) router.replace(nextPathFromSearch() ?? path);
          })
          .catch(() => {
-            if (!cancelled) router.replace('/new');
+            if (!cancelled) router.replace(AppRoute.NEW);
          });
       return () => {
          cancelled = true;
@@ -64,7 +57,7 @@ export default function LoginPage() {
       setError(null);
       try {
          await loginMutation.mutateAsync({ email, password });
-         router.push(nextPath() ?? (await resolveHomePath()));
+         router.push(nextPathFromSearch() ?? (await resolveHomePath()));
       } catch (err) {
          const message =
             err instanceof ApiError ? err.message : 'Invalid email or password';
@@ -173,7 +166,7 @@ export default function LoginPage() {
             <p className="text-muted-foreground mt-6 text-center text-sm">
                Need an account?{' '}
                <Link
-                  href="/register"
+                  href={AppRoute.REGISTER}
                   className="text-foreground font-medium underline-offset-4 hover:underline"
                >
                   Sign up

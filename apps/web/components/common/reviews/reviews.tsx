@@ -1,5 +1,6 @@
 'use client';
 
+import { reviewPath, reviewsCreatedPath, reviewsPath } from '@/constants/workspace.constant';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import {
@@ -49,7 +50,7 @@ function ReviewRow({
 }) {
    return (
       <Link
-         href={`/${orgId}/review/${review.id}`}
+         href={reviewPath(orgId, review.id)}
          className={cn(
             'flex items-center gap-2 px-4 py-2 text-sm border-b border-border/40 transition-colors',
             selected ? 'bg-accent/60' : 'hover:bg-sidebar/50'
@@ -147,7 +148,7 @@ export default function Reviews({
             </div>
             <div className="flex items-center gap-1.5 px-4 py-2 shrink-0">
                <Link
-                  href={`/${orgId}/reviews`}
+                  href={reviewsPath(orgId)}
                   className={cn(
                      'px-2.5 py-1 rounded-md border text-xs font-medium transition-colors',
                      listTab === 'for-you'
@@ -158,7 +159,7 @@ export default function Reviews({
                   For you
                </Link>
                <Link
-                  href={`/${orgId}/reviews/created`}
+                  href={reviewsCreatedPath(orgId)}
                   className={cn(
                      'px-2.5 py-1 rounded-md border text-xs font-medium transition-colors',
                      listTab === 'created'

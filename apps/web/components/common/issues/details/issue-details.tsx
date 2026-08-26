@@ -9,7 +9,7 @@ import { IssuePropertiesPanel } from './issue-properties-panel';
 import { Issue } from '@/mock-data/issues';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { DEFAULT_TEAM_KEY } from '@/lib/paths';
+import { DEFAULT_TEAM_KEY, teamHomePath } from '@/constants/team.constant';
 
 export default function IssueDetails() {
    const { orgId, issueId } = useParams<{ orgId: string; issueId: string }>();
@@ -31,7 +31,7 @@ export default function IssueDetails() {
          <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-muted-foreground">
             <p>Issue {issueId} not found.</p>
             <Link
-               href={`/${orgId}/team/${issueId.split('-')[0] ?? DEFAULT_TEAM_KEY}/all`}
+               href={teamHomePath(orgId, issueId.split('-')[0] ?? DEFAULT_TEAM_KEY)}
                className="underline"
             >
                Back to issues

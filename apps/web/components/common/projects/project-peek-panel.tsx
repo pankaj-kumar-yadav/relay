@@ -1,11 +1,13 @@
 'use client';
 
+import { formatIsoDayOrdinal } from '@/constants/date.constant';
+import { IssueStatusCategory } from '@/constants/issue.constant';
+import { projectOverviewPath } from '@/constants/project.constant';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getProjectDetail } from '@/mock-data/project-details';
 import { getProjectById } from '@/mock-data/projects';
 import { teams } from '@/mock-data/teams';
 import { useIssuesStore } from '@/store/issues-store';
-import { format, parseISO } from 'date-fns';
 import {
    ArrowRight,
    Calendar,
@@ -28,8 +30,6 @@ interface ProjectPeekPanelProps {
    projectId: string;
    onClose: () => void;
 }
-
-const formatDay = (iso?: string) => (iso ? format(parseISO(iso), 'MMM do') : '—');
 
 function PropertyRow({ label, children }: { label: string; children: React.ReactNode }) {
    return (
@@ -87,8 +87,11 @@ export function ProjectPeekPanel({ projectId, onClose }: ProjectPeekPanelProps) 
    if (!project) return null;
 
    const team = teams.find((candidate) => candidate.id === project.teamId);
-   const started = issues.filter((issue) => issue.status.category === 'started').length;
-   const completed = issues.filter((issue) => issue.status.category === 'completed').length;
+   const started = issues.filter((issue) => issue.status.category === IssueStatusCategory.STARTED)
+      .length;
+   const completed = issues.filter(
+      (issue) => issue.status.category === IssueStatusCategory.COMPLETED,
+   ).length;
 
    return (
       <aside className="absolute top-10 right-2 bottom-2 w-[400px] max-w-[calc(100%-1rem)] z-40 flex flex-col gap-2 overflow-y-auto">
@@ -98,7 +101,7 @@ export function ProjectPeekPanel({ projectId, onClose }: ProjectPeekPanelProps) 
                <project.icon className="size-3.5" />
             </span>
             <Link
-               href={`/${orgId}/project/${project.id}/overview`}
+               href={projectOverviewPath(orgId, project.id)}
                className="flex-1 min-w-0 flex items-center gap-1.5 group"
                aria-label="Open project"
             >
@@ -166,13 +169,13 @@ export function ProjectPeekPanel({ projectId, onClose }: ProjectPeekPanelProps) 
                <PropertyRow label="Dates">
                   <span className="inline-flex items-center gap-1">
                      <Calendar className="size-3.5 text-muted-foreground" />
-                     {formatDay(project.startDate)}
+                     {formatIsoDayOrdinal(project.startDate)}
                   </span>
                   <ArrowRight className="size-3 text-muted-foreground" />
                   <span className="inline-flex items-center gap-1 text-muted-foreground">
                      <CalendarPlus className="size-3.5" />
                      {project.targetDate ? (
-                        <span className="text-foreground">{formatDay(project.targetDate)}</span>
+                        <span className="text-foreground">{formatIsoDayOrdinal(project.targetDate)}</span>
                      ) : (
                         'Target'
                      )}
@@ -254,7 +257,7 @@ export function ProjectPeekPanel({ projectId, onClose }: ProjectPeekPanelProps) 
                            {milestone.name}
                         </span>
                         <span className="text-xs text-muted-foreground whitespace-nowrap">
-                           {formatDay(milestone.targetDate)}
+                           {formatIsoDayOrdinal(milestone.targetDate)}
                         </span>
                      </div>
                   ))}

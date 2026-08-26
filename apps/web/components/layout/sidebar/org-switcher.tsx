@@ -24,7 +24,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { useLogout } from '@/hooks/use-session';
 import { useOrgs } from '@/hooks/use-orgs';
 import { useTeams } from '@/hooks/use-teams';
-import { DEFAULT_TEAM_KEY, teamHomePath } from '@/lib/paths';
+import { AppRoute } from '@/constants/auth.constant';
+import { membersPath, settingsPath } from '@/constants/org.constant';
+import { DEFAULT_TEAM_KEY, teamHomePath } from '@/constants/team.constant';
 
 function initials(name: string) {
    return name
@@ -50,7 +52,7 @@ export function OrgSwitcher() {
       } catch {
          // still leave the UI even if the API call fails
       }
-      router.push('/login');
+      router.push(AppRoute.LOGIN);
    }
 
    return (
@@ -87,13 +89,13 @@ export function OrgSwitcher() {
                >
                   <DropdownMenuGroup>
                      <DropdownMenuItem asChild>
-                        <Link href={`/${orgId}/settings`}>
+                        <Link href={settingsPath(orgId)}>
                            Settings
                            <DropdownMenuShortcut>G then S</DropdownMenuShortcut>
                         </Link>
                      </DropdownMenuItem>
                      <DropdownMenuItem asChild>
-                        <Link href={`/${orgId}/members`}>Invite and manage members</Link>
+                        <Link href={membersPath(orgId)}>Invite and manage members</Link>
                      </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
@@ -115,7 +117,7 @@ export function OrgSwitcher() {
                            ))}
                            <DropdownMenuSeparator />
                            <DropdownMenuItem asChild>
-                              <Link href="/new">Create workspace</Link>
+                              <Link href={AppRoute.NEW}>Create workspace</Link>
                            </DropdownMenuItem>
                         </DropdownMenuSubContent>
                      </DropdownMenuPortal>

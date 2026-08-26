@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { AppRoute } from '@/constants/auth.constant';
 import { ApiError } from '@/lib/api';
 import { useRegister, useSession } from '@/hooks/use-session';
 import { useResolveHomePath } from '@/hooks/use-orgs';
@@ -30,7 +31,7 @@ export default function RegisterPage() {
             if (!cancelled) router.replace(path);
          })
          .catch(() => {
-            if (!cancelled) router.replace('/new');
+            if (!cancelled) router.replace(AppRoute.NEW);
          });
       return () => {
          cancelled = true;
@@ -110,7 +111,7 @@ export default function RegisterPage() {
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
                Already have an account?{' '}
-               <Link href="/login" className="text-foreground underline-offset-4 hover:underline">
+               <Link href={AppRoute.LOGIN} className="text-foreground underline-offset-4 hover:underline">
                   Sign in
                </Link>
             </p>

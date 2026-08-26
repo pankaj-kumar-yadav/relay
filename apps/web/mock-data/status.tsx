@@ -1,3 +1,10 @@
+import {
+   ISSUE_STATUS_CATEGORY,
+   IssueStatus,
+   IssueStatusCategory,
+   type IssueStatusCategoryValue,
+   type IssueStatusValue,
+} from '@/constants/issue.constant';
 import React from 'react';
 
 /**
@@ -5,16 +12,10 @@ import React from 'react';
  * to order statuses in a workflow-friendly way and to compute
  * progress (completed vs remaining) in cycles.
  */
-export type StatusCategory =
-   | 'triage'
-   | 'backlog'
-   | 'unstarted'
-   | 'started'
-   | 'completed'
-   | 'canceled';
+export type StatusCategory = IssueStatusCategoryValue;
 
 export interface Status {
-   id: string;
+   id: IssueStatusValue;
    name: string;
    color: string;
    category: StatusCategory;
@@ -146,40 +147,94 @@ export const DuplicateIcon: React.FC = () => <StatusDuplicateIcon color="#95a2b3
  */
 export const status: Status[] = [
    {
-      id: 'in-progress',
+      id: IssueStatus.IN_PROGRESS,
       name: 'In Progress',
       color: '#facc15',
-      category: 'started',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.IN_PROGRESS],
       icon: InProgressIcon,
    },
    {
-      id: 'technical-review',
+      id: IssueStatus.TECHNICAL_REVIEW,
       name: 'Technical Review',
       color: '#22c55e',
-      category: 'started',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.TECHNICAL_REVIEW],
       icon: TechnicalReviewIcon,
    },
-   { id: 'done', name: 'Done', color: '#5e6ad2', category: 'completed', icon: DoneIcon },
-   { id: 'paused', name: 'Paused', color: '#26b5ce', category: 'started', icon: PausedIcon },
-   { id: 'to-do', name: 'Todo', color: '#99a2b2', category: 'unstarted', icon: ToDoIcon },
-   { id: 'backlog', name: 'Backlog', color: '#95a2b3', category: 'backlog', icon: BacklogIcon },
-   { id: 'triage', name: 'Triage', color: '#f2790f', category: 'triage', icon: TriageIcon },
-   { id: 'idea', name: 'Idea', color: '#5e6ad2', category: 'backlog', icon: IdeaIcon },
    {
-      id: 'product-feedback',
+      id: IssueStatus.DONE,
+      name: 'Done',
+      color: '#5e6ad2',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.DONE],
+      icon: DoneIcon,
+   },
+   {
+      id: IssueStatus.PAUSED,
+      name: 'Paused',
+      color: '#26b5ce',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.PAUSED],
+      icon: PausedIcon,
+   },
+   {
+      id: IssueStatus.TO_DO,
+      name: 'Todo',
+      color: '#99a2b2',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.TO_DO],
+      icon: ToDoIcon,
+   },
+   {
+      id: IssueStatus.BACKLOG,
+      name: 'Backlog',
+      color: '#95a2b3',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.BACKLOG],
+      icon: BacklogIcon,
+   },
+   {
+      id: IssueStatus.TRIAGE,
+      name: 'Triage',
+      color: '#f2790f',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.TRIAGE],
+      icon: TriageIcon,
+   },
+   {
+      id: IssueStatus.IDEA,
+      name: 'Idea',
+      color: '#5e6ad2',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.IDEA],
+      icon: IdeaIcon,
+   },
+   {
+      id: IssueStatus.PRODUCT_FEEDBACK,
       name: 'Product Feedback',
       color: '#f2994a',
-      category: 'started',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.PRODUCT_FEEDBACK],
       icon: ProductFeedbackIcon,
    },
-   { id: 'blocked', name: 'Blocked', color: '#eb5757', category: 'started', icon: BlockedIcon },
-   { id: 'shipped', name: 'Shipped', color: '#4cb782', category: 'completed', icon: ShippedIcon },
-   { id: 'canceled', name: 'Canceled', color: '#95a2b3', category: 'canceled', icon: CanceledIcon },
    {
-      id: 'duplicate',
+      id: IssueStatus.BLOCKED,
+      name: 'Blocked',
+      color: '#eb5757',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.BLOCKED],
+      icon: BlockedIcon,
+   },
+   {
+      id: IssueStatus.SHIPPED,
+      name: 'Shipped',
+      color: '#4cb782',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.SHIPPED],
+      icon: ShippedIcon,
+   },
+   {
+      id: IssueStatus.CANCELED,
+      name: 'Canceled',
+      color: '#95a2b3',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.CANCELED],
+      icon: CanceledIcon,
+   },
+   {
+      id: IssueStatus.DUPLICATE,
       name: 'Duplicate',
       color: '#95a2b3',
-      category: 'canceled',
+      category: ISSUE_STATUS_CATEGORY[IssueStatus.DUPLICATE],
       icon: DuplicateIcon,
    },
 ];
@@ -189,22 +244,22 @@ export const status: Status[] = [
  * used by the insights table.
  */
 const CATEGORY_ORDER: Record<StatusCategory, number> = {
-   triage: 0,
-   backlog: 1,
-   unstarted: 2,
-   started: 3,
-   completed: 4,
-   canceled: 5,
+   [IssueStatusCategory.TRIAGE]: 0,
+   [IssueStatusCategory.BACKLOG]: 1,
+   [IssueStatusCategory.UNSTARTED]: 2,
+   [IssueStatusCategory.STARTED]: 3,
+   [IssueStatusCategory.COMPLETED]: 4,
+   [IssueStatusCategory.CANCELED]: 5,
 };
 
 /** Display order used by grouped issue views (started statuses first, Linear-like). */
 const DISPLAY_CATEGORY_ORDER: Record<StatusCategory, number> = {
-   started: 0,
-   unstarted: 1,
-   triage: 2,
-   backlog: 3,
-   completed: 4,
-   canceled: 5,
+   [IssueStatusCategory.STARTED]: 0,
+   [IssueStatusCategory.UNSTARTED]: 1,
+   [IssueStatusCategory.TRIAGE]: 2,
+   [IssueStatusCategory.BACKLOG]: 3,
+   [IssueStatusCategory.COMPLETED]: 4,
+   [IssueStatusCategory.CANCELED]: 5,
 };
 
 export const workflowOrderedStatus: Status[] = [...status].sort(

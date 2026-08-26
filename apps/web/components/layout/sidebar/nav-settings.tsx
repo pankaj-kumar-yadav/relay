@@ -29,6 +29,7 @@ import {
    Users,
    Zap,
 } from 'lucide-react';
+import { OrgPath, orgPath } from '@/constants/org.constant';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 
@@ -49,44 +50,44 @@ export const settingsNav: SettingsNavGroup[] = [
    {
       label: 'Personal',
       items: [
-         { name: 'Preferences', url: '/settings/preferences', icon: Settings },
-         { name: 'Profile', url: '/settings/profile', icon: UserRound },
-         { name: 'Notifications', url: '/settings/notifications', icon: Bell },
-         { name: 'Code & reviews', url: '/settings/code-and-reviews', icon: Code },
-         { name: 'Security & access', url: '/settings/security', icon: KeyRound },
-         { name: 'Connected accounts', url: '/settings/connected-accounts', icon: Users },
-         { name: 'Agent personalization', url: '/settings/agent-personalization', icon: Bot },
+         { name: 'Preferences', url: OrgPath.SETTINGS_PREFERENCES, icon: Settings },
+         { name: 'Profile', url: OrgPath.SETTINGS_PROFILE, icon: UserRound },
+         { name: 'Notifications', url: OrgPath.SETTINGS_NOTIFICATIONS, icon: Bell },
+         { name: 'Code & reviews', url: OrgPath.SETTINGS_CODE_AND_REVIEWS, icon: Code },
+         { name: 'Security & access', url: OrgPath.SETTINGS_SECURITY, icon: KeyRound },
+         { name: 'Connected accounts', url: OrgPath.SETTINGS_CONNECTED_ACCOUNTS, icon: Users },
+         { name: 'Agent personalization', url: OrgPath.SETTINGS_AGENT_PERSONALIZATION, icon: Bot },
       ],
    },
    {
       label: 'Issues',
       items: [
-         { name: 'Labels', url: '/settings/issue-labels', icon: Tag },
-         { name: 'Templates', url: '/settings/issue-templates', icon: FileText },
-         { name: 'SLAs', url: '/settings/slas', icon: Flame },
+         { name: 'Labels', url: OrgPath.SETTINGS_ISSUE_LABELS, icon: Tag },
+         { name: 'Templates', url: OrgPath.SETTINGS_ISSUE_TEMPLATES, icon: FileText },
+         { name: 'SLAs', url: OrgPath.SETTINGS_SLAS, icon: Flame },
       ],
    },
    {
       label: 'Projects',
       items: [
-         { name: 'Labels', url: '/settings/project-labels', icon: Tag },
-         { name: 'Templates', url: '/settings/project-templates', icon: FileText },
-         { name: 'Statuses', url: '/settings/project-statuses', icon: Target },
-         { name: 'Updates', url: '/settings/project-updates', icon: Zap },
+         { name: 'Labels', url: OrgPath.SETTINGS_PROJECT_LABELS, icon: Tag },
+         { name: 'Templates', url: OrgPath.SETTINGS_PROJECT_TEMPLATES, icon: FileText },
+         { name: 'Statuses', url: OrgPath.SETTINGS_PROJECT_STATUSES, icon: Target },
+         { name: 'Updates', url: OrgPath.SETTINGS_PROJECT_UPDATES, icon: Zap },
       ],
    },
    {
       label: 'Features',
       items: [
-         { name: 'AI & Agents', url: '/settings/ai', icon: Sparkles },
-         { name: 'Initiatives', url: '/settings/initiatives', icon: Compass },
-         { name: 'Documents', url: '/settings/documents', icon: FileText },
-         { name: 'Customer requests', url: '/settings/customer-requests', icon: HeartHandshake },
-         { name: 'Releases', url: '/settings/releases', icon: Rocket },
-         { name: 'Pulse', url: '/settings/pulse', icon: Zap },
-         { name: 'Asks', url: '/settings/asks', icon: MessageCircleQuestion },
-         { name: 'Emojis', url: '/settings/emojis', icon: Smile },
-         { name: 'Integrations', url: '/settings/integrations', icon: Blocks },
+         { name: 'AI & Agents', url: OrgPath.SETTINGS_AI, icon: Sparkles },
+         { name: 'Initiatives', url: OrgPath.SETTINGS_INITIATIVES, icon: Compass },
+         { name: 'Documents', url: OrgPath.SETTINGS_DOCUMENTS, icon: FileText },
+         { name: 'Customer requests', url: OrgPath.SETTINGS_CUSTOMER_REQUESTS, icon: HeartHandshake },
+         { name: 'Releases', url: OrgPath.SETTINGS_RELEASES, icon: Rocket },
+         { name: 'Pulse', url: OrgPath.SETTINGS_PULSE, icon: Zap },
+         { name: 'Asks', url: OrgPath.SETTINGS_ASKS, icon: MessageCircleQuestion },
+         { name: 'Emojis', url: OrgPath.SETTINGS_EMOJIS, icon: Smile },
+         { name: 'Integrations', url: OrgPath.SETTINGS_INTEGRATIONS, icon: Blocks },
       ],
    },
 ];
@@ -102,7 +103,7 @@ export function NavSettings() {
                <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
                <SidebarMenu>
                   {group.items.map((item) => {
-                     const href = `/${orgId}${item.url}`;
+                     const href = orgPath(orgId, item.url);
                      const isActive = pathname === href;
                      return (
                         <SidebarMenuItem key={`${group.label}-${item.name}`}>

@@ -1,5 +1,6 @@
 'use client';
 
+import { CycleViewPath, teamCycleViewPath } from '@/constants/team.constant';
 import { Cycle, cycleStatusLabel } from '@/mock-data/cycles';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -36,9 +37,9 @@ export default function CycleLine({ cycle }: CycleLineProps) {
 
    const href =
       cycle.status === 'current'
-         ? `/${orgId}/team/${teamId}/cycle/active`
+         ? teamCycleViewPath(orgId, teamId, CycleViewPath.ACTIVE)
          : cycle.status === 'upcoming'
-           ? `/${orgId}/team/${teamId}/cycle/upcoming`
+           ? teamCycleViewPath(orgId, teamId, CycleViewPath.UPCOMING)
            : undefined;
 
    const content = (

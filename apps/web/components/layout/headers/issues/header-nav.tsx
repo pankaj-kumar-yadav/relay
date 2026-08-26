@@ -1,5 +1,6 @@
 'use client';
 
+import { TeamTab, teamPath } from '@/constants/team.constant';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -12,9 +13,9 @@ import { useEffect, useRef } from 'react';
 import Notifications from './notifications';
 
 const ISSUE_VIEW_TABS = [
-   { label: 'Active', segment: 'active' },
-   { label: 'Backlog', segment: 'backlog' },
-   { label: 'All issues', segment: 'all' },
+   { label: 'Active', segment: TeamTab.ACTIVE },
+   { label: 'Backlog', segment: TeamTab.BACKLOG },
+   { label: 'All issues', segment: TeamTab.ALL },
 ];
 
 function IssueViewTabs() {
@@ -24,7 +25,7 @@ function IssueViewTabs() {
    return (
       <div className="flex items-center gap-1">
          {ISSUE_VIEW_TABS.map((tab) => {
-            const href = `/${orgId}/team/${teamId}/${tab.segment}`;
+            const href = teamPath(orgId, teamId, tab.segment);
             const isActive = pathname === href;
             return (
                <Link

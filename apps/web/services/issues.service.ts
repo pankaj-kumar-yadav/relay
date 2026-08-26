@@ -1,3 +1,7 @@
+import type {
+  IssuePriorityValue,
+  IssueStatusValue,
+} from '@/constants/issue.constant';
 import { api } from '@/lib/api';
 
 export type ApiAssignee = {
@@ -12,8 +16,8 @@ export type ApiIssue = {
   number: number;
   title: string;
   description: string | null;
-  status: string;
-  priority: string;
+  status: IssueStatusValue;
+  priority: IssuePriorityValue;
   rank: string;
   projectId: string | null;
   project: { id: string; name: string } | null;
@@ -38,8 +42,8 @@ export type IssueListQuery = {
 export type CreateIssueInput = {
   title: string;
   description?: string | null;
-  status?: string;
-  priority?: string;
+  status?: IssueStatusValue;
+  priority?: IssuePriorityValue;
   assigneeId?: string | null;
   teamId?: string;
   projectId?: string | null;
@@ -48,8 +52,8 @@ export type CreateIssueInput = {
 export type PatchIssueInput = {
   title?: string;
   description?: string | null;
-  status?: string;
-  priority?: string;
+  status?: IssueStatusValue;
+  priority?: IssuePriorityValue;
   assigneeId?: string | null;
   rank?: string;
   beforeIssueId?: string;

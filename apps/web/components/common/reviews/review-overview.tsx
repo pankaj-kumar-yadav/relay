@@ -1,5 +1,6 @@
 'use client';
 
+import { issuePath } from '@/constants/issue.constant';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { Review, ReviewFileCategory } from '@/mock-data/reviews';
@@ -107,7 +108,7 @@ export function ReviewOverview({ review }: { review: Review }) {
                <div className="flex flex-col gap-2">
                   <h2 className="text-lg font-semibold">Ticket</h2>
                   <Link
-                     href={`/${orgId}/issue/${review.resolves.identifier}`}
+                     href={issuePath(orgId, review.resolves.identifier)}
                      className="inline-flex items-center gap-2 rounded-md bg-muted/60 border border-border/60 px-2 py-1.5 text-sm hover:bg-muted transition-colors self-start"
                   >
                      <IssueCheckIcon />
@@ -239,7 +240,7 @@ export function ReviewOverview({ review }: { review: Review }) {
                   <Plus className="size-3.5 text-muted-foreground" />
                </div>
                <Link
-                  href={`/${orgId}/issue/${review.resolves.identifier}`}
+                  href={issuePath(orgId, review.resolves.identifier)}
                   className="flex items-center gap-1.5 text-sm hover:opacity-80 min-w-0"
                >
                   <IssueCheckIcon />

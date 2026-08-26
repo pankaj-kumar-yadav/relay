@@ -1,3 +1,4 @@
+import { IssuePriority, type IssuePriorityValue } from '@/constants/issue.constant';
 import React from 'react';
 
 interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -98,15 +99,15 @@ const LowPriorityIcon = ({ className, ...props }: IconProps) => (
 );
 
 export interface Priority {
-   id: string;
+   id: IssuePriorityValue;
    name: string;
    icon: React.FC<React.SVGProps<SVGSVGElement>>;
 }
 
 export const priorities: Priority[] = [
-   { id: 'no-priority', name: 'No priority', icon: NoPriorityIcon },
-   { id: 'urgent', name: 'Urgent', icon: UrgentPriorityIcon },
-   { id: 'high', name: 'High', icon: HighPriorityIcon },
-   { id: 'medium', name: 'Medium', icon: MediumPriorityIcon },
-   { id: 'low', name: 'Low', icon: LowPriorityIcon },
+   { id: IssuePriority.NO_PRIORITY, name: 'No priority', icon: NoPriorityIcon },
+   { id: IssuePriority.URGENT, name: 'Urgent', icon: UrgentPriorityIcon },
+   { id: IssuePriority.HIGH, name: 'High', icon: HighPriorityIcon },
+   { id: IssuePriority.MEDIUM, name: 'Medium', icon: MediumPriorityIcon },
+   { id: IssuePriority.LOW, name: 'Low', icon: LowPriorityIcon },
 ];

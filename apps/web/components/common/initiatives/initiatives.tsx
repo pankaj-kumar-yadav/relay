@@ -1,5 +1,7 @@
 'use client';
 
+import { IssueStatusCategory } from '@/constants/issue.constant';
+import { initiativePath } from '@/constants/workspace.constant';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -295,7 +297,7 @@ const ACTIVE_DOT_COLORS: Record<string, string> = {
 
 function ActiveProjectDots({ initiative }: { initiative: Initiative }) {
    const started = getInitiativeProjects(initiative).filter(
-      (project) => project.status.category === 'started'
+      (project) => project.status.category === IssueStatusCategory.STARTED
    );
    const byHealth = new Map<string, number>();
    for (const project of started) {
@@ -331,7 +333,7 @@ function InitiativeRow({
 
    return (
       <Link
-         href={`/${orgId}/initiative/${initiative.id}`}
+         href={initiativePath(orgId, initiative.id)}
          className="flex items-center gap-2 px-6 py-2 border-b border-border/50 hover:bg-sidebar/50 transition-colors text-sm"
       >
          <span className="inline-flex size-6 items-center justify-center rounded bg-muted/50 text-sm shrink-0">

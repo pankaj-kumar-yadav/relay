@@ -1,11 +1,11 @@
 ---
-description: Named consts/enums live only in constants/*.constant.ts (API + web)
+description: Named consts live in domain *.constant.ts files — balanced, not one mega-file
 alwaysApply: true
 ---
 
-# Single source of truth — consts & enums
+# Single source of truth — consts by domain
 
-Reusable strings, numbers, roles, statuses, and codes belong in a **constants file**, not inline in routes, services, or components. The frontend **imports** those files; it does not re-hardcode the values.
+Reusable strings, numbers, roles, statuses, codes, **app paths**, and **date/time formats** belong in `constants/*.constant.ts`. Split by **domain**, not one kitchen-sink file and not one file per value.
 
 ## Location & naming
 
@@ -14,34 +14,35 @@ Reusable strings, numbers, roles, statuses, and codes belong in a **constants fi
 | API | `apps/api/src/constants/` | `<domain>.constant.ts` |
 | Web | `apps/web/constants/` | `<domain>.constant.ts` |
 
-Examples: `org.constant.ts`, `issue.constant.ts`. Not `org.ts`, not `org.constants.ts`, and not inside `lib/`, `services/`, or a component.
+## Balanced files (do this)
+
+- **One domain per file**: `org`, `team`, `project`, `issue`, `auth`, `http`, `date`, `workspace`, `brand`, `seed`
+- Path builders live **in that domain** (`teamHomePath` in `team.constant.ts`, not a catch-all `route.constant.ts`)
+- Cross-cutting display formats live in `date.constant.ts`
+- Circle leftovers (inbox, reviews, initiatives, views) share `workspace.constant.ts` until they are first-class domains
 
 ```ts
-// ✅ GOOD — apps/web/constants/org.constant.ts
-export const OrgRole = { ADMIN: 'admin', EMPLOYEE: 'employee' } as const;
-export type OrgRoleValue = (typeof OrgRole)[keyof typeof OrgRole];
+// ✅ GOOD — domain file
+import { teamHomePath } from '@/constants/team.constant';
+router.push(teamHomePath(orgSlug, teamKey));
 ```
 
 ```ts
-// ✅ GOOD — import on the client
-import { OrgRole } from '@/constants/org.constant';
-if (member.role === OrgRole.ADMIN) { /* … */ }
+// ❌ BAD — one mega constants / routes file
+import { teamHomePath, DateFormat, OrgRole } from '@/constants/route.constant';
 ```
 
 ```ts
-// ❌ BAD — magic string in a component / service
-if (member.role === 'admin') { /* … */ }
+// ❌ BAD — a new file for a single string
+// constants/my-issues-path.constant.ts
 ```
 
-Prefer `as const` objects (this repo’s default). Use `enum` only when it clearly fits.
+## Don't
 
-## Don't overdo
+- Inline roles, path strings (`router.push` / `replace` / `redirect` / `Link href`), or date-fns patterns
+- Invent a file per screen or widget
+- Dump everything into `constants.ts` / `route.constant.ts`
 
-- One-off UI copy, log messages, or a value used once → leave inline
-- Don't invent enums for every prop or boolean
-- Until `packages/shared` exists, domain values used on both sides (roles, issue status) are mirrored in **both** constant folders with the **same keys and values** — don't invent a second spelling
-- New files use `*.constant.ts`; rename older API files (`org.ts`, `brand.constants.ts`) when you next touch them
+`new Date()` for timestamps/sorting is fine. One-off UI copy stays inline.
 
-## Agent habit
-
-Before hardcoding a role, status, error code, cookie name, or path segment: add or reuse `*.constant.ts`, then import it (including on the web client).
+Until `packages/shared` exists, values used on both sides are mirrored with the **same keys and values**. New files use `*.constant.ts`; rename older API files (`org.ts`) when you next touch them.

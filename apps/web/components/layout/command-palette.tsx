@@ -44,6 +44,9 @@ import {
    UserRoundPlus,
    Users,
 } from 'lucide-react';
+import { ISSUE_PATHNAME_PATTERN, IssuePath, issuePath } from '@/constants/issue.constant';
+import { OrgPath, orgPath } from '@/constants/org.constant';
+import { TeamPath } from '@/constants/team.constant';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -92,7 +95,7 @@ export function CommandPalette() {
    const { openModal } = useCreateIssueStore();
 
    const contextIssue = useMemo<Issue | undefined>(() => {
-      const match = pathname.match(/^\/[^/]+\/issue\/([^/]+)/);
+      const match = pathname.match(ISSUE_PATHNAME_PATTERN);
       if (!match) return undefined;
       return issues.find((issue) => issue.identifier === match[1]);
    }, [pathname, issues]);
@@ -137,7 +140,7 @@ export function CommandPalette() {
    );
 
    const issueUrl = issue
-      ? `${typeof window !== 'undefined' ? window.location.origin : ''}/${orgId}/issue/${issue.identifier}`
+      ? `${typeof window !== 'undefined' ? window.location.origin : ''}${issuePath(orgId, issue.identifier)}`
       : '';
    const branchName = issue
       ? `${users[0].id}/${issue.identifier.toLowerCase()}-${issue.title
@@ -149,7 +152,7 @@ export function CommandPalette() {
 
    const go = (path: string) => {
       if (!orgId) return;
-      router.push(`/${orgId}${path}`);
+      router.push(orgPath(orgId, path));
       close();
    };
 
@@ -354,17 +357,17 @@ export function CommandPalette() {
                      </CommandItem>
                   </CommandGroup>
                   <CommandGroup heading="Go to">
-                     <CommandItem onSelect={() => go('/my-issues')}>
+                     <CommandItem onSelect={() => go(IssuePath.MY_ISSUES)}>
                         <ClipboardList className="text-muted-foreground" /> My issues
                         <Keys keys={['G', 'M']} />
                      </CommandItem>
-                     <CommandItem onSelect={() => go('/teams')}>
+                     <CommandItem onSelect={() => go(TeamPath.LIST)}>
                         <ContactRound className="text-muted-foreground" /> Teams
                      </CommandItem>
-                     <CommandItem onSelect={() => go('/members')}>
+                     <CommandItem onSelect={() => go(OrgPath.MEMBERS)}>
                         <UserRound className="text-muted-foreground" /> Members
                      </CommandItem>
-                     <CommandItem onSelect={() => go('/settings')}>
+                     <CommandItem onSelect={() => go(OrgPath.SETTINGS)}>
                         <FileText className="text-muted-foreground" /> Settings
                         <Keys keys={['G', 'S']} />
                      </CommandItem>

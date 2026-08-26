@@ -10,6 +10,7 @@ import {
    SidebarMenuButton,
    SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { settingsNewTeamPath, settingsTeamPath } from '@/constants/org.constant';
 import { teams } from '@/mock-data/teams';
 import { Button } from '@/components/ui/button';
 import { useParams } from 'next/navigation';
@@ -24,7 +25,7 @@ export function NavTeamsSettings() {
             {joinedTeams.map((team) => (
                <SidebarMenuItem key={team.id}>
                   <SidebarMenuButton asChild>
-                     <Link href={`/${orgId}/settings/teams/${team.id}`}>
+                     <Link href={settingsTeamPath(orgId, team.id)}>
                         <div className="inline-flex size-6 bg-muted/50 items-center justify-center rounded shrink-0">
                            <div className="text-sm">{team.icon}</div>
                         </div>
@@ -36,7 +37,7 @@ export function NavTeamsSettings() {
             <SidebarMenuItem>
                <SidebarMenuButton asChild>
                   <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
-                     <Link href={`/${orgId}/settings/teams/new`}>
+                     <Link href={settingsNewTeamPath(orgId)}>
                         <PlusIcon className="size-4" />
                         <span>Join or create a team</span>
                      </Link>

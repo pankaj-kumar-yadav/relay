@@ -1,5 +1,7 @@
 'use client';
 
+import { issuePath } from '@/constants/issue.constant';
+import { teamOverviewPath } from '@/constants/team.constant';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { teams } from '@/mock-data/teams';
@@ -28,7 +30,7 @@ export default function HeaderNav() {
          <div className="flex items-center gap-2 min-w-0">
             <SidebarTrigger />
             <Link
-               href={`/${orgId}/team/${team.id}/overview`}
+               href={teamOverviewPath(orgId, team.id)}
                className="flex items-center gap-1.5 shrink-0 hover:opacity-80"
             >
                <div className="inline-flex size-5 bg-muted/50 items-center justify-center rounded shrink-0 text-xs">
@@ -64,7 +66,7 @@ export default function HeaderNav() {
             >
                {previousIssue ? (
                   <Link
-                     href={`/${orgId}/issue/${previousIssue.identifier}`}
+                     href={issuePath(orgId, previousIssue.identifier)}
                      aria-label="Previous issue"
                   >
                      <ChevronUp className="size-4" />
@@ -81,7 +83,7 @@ export default function HeaderNav() {
                asChild={!!nextIssue}
             >
                {nextIssue ? (
-                  <Link href={`/${orgId}/issue/${nextIssue.identifier}`} aria-label="Next issue">
+                  <Link href={issuePath(orgId, nextIssue.identifier)} aria-label="Next issue">
                      <ChevronDown className="size-4" />
                   </Link>
                ) : (

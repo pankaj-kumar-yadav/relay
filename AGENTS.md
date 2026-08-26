@@ -22,7 +22,9 @@ Read these before changing code:
 - Do not add billing, SSO, or AI agent features until they appear in SCOPE
 - Prefer small, focused changes; match existing stack choices
 - Use path alias imports (`@/…`) as much as possible — see `.cursor/rules/alias-imports.mdc`
-- Named consts/enums live only in `constants/*.constant.ts` (`apps/api/src/constants/`, `apps/web/constants/`); the web client imports those files — see `.cursor/rules/single-source-consts.mdc`
+- Named consts live in `constants/*.constant.ts`, **one domain per file** (not one mega-file, not one file per value) — see `.cursor/rules/single-source-consts.mdc`
+- App routes: never inline path strings in `router.push` / `replace` / `redirect` / `Link href` — use the matching domain file (`team.constant.ts`, `issue.constant.ts`, `auth.constant.ts`, …)
+- Date/time display: never inline format patterns — use `apps/web/constants/date.constant.ts`
 - API JSON responses always use `{ success, message, data, error }` — see `.cursor/rules/api-response-envelope.mdc`
 - Web HTTP lives only in `apps/web/services/*.service.ts`; each HTTP function is named `*Api` (`listIssuesApi`); UI consumes those with TanStack Query — see `.cursor/rules/web-api-services.mdc`
 

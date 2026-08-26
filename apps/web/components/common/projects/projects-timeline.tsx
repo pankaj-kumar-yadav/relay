@@ -1,5 +1,12 @@
 'use client';
 
+import {
+   DateFormat,
+   formatDate,
+   formatUtcMonth,
+   toIsoDate,
+   toIsoMonth,
+} from '@/constants/date.constant';
 import { CapacityRing } from '@/components/common/cycles/capacity-ring';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -11,7 +18,6 @@ import {
 import { cn } from '@/lib/utils';
 import { Project } from '@/mock-data/projects';
 import { useProjectsDisplayStore } from '@/store/projects-display-store';
-import { format, parseISO } from 'date-fns';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, Plus } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ProjectPeekPanel } from './project-peek-panel';
@@ -49,11 +55,11 @@ for (let index = 0; ; index++) {
    const date = new Date(Date.UTC(2020, index, 1));
    if (date.getTime() > RANGE_END) break;
    MONTHS.push({
-      key: date.toISOString().slice(0, 7),
+      key: toIsoMonth(date),
       label:
          date.getUTCMonth() === 0
-            ? `${date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' })} ${date.getUTCFullYear()}`
-            : date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }),
+            ? `${formatUtcMonth(date)} ${date.getUTCFullYear()}`
+            : formatUtcMonth(date),
    });
 }
 
@@ -115,9 +121,9 @@ const barBounds = (project: Project, monthWidth: number) => {
 };
 
 const dateRangeLabel = (project: Project) => {
-   const startLabel = format(parseISO(project.startDate), 'MMM d');
+   const startLabel = formatDate(project.startDate, DateFormat.MONTH_DAY);
    if (!project.targetDate || project.targetDate === project.startDate) return startLabel;
-   return `${startLabel} - ${format(parseISO(project.targetDate), 'MMM d')}`;
+   return `${startLabel} - ${formatDate(project.targetDate, DateFormat.MONTH_DAY)}`;
 };
 
 interface Viewport {
@@ -230,7 +236,7 @@ export default function ProjectsTimeline({ groups }: ProjectsTimelineProps) {
    const totalWidth = totalWidthOf(monthWidth);
    const listOffset = showProjectList ? LIST_WIDTH : 0;
    const todayOffset = todayIso !== null ? offsetFor(todayIso, monthWidth) : null;
-   const todayLabel = todayIso !== null ? format(parseISO(todayIso), 'MMM d').toUpperCase() : null;
+   const todayLabel = todayIso !== null ? formatDate(todayIso, DateFormat.MONTH_DAY).toUpperCase() : null;
    /** The line would sit on the sticky project list → hide it (the pill stays on the scale). */
    const todayOverlapsList =
       viewport !== null && todayOffset !== null && todayOffset < viewport.left + listOffset + 28;
@@ -251,7 +257,7 @@ export default function ProjectsTimeline({ groups }: ProjectsTimelineProps) {
    }, [syncViewport]);
 
    useEffect(() => {
-      const iso = new Date().toISOString().slice(0, 10);
+      const iso = toIsoDate();
       setTodayIso(iso);
       // Bring today into view on mount (a third from the left edge, but always
       // clear of the sticky project list so the line stays visible).

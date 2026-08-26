@@ -1,5 +1,6 @@
 'use client';
 
+import { IssueStatusCategory } from '@/constants/issue.constant';
 import {
    PanelFilterTarget,
    usePanelFilter,
@@ -32,7 +33,7 @@ interface CycleDetailsPanelProps {
    issues: Issue[];
 }
 
-const isCompleted = (issue: Issue) => issue.status.category === 'completed';
+const isCompleted = (issue: Issue) => issue.status.category === IssueStatusCategory.COMPLETED;
 
 function buildBreakdown<T>(
    issues: Issue[],

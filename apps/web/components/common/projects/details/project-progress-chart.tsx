@@ -1,6 +1,6 @@
 'use client';
 
-import { format, parseISO } from 'date-fns';
+import { DateFormat, formatDate } from '@/constants/date.constant';
 import { Area, ComposedChart, Line, ResponsiveContainer, XAxis } from 'recharts';
 
 interface ProjectProgressChartProps {
@@ -80,8 +80,8 @@ export function ProjectProgressChart({
             </ComposedChart>
          </ResponsiveContainer>
          <div className="flex justify-between text-[11px] text-muted-foreground mt-0.5">
-            <span>{format(parseISO(startDate), 'MMM d')}</span>
-            <span>{format(parseISO(endDate), 'MMM d')}</span>
+            <span>{formatDate(startDate, DateFormat.MONTH_DAY)}</span>
+            <span>{formatDate(endDate, DateFormat.MONTH_DAY)}</span>
          </div>
       </div>
    );

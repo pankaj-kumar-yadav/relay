@@ -1,5 +1,8 @@
 'use client';
 
+import { OrgPath, orgPath } from '@/constants/org.constant';
+import { ProjectPath } from '@/constants/project.constant';
+import { TeamPath } from '@/constants/team.constant';
 import {
    ContactRound,
    FolderKanban,
@@ -43,9 +46,9 @@ interface WorkspaceNavItem {
 }
 
 const WORKSPACE_NAV: WorkspaceNavItem[] = [
-   { key: 'teams', name: 'Teams', icon: ContactRound, url: '/teams' },
-   { key: 'projects', name: 'Projects', icon: FolderKanban, url: '/projects' },
-   { key: 'members', name: 'Members', icon: UserRound, url: '/members' },
+   { key: 'teams', name: 'Teams', icon: ContactRound, url: TeamPath.LIST },
+   { key: 'projects', name: 'Projects', icon: FolderKanban, url: ProjectPath.LIST },
+   { key: 'members', name: 'Members', icon: UserRound, url: OrgPath.MEMBERS },
 ];
 
 export function NavWorkspace() {
@@ -78,7 +81,7 @@ export function NavWorkspace() {
             {items.map((item) => (
                <SidebarMenuItem key={item.key}>
                   <SidebarMenuButton asChild>
-                     <Link href={`/${orgId}${item.url}`}>
+                     <Link href={orgPath(orgId, item.url)}>
                         <item.icon />
                         <span>{item.name}</span>
                      </Link>
@@ -98,7 +101,7 @@ export function NavWorkspace() {
                   <DropdownMenuContent className="w-48 rounded-lg" side="bottom" align="start">
                      {hidden.map((item) => (
                         <DropdownMenuItem key={item.key} asChild>
-                           <Link href={`/${orgId}${item.url}`}>
+                           <Link href={orgPath(orgId, item.url)}>
                               <item.icon className="text-muted-foreground" />
                               <span>{item.name}</span>
                            </Link>

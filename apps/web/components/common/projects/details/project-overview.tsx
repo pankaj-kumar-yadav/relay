@@ -1,5 +1,7 @@
 'use client';
 
+import { formatIsoDayOrdinal } from '@/constants/date.constant';
+import { projectActivityPath, projectsPath } from '@/constants/project.constant';
 import { ContentBlocks } from '@/components/common/issues/details/content-blocks';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getProjectDetail } from '@/mock-data/project-details';
@@ -7,7 +9,6 @@ import { useIssuesList } from '@/hooks/use-issues';
 import { useProject } from '@/hooks/use-projects';
 import { useTeams } from '@/hooks/use-teams';
 import { useIssuesStore } from '@/store/issues-store';
-import { format, parseISO } from 'date-fns';
 import { ArrowRight, ChevronDown, FileText, PenLine, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -18,8 +19,6 @@ import { ProjectSidePanel } from './project-side-panel';
 interface ProjectOverviewProps {
    projectId: string;
 }
-
-const formatDay = (iso?: string) => (iso ? format(parseISO(iso), 'MMM do') : '—');
 
 /** Project "Overview" tab: description column + properties side panel. */
 export default function ProjectOverview({ projectId }: ProjectOverviewProps) {
@@ -46,7 +45,7 @@ export default function ProjectOverview({ projectId }: ProjectOverviewProps) {
       return (
          <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-muted-foreground">
             <p>Project not found.</p>
-            <Link href={`/${orgId}/projects`} className="underline">
+            <Link href={projectsPath(orgId)} className="underline">
                Back to projects
             </Link>
          </div>
@@ -87,9 +86,9 @@ export default function ProjectOverview({ projectId }: ProjectOverviewProps) {
                            {project.lead.name}
                         </span>
                         <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                           {formatDay(project.startDate)}
+                           {formatIsoDayOrdinal(project.startDate)}
                            <ArrowRight className="size-3" />
-                           {formatDay(project.targetDate)}
+                           {formatIsoDayOrdinal(project.targetDate)}
                         </span>
                         {team && (
                            <span className="inline-flex items-center gap-1.5">
@@ -157,7 +156,7 @@ export default function ProjectOverview({ projectId }: ProjectOverviewProps) {
 
                {/* Update CTA */}
                <Link
-                  href={`/${orgId}/project/${project.id}/activity`}
+                  href={projectActivityPath(orgId, project.id)}
                   className="mt-8 flex items-center justify-center gap-2 border rounded-lg py-4 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/30 transition-colors"
                >
                   <PenLine className="size-4" />

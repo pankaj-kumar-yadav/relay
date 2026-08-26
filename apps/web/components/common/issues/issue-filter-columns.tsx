@@ -1,5 +1,6 @@
 'use client';
 
+import { IssueStatusCategory } from '@/constants/issue.constant';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createColumnConfigHelper } from '@/components/data-table-filter/core/filters';
 import type { ColumnOption, FiltersState } from '@/components/data-table-filter/core/types';
@@ -32,12 +33,12 @@ const statusOptions: ColumnOption[] = status.map((item) => ({
 }));
 
 const STATUS_TYPES: { id: StatusCategory; name: string }[] = [
-   { id: 'triage', name: 'Triage' },
-   { id: 'backlog', name: 'Backlog' },
-   { id: 'unstarted', name: 'Unstarted' },
-   { id: 'started', name: 'Started' },
-   { id: 'completed', name: 'Completed' },
-   { id: 'canceled', name: 'Canceled' },
+   { id: IssueStatusCategory.TRIAGE, name: 'Triage' },
+   { id: IssueStatusCategory.BACKLOG, name: 'Backlog' },
+   { id: IssueStatusCategory.UNSTARTED, name: 'Unstarted' },
+   { id: IssueStatusCategory.STARTED, name: 'Started' },
+   { id: IssueStatusCategory.COMPLETED, name: 'Completed' },
+   { id: IssueStatusCategory.CANCELED, name: 'Canceled' },
 ];
 
 const statusTypeOptions: ColumnOption[] = STATUS_TYPES.map((item) => ({

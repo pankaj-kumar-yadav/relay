@@ -1,7 +1,7 @@
 'use client';
 
+import { DateFormat, formatDate } from '@/constants/date.constant';
 import { Cycle } from '@/mock-data/cycles';
-import { format, parseISO } from 'date-fns';
 import {
    Area,
    CartesianGrid,
@@ -62,7 +62,7 @@ export function CycleBurnupChart({ cycle, height = 210, compact = false }: Cycle
             <XAxis
                dataKey="date"
                ticks={compact ? [first, last] : [first, middle, last]}
-               tickFormatter={(value: string) => format(parseISO(value), 'MMM d')}
+               tickFormatter={(value: string) => formatDate(value, DateFormat.MONTH_DAY)}
                tick={{ fontSize: 11, fill: 'currentColor', opacity: 0.6 }}
                axisLine={false}
                tickLine={false}
@@ -77,7 +77,7 @@ export function CycleBurnupChart({ cycle, height = 210, compact = false }: Cycle
                   fontSize: 12,
                   color: 'var(--popover-foreground)',
                }}
-               labelFormatter={(value) => format(parseISO(String(value)), 'MMM d')}
+               labelFormatter={(value) => formatDate(String(value), DateFormat.MONTH_DAY)}
             />
             <Line
                type="monotone"

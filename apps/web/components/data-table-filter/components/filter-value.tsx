@@ -19,8 +19,8 @@ import {
 import { Slider } from '@/components/ui/slider'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
+import { DateFormat, formatDate } from '@/constants/date.constant'
 import { isEqual } from 'date-fns'
-import { format } from 'date-fns'
 import { Ellipsis } from 'lucide-react'
 import {
   cloneElement,
@@ -272,14 +272,14 @@ function formatDateRange(start: Date, end: Date) {
   const sameYear = start.getFullYear() === end.getFullYear()
 
   if (sameMonth && sameYear) {
-    return `${format(start, 'MMM d')} - ${format(end, 'd, yyyy')}`
+    return `${formatDate(start, DateFormat.MONTH_DAY)} - ${formatDate(end, DateFormat.RANGE_END_DAY_YEAR)}`
   }
 
   if (sameYear) {
-    return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
+    return `${formatDate(start, DateFormat.MONTH_DAY)} - ${formatDate(end, DateFormat.MONTH_DAY_YEAR)}`
   }
 
-  return `${format(start, 'MMM d, yyyy')} - ${format(end, 'MMM d, yyyy')}`
+  return `${formatDate(start, DateFormat.MONTH_DAY_YEAR)} - ${formatDate(end, DateFormat.MONTH_DAY_YEAR)}`
 }
 
 export function FilterValueDateDisplay<TData>({
@@ -293,7 +293,7 @@ export function FilterValueDateDisplay<TData>({
   if (filter.values.length === 1) {
     const value = filter.values[0]
 
-    const formattedDateStr = format(value, 'MMM d, yyyy')
+    const formattedDateStr = formatDate(value, DateFormat.MONTH_DAY_YEAR)
 
     return <span>{formattedDateStr}</span>
   }

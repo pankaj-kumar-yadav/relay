@@ -1,5 +1,6 @@
 'use client';
 
+import { IssueStatusCategory } from '@/constants/issue.constant';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Issue, sortIssuesByPriority } from '@/mock-data/issues';
@@ -138,7 +139,8 @@ export const GroupedIssuesView: FC<GroupedIssuesViewProps> = ({
          completedIssues === 'none'
             ? list.filter(
                  (issue) =>
-                    issue.status.category !== 'completed' && issue.status.category !== 'canceled'
+                    issue.status.category !== IssueStatusCategory.COMPLETED &&
+                    issue.status.category !== IssueStatusCategory.CANCELED
               )
             : list;
 

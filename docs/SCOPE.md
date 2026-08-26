@@ -47,9 +47,11 @@ Multi-tenant project management for teams: issues, projects, and org membership 
 
 ## Constants (locked)
 
-- Reused consts/enums (`as const` objects or enums) live **only** in a `constants/` folder, in files named `*.constant.ts`
+- Reused consts/enums live **only** in `constants/*.constant.ts`, **one domain per file** (`org`, `team`, `project`, `issue`, `auth`, `http`, `date`, `workspace`, …)
+- Do **not** put all constants in one file; do **not** add a new file for a single value — keep a balanced set of domain files
 - API: `apps/api/src/constants/<domain>.constant.ts`
-- Web: `apps/web/constants/<domain>.constant.ts` — frontend imports these; do not hardcode roles, statuses, or other domain codes in components, hooks, or services
+- Web: `apps/web/constants/<domain>.constant.ts` — import these; do not hardcode roles, statuses, paths, or date formats in components
+- Path builders live in the matching domain (`teamHomePath` in `team.constant.ts`). Date/time display lives in `date.constant.ts`
 - Until `packages/shared` exists, domain values used on both sides are mirrored with the same keys and values
 
 ## Agent process constraints

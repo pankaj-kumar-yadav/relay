@@ -1,5 +1,6 @@
 'use client';
 
+import { teamOverviewPath } from '@/constants/team.constant';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { teams } from '@/mock-data/teams';
 import { ChevronRight, Star } from 'lucide-react';
@@ -15,7 +16,7 @@ export default function HeaderNav() {
          <div className="flex items-center gap-2 min-w-0">
             <SidebarTrigger />
             <Link
-               href={`/${orgId}/team/${team.id}/overview`}
+               href={teamOverviewPath(orgId, team.id)}
                className="flex items-center gap-1.5 min-w-0 hover:opacity-80"
             >
                <div className="inline-flex size-5 bg-muted/50 items-center justify-center rounded shrink-0 text-xs">

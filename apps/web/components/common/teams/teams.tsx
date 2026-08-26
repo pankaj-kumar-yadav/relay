@@ -1,5 +1,6 @@
 'use client';
 
+import { teamOverviewPath } from '@/constants/team.constant';
 import { Team } from '@/mock-data/teams';
 import { useTeams } from '@/hooks/use-teams';
 import { useMemo } from 'react';
@@ -34,7 +35,7 @@ export default function Teams() {
          </div>
          <div className="w-full">
             {displayed.map((team) => (
-               <Link key={team.id} href={`/${orgId}/team/${team.id}/overview`} className="block">
+               <Link key={team.id} href={teamOverviewPath(orgId, team.id)} className="block">
                   <TeamLine team={team} />
                </Link>
             ))}

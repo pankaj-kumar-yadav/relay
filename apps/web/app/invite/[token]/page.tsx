@@ -8,7 +8,8 @@ import { ApiError } from '@/lib/api';
 import { useSession } from '@/hooks/use-session';
 import { useAcceptInvite } from '@/hooks/use-invites';
 import { useTeams } from '@/hooks/use-teams';
-import { DEFAULT_TEAM_KEY, teamHomePath } from '@/lib/paths';
+import { AppRoute, invitePath, loginWithNextPath } from '@/constants/auth.constant';
+import { DEFAULT_TEAM_KEY, teamHomePath } from '@/constants/team.constant';
 
 export default function AcceptInvitePage() {
   const { token } = useParams<{ token: string }>();
@@ -22,7 +23,7 @@ export default function AcceptInvitePage() {
   useEffect(() => {
     if (!isFetched) return;
     if (!user) {
-      router.replace(`/login?next=/invite/${token}`);
+      router.replace(loginWithNextPath(invitePath(token)));
     }
   }, [isFetched, user, router, token]);
 
@@ -61,7 +62,7 @@ export default function AcceptInvitePage() {
         </Button>
         <p className="text-center text-sm text-muted-foreground">
           Wrong account?{' '}
-          <Link href="/login" className="underline">
+          <Link href={AppRoute.LOGIN} className="underline">
             Sign in with another
           </Link>
         </p>

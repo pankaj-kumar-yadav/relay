@@ -2,10 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { isTeamKey, normalizeTeamKey } from '@/constants/team.constant';
+import { isTeamKey, normalizeTeamKey, teamHomePath } from '@/constants/team.constant';
 import { useCreateTeam } from '@/hooks/use-teams';
 import { ApiError } from '@/lib/api';
-import { teamHomePath } from '@/lib/paths';
 import { useParams, useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';

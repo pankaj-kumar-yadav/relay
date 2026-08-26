@@ -1,3 +1,4 @@
+import { IssueStatusCategory } from '@/constants/issue.constant';
 import { Priority, priorities } from './priorities';
 import { Health, health, Project, projects } from './projects';
 import { User, users } from './users';
@@ -190,6 +191,7 @@ export function getInitiativeProjects(initiative: Initiative): Project[] {
 /** Projects considered "completed" for the n / m counter. */
 export function countCompletedProjects(initiative: Initiative): number {
    return getInitiativeProjects(initiative).filter(
-      (project) => project.status.category === 'completed' || project.percentComplete >= 100
+      (project) =>
+         project.status.category === IssueStatusCategory.COMPLETED || project.percentComplete >= 100
    ).length;
 }

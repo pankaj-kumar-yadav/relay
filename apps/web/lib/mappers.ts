@@ -1,3 +1,4 @@
+import { DEFAULT_ISSUE_STATUS } from '@/constants/issue.constant';
 import { OrgRoleLabel } from '@/constants/org.constant';
 import {
   DEFAULT_PROJECT_HEALTH,
@@ -72,7 +73,9 @@ export function mapApiIssue(issue: ApiIssue): Issue {
     identifier: issue.identifier,
     title: issue.title,
     description: issue.description ?? '',
-    status: status.find((item) => item.id === issue.status) ?? status.find((item) => item.id === 'to-do')!,
+    status:
+      status.find((item) => item.id === issue.status) ??
+      status.find((item) => item.id === DEFAULT_ISSUE_STATUS)!,
     assignee: mapAssigneeToUser(issue.assignee),
     priority:
       priorities.find((item) => item.id === issue.priority) ?? priorities[0]!,

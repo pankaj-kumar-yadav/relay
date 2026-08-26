@@ -1,3 +1,8 @@
+import { IssuePath } from '@/constants/issue.constant';
+import { OrgPath } from '@/constants/org.constant';
+import { ProjectPath } from '@/constants/project.constant';
+import { TeamPath } from '@/constants/team.constant';
+import { WorkspacePath } from '@/constants/workspace.constant';
 import {
    Bot,
    GitPullRequestArrow,
@@ -21,17 +26,17 @@ import {
 export const inboxItems = [
    {
       name: 'Inbox',
-      url: '/inbox',
+      url: WorkspacePath.INBOX,
       icon: Inbox,
    },
    {
       name: 'Reviews',
-      url: '/reviews',
+      url: WorkspacePath.REVIEWS,
       icon: GitPullRequestArrow,
    },
    {
       name: 'My issues',
-      url: '/my-issues',
+      url: IssuePath.MY_ISSUES,
       icon: FolderKanban,
    },
 ];
@@ -42,24 +47,24 @@ export const inboxItems = [
  */
 export const deprecatedAgentNavItem = {
    name: 'Agent',
-   url: '/agent',
+   url: WorkspacePath.AGENT,
    icon: Bot,
 } as const;
 
 export const workspaceItems = [
    {
       name: 'Teams',
-      url: '/teams',
+      url: TeamPath.LIST,
       icon: ContactRound,
    },
    {
       name: 'Projects',
-      url: '/projects',
+      url: ProjectPath.LIST,
       icon: Box,
    },
    {
       name: 'Members',
-      url: '/members',
+      url: OrgPath.MEMBERS,
       icon: UserRound,
    },
 ];
@@ -67,32 +72,32 @@ export const workspaceItems = [
 export const accountItems = [
    {
       name: 'Account',
-      url: '/settings/account',
+      url: OrgPath.SETTINGS_ACCOUNT,
       icon: UserRound,
    },
    {
       name: 'Preferences',
-      url: '/settings/preferences',
+      url: OrgPath.SETTINGS_PREFERENCES,
       icon: Settings,
    },
    {
       name: 'Profile',
-      url: '/settings/profile',
+      url: OrgPath.SETTINGS_PROFILE,
       icon: UserRound,
    },
    {
       name: 'Notifications',
-      url: '/settings/notifications',
+      url: OrgPath.SETTINGS_NOTIFICATIONS,
       icon: Bell,
    },
    {
       name: 'Security & access',
-      url: '/settings/security',
+      url: OrgPath.SETTINGS_SECURITY,
       icon: KeyRound,
    },
    {
       name: 'Connected accounts',
-      url: '/settings/connected-accounts',
+      url: OrgPath.SETTINGS_CONNECTED_ACCOUNTS,
       icon: Users,
    },
 ];
@@ -100,47 +105,47 @@ export const accountItems = [
 export const featuresItems = [
    {
       name: 'Labels',
-      url: '/settings/labels',
+      url: OrgPath.SETTINGS_LABELS,
       icon: Tag,
    },
    {
       name: 'Projects',
-      url: '/settings/projects',
+      url: OrgPath.SETTINGS_PROJECTS,
       icon: Box,
    },
    {
       name: 'Initiatives',
-      url: '/settings/initiatives',
+      url: OrgPath.SETTINGS_INITIATIVES,
       icon: Layers,
    },
    {
       name: 'Customer requests',
-      url: '/settings/customer-requests',
+      url: OrgPath.SETTINGS_CUSTOMER_REQUESTS,
       icon: Inbox,
    },
    {
       name: 'Templates',
-      url: '/settings/templates',
+      url: OrgPath.SETTINGS_TEMPLATES,
       icon: FileText,
    },
    {
       name: 'Asks',
-      url: '/settings/asks',
+      url: OrgPath.SETTINGS_ASKS,
       icon: MessageSquare,
    },
    {
       name: 'SLAs',
-      url: '/settings/slas',
+      url: OrgPath.SETTINGS_SLAS,
       icon: Clock,
    },
    {
       name: 'Emojis',
-      url: '/settings/emojis',
+      url: OrgPath.SETTINGS_EMOJIS,
       icon: MessageSquare,
    },
    {
       name: 'Integrations',
-      url: '/settings/integrations',
+      url: OrgPath.SETTINGS_INTEGRATIONS,
       icon: Zap,
    },
 ];

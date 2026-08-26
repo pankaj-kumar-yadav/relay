@@ -1,5 +1,6 @@
 'use client';
 
+import { projectOverviewPath } from '@/constants/project.constant';
 import { Issue } from '@/mock-data/issues';
 import { Project } from '@/mock-data/projects';
 import { useIssuesStore } from '@/store/issues-store';
@@ -36,7 +37,7 @@ export default function ProjectLine({ project }: ProjectLineProps) {
             </div>
             <div className="flex flex-col items-start overflow-hidden">
                <Link
-                  href={`/${orgId}/project/${project.id}/overview`}
+                  href={projectOverviewPath(orgId, project.id)}
                   className="font-medium truncate w-full hover:underline underline-offset-2"
                >
                   {project.name}

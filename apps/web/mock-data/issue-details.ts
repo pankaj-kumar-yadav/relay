@@ -1,3 +1,4 @@
+import { IssueStatusCategory } from '@/constants/issue.constant';
 import { Issue } from './issues';
 import { User, users } from './users';
 
@@ -899,7 +900,10 @@ const buildFallbackDetail = (issue: Issue): IssueDetail => {
       });
    }
 
-   if (issue.status.category === 'started' || issue.status.category === 'completed') {
+   if (
+      issue.status.category === IssueStatusCategory.STARTED ||
+      issue.status.category === IssueStatusCategory.COMPLETED
+   ) {
       activity.push({
          kind: 'event',
          id: `${issue.id}-status`,

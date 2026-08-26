@@ -1,5 +1,6 @@
 'use client';
 
+import { IssuePriority } from '@/constants/issue.constant';
 import { cn } from '@/lib/utils';
 import { Issue } from '@/mock-data/issues';
 import { teams } from '@/mock-data/teams';
@@ -31,11 +32,11 @@ const LABEL_COLORS: Record<string, string> = {
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-   'no-priority': '#94a3b8',
-   'urgent': '#eb5757',
-   'high': '#f2994a',
-   'medium': '#facc15',
-   'low': '#4cb782',
+   [IssuePriority.NO_PRIORITY]: '#94a3b8',
+   [IssuePriority.URGENT]: '#eb5757',
+   [IssuePriority.HIGH]: '#f2994a',
+   [IssuePriority.MEDIUM]: '#facc15',
+   [IssuePriority.LOW]: '#4cb782',
 };
 
 /**

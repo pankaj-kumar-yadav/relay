@@ -2,9 +2,9 @@
 
 import { Issue } from '@/mock-data/issues';
 import { getCycleById } from '@/mock-data/cycles';
-import { issuePath } from '@/lib/paths';
+import { DateFormat, formatDate } from '@/constants/date.constant';
+import { issuePath } from '@/constants/issue.constant';
 import { useDisplaySettingsStore } from '@/store/display-settings-store';
-import { format } from 'date-fns';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { AssigneeUser } from './assignee-user';
@@ -65,12 +65,12 @@ export function IssueLine({ issue, layoutId = false }: { issue: Issue; layoutId?
                   )}
                   {displayProperties.dueDate && issue.dueDate && (
                      <span className="text-xs text-orange-400 shrink-0 hidden sm:inline-block">
-                        Due {format(new Date(issue.dueDate), 'MMM dd')}
+                        Due {formatDate(issue.dueDate, DateFormat.MONTH_DAY_PAD)}
                      </span>
                   )}
                   {displayProperties.created && (
                      <span className="text-xs text-muted-foreground shrink-0 hidden sm:inline-block">
-                        {format(new Date(issue.createdAt), 'MMM dd')}
+                        {formatDate(issue.createdAt, DateFormat.MONTH_DAY_PAD)}
                      </span>
                   )}
                   {displayProperties.assignee && (

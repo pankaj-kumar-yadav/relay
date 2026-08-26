@@ -1,5 +1,6 @@
 'use client';
 
+import { teamHomePath, teamOverviewPath } from '@/constants/team.constant';
 import { ChevronRight, CopyMinus, Home, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -64,7 +65,7 @@ export function NavTeams() {
                                  align="start"
                               >
                                  <DropdownMenuItem asChild>
-                                    <Link href={`/${orgId}/team/${item.key}/overview`}>
+                                    <Link href={teamOverviewPath(orgId, item.key)}>
                                        Team home
                                     </Link>
                                  </DropdownMenuItem>
@@ -76,7 +77,7 @@ export function NavTeams() {
                         <SidebarMenuSub>
                            <SidebarMenuSubItem>
                               <SidebarMenuSubButton asChild>
-                                 <Link href={`/${orgId}/team/${item.key}/overview`}>
+                                 <Link href={teamOverviewPath(orgId, item.key)}>
                                     <Home size={14} />
                                     <span>Home</span>
                                  </Link>
@@ -84,7 +85,7 @@ export function NavTeams() {
                            </SidebarMenuSubItem>
                            <SidebarMenuSubItem>
                               <SidebarMenuSubButton asChild>
-                                 <Link href={`/${orgId}/team/${item.key}/all`}>
+                                 <Link href={teamHomePath(orgId, item.key)}>
                                     <CopyMinus size={14} />
                                     <span>Issues</span>
                                  </Link>

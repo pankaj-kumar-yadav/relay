@@ -7,6 +7,7 @@ import {
    SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useCommandPaletteStore } from '@/store/command-palette-store';
+import { myIssuesPath } from '@/constants/issue.constant';
 import { FolderKanban, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -29,7 +30,7 @@ export function NavInbox() {
             </SidebarMenuItem>
             <SidebarMenuItem>
                <SidebarMenuButton asChild>
-                  <Link href={`/${orgId}/my-issues`}>
+                  <Link href={myIssuesPath(orgId)}>
                      <FolderKanban />
                      <span>My issues</span>
                   </Link>

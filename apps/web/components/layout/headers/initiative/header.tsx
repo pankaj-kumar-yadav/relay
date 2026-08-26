@@ -1,5 +1,6 @@
 'use client';
 
+import { initiativesPath } from '@/constants/workspace.constant';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { getInitiativeById } from '@/mock-data/initiatives';
@@ -26,7 +27,7 @@ export default function Header() {
             <div className="flex items-center gap-2 min-w-0">
                <SidebarTrigger />
                <Link
-                  href={`/${orgId}/initiatives`}
+                  href={initiativesPath(orgId)}
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors shrink-0"
                >
                   Initiatives

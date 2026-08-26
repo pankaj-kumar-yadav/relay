@@ -1,5 +1,7 @@
 'use client';
 
+import { formatIsoDayOrdinal } from '@/constants/date.constant';
+import { IssueStatusCategory } from '@/constants/issue.constant';
 import { CapacityRing } from '@/components/common/cycles/capacity-ring';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,7 +12,6 @@ import { Project } from '@/mock-data/projects';
 import { teams } from '@/mock-data/teams';
 import { PanelFilterTarget, usePanelFilter } from '@/components/common/issues/use-panel-filter';
 import { cn } from '@/lib/utils';
-import { format, parseISO } from 'date-fns';
 import { ProjectProgressChart } from './project-progress-chart';
 import { ArrowRight, Calendar, Check, Compass, Plus, Slack, Tag, UserPlus } from 'lucide-react';
 import { useMemo } from 'react';
@@ -21,9 +22,7 @@ interface ProjectPropertiesPanelProps {
    issues: Issue[];
 }
 
-const isCompleted = (issue: Issue) => issue.status.category === 'completed';
-
-const formatDay = (iso?: string) => (iso ? format(parseISO(iso), 'MMM do') : '—');
+const isCompleted = (issue: Issue) => issue.status.category === IssueStatusCategory.COMPLETED;
 
 interface BreakdownRow {
    key: string;
@@ -116,7 +115,8 @@ export function ProjectPropertiesPanel({ project, detail, issues }: ProjectPrope
 
    const team = teams.find((candidate) => candidate.id === project.teamId);
 
-   const started = issues.filter((issue) => issue.status.category === 'started').length;
+   const started = issues.filter((issue) => issue.status.category === IssueStatusCategory.STARTED)
+      .length;
 
    const members = useMemo(() => {
       const seen = new Set<string>();
@@ -239,12 +239,12 @@ export function ProjectPropertiesPanel({ project, detail, issues }: ProjectPrope
                <PropertyRow label="Dates">
                   <span className="inline-flex items-center gap-1">
                      <Calendar className="size-3.5 text-muted-foreground" />
-                     {formatDay(project.startDate)}
+                     {formatIsoDayOrdinal(project.startDate)}
                   </span>
                   <ArrowRight className="size-3 text-muted-foreground" />
                   <span className="inline-flex items-center gap-1">
                      <Calendar className="size-3.5 text-muted-foreground" />
-                     {project.targetDate ? formatDay(project.targetDate) : 'Target'}
+                     {project.targetDate ? formatIsoDayOrdinal(project.targetDate) : 'Target'}
                   </span>
                </PropertyRow>
                <PropertyRow label="Teams">
@@ -337,7 +337,7 @@ export function ProjectPropertiesPanel({ project, detail, issues }: ProjectPrope
                            </span>
                         </span>
                         <span className="text-xs text-muted-foreground whitespace-nowrap">
-                           {formatDay(milestone.targetDate)}
+                           {formatIsoDayOrdinal(milestone.targetDate)}
                         </span>
                      </div>
                   ))}
@@ -421,7 +421,7 @@ export function ProjectPropertiesPanel({ project, detail, issues }: ProjectPrope
                      </Avatar>
                      <p className="text-muted-foreground leading-relaxed">
                         <span className="text-foreground">{event.user.name}</span> {event.text} ·{' '}
-                        {formatDay(event.date)}
+                        {formatIsoDayOrdinal(event.date)}
                      </p>
                   </div>
                ))}

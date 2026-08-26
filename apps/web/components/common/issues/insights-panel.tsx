@@ -8,6 +8,7 @@ import {
    SelectTrigger,
    SelectValue,
 } from '@/components/ui/select';
+import { IssuePriority } from '@/constants/issue.constant';
 import { cn } from '@/lib/utils';
 import { Issue } from '@/mock-data/issues';
 import { priorities } from '@/mock-data/priorities';
@@ -19,11 +20,11 @@ import { usePanelFilter } from './use-panel-filter';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const PRIORITY_COLORS: Record<string, string> = {
-   'no-priority': '#64748b',
-   'urgent': '#eb5757',
-   'high': '#f2994a',
-   'medium': '#facc15',
-   'low': '#4cb782',
+   [IssuePriority.NO_PRIORITY]: '#64748b',
+   [IssuePriority.URGENT]: '#eb5757',
+   [IssuePriority.HIGH]: '#f2994a',
+   [IssuePriority.MEDIUM]: '#facc15',
+   [IssuePriority.LOW]: '#4cb782',
 };
 
 interface InsightsRow {

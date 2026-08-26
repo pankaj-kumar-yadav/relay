@@ -1,5 +1,6 @@
 'use client';
 
+import { ProjectTab, projectPath, projectsPath } from '@/constants/project.constant';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
@@ -10,9 +11,9 @@ import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 
 const PROJECT_TABS = [
-   { label: 'Overview', segment: 'overview' },
-   { label: 'Activity', segment: 'activity' },
-   { label: 'Issues', segment: 'issues' },
+   { label: 'Overview', segment: ProjectTab.OVERVIEW },
+   { label: 'Activity', segment: ProjectTab.ACTIVITY },
+   { label: 'Issues', segment: ProjectTab.ISSUES },
 ];
 
 function ProjectTabs({ projectId }: { projectId: string }) {
@@ -22,7 +23,7 @@ function ProjectTabs({ projectId }: { projectId: string }) {
    return (
       <div className="flex items-center gap-1">
          {PROJECT_TABS.map((tab) => {
-            const href = `/${orgId}/project/${projectId}/${tab.segment}`;
+            const href = projectPath(orgId, projectId, tab.segment);
             const isActive = pathname === href;
             return (
                <Link
@@ -80,7 +81,7 @@ export default function Header({ projectId }: { projectId: string }) {
                <SidebarTrigger className="" />
                <div className="flex items-center gap-1.5 text-sm min-w-0">
                   <Link
-                     href={`/${orgId}/projects`}
+                     href={projectsPath(orgId)}
                      className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                      Projects

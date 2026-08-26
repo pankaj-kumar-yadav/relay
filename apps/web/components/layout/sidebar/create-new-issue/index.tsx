@@ -19,7 +19,8 @@ import { TeamSelector } from './team-selector';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { useCreateIssue } from '@/hooks/use-issues';
 import { useTeams } from '@/hooks/use-teams';
-import { DEFAULT_TEAM_KEY } from '@/lib/paths';
+import { DEFAULT_ISSUE_PRIORITY, DEFAULT_ISSUE_STATUS } from '@/constants/issue.constant';
+import { DEFAULT_TEAM_KEY } from '@/constants/team.constant';
 import { useParams } from 'next/navigation';
 import type { TeamSummary } from '@/services/teams.service';
 
@@ -43,9 +44,9 @@ export function CreateNewIssue() {
          identifier: '',
          title: '',
          description: '',
-         status: defaultStatus || status.find((s) => s.id === 'to-do')!,
+         status: defaultStatus || status.find((s) => s.id === DEFAULT_ISSUE_STATUS)!,
          assignee: null,
-         priority: priorities.find((p) => p.id === 'no-priority')!,
+         priority: priorities.find((p) => p.id === DEFAULT_ISSUE_PRIORITY)!,
          labels: [],
          createdAt: new Date().toISOString(),
          cycleId: '',

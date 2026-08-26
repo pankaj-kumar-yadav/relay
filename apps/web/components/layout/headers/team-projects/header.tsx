@@ -1,5 +1,6 @@
 'use client';
 
+import { teamOverviewPath } from '@/constants/team.constant';
 import { CreateProjectButton } from '@/components/common/projects/create-project-modal';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useTeams } from '@/hooks/use-teams';
@@ -17,7 +18,7 @@ export default function Header() {
          <div className="flex items-center gap-2 min-w-0">
             <SidebarTrigger />
             <Link
-               href={`/${orgId}/team/${teamId}/overview`}
+               href={teamOverviewPath(orgId, teamId)}
                className="flex items-center gap-1.5 min-w-0 hover:opacity-80"
             >
                <div className="inline-flex size-5 bg-muted/50 items-center justify-center rounded shrink-0 text-xs">

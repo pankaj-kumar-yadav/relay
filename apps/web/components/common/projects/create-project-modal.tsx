@@ -22,11 +22,11 @@ import {
   DEFAULT_PROJECT_STATUS,
   ProjectHealth,
   ProjectStatus,
+  projectIssuesPath,
 } from '@/constants/project.constant';
 import { useCreateProject } from '@/hooks/use-projects';
 import { useTeams } from '@/hooks/use-teams';
 import { ApiError } from '@/lib/api';
-import { projectIssuesPath } from '@/lib/paths';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

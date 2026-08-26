@@ -1,10 +1,11 @@
 'use client';
 
+import { DateFormat, formatDate } from '@/constants/date.constant';
+import { projectOverviewPath } from '@/constants/project.constant';
 import { CapacityRing } from '@/components/common/cycles/capacity-ring';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Project } from '@/mock-data/projects';
 import { useProjectsDisplayStore } from '@/store/projects-display-store';
-import { format, parseISO } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -21,7 +22,7 @@ function ProjectCard({ project }: { project: Project }) {
                <project.icon className="size-4" />
             </span>
             <Link
-               href={`/${orgId}/project/${project.id}/overview`}
+               href={projectOverviewPath(orgId, project.id)}
                className="text-sm font-medium leading-snug hover:underline underline-offset-2 min-w-0"
             >
                {project.name}
@@ -71,7 +72,7 @@ function ProjectCard({ project }: { project: Project }) {
             {displayProperties.targetDate && project.targetDate && (
                <span className="inline-flex items-center gap-1">
                   <Calendar className="size-3" />
-                  {format(parseISO(project.targetDate), 'MMM d')}
+                  {formatDate(project.targetDate, DateFormat.MONTH_DAY)}
                </span>
             )}
             {displayProperties.lead && (

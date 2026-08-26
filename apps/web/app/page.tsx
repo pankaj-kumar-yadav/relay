@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { AppRoute } from '@/constants/auth.constant';
 import { useSession } from '@/hooks/use-session';
 import { useResolveHomePath } from '@/hooks/use-orgs';
 
@@ -13,7 +14,7 @@ export default function Home() {
   useEffect(() => {
     if (!isFetched) return;
     if (!user || isError) {
-      router.replace('/login');
+      router.replace(AppRoute.LOGIN);
       return;
     }
     let cancelled = false;
@@ -22,7 +23,7 @@ export default function Home() {
         if (!cancelled) router.replace(path);
       })
       .catch(() => {
-        if (!cancelled) router.replace('/login');
+        if (!cancelled) router.replace(AppRoute.LOGIN);
       });
     return () => {
       cancelled = true;

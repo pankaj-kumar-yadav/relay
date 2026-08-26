@@ -1,7 +1,7 @@
 'use client';
 
+import { DateFormat, formatDate } from '@/constants/date.constant';
 import * as React from 'react';
-import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -35,7 +35,7 @@ export function DatePicker({ date, onDateChange }: DatePickerProps) {
                <CalendarIcon className="h-4 w-4 md:mr-0.5" />
                {selectedDate ? (
                   <span className="text-xs hidden xl:inline mt-[1px]">
-                     {format(selectedDate, 'MMM dd, yyyy')}
+                     {formatDate(selectedDate, DateFormat.MONTH_DAY_PAD_YEAR)}
                   </span>
                ) : (
                   <span className="text-xs text-muted-foreground hidden xl:inline mt-[1px]">

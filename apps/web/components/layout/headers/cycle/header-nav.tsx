@@ -1,5 +1,6 @@
 'use client';
 
+import { teamCyclesPath, teamOverviewPath } from '@/constants/team.constant';
 import { CyclePlayIcon } from '@/components/common/cycles/cycle-line';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { getCurrentCycle, getUpcomingCycle } from '@/mock-data/cycles';
@@ -19,7 +20,7 @@ export default function HeaderNav({ cycleView }: { cycleView: CycleView }) {
          <div className="flex items-center gap-2 min-w-0">
             <SidebarTrigger />
             <Link
-               href={`/${orgId}/team/${team.id}/overview`}
+               href={teamOverviewPath(orgId, team.id)}
                className="flex items-center gap-1.5 min-w-0 hover:opacity-80"
             >
                <div className="inline-flex size-5 bg-muted/50 items-center justify-center rounded shrink-0 text-xs">
@@ -29,7 +30,7 @@ export default function HeaderNav({ cycleView }: { cycleView: CycleView }) {
             </Link>
             <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
             <Link
-               href={`/${orgId}/team/${team.id}/cycles`}
+               href={teamCyclesPath(orgId, team.id)}
                className="text-sm font-medium text-muted-foreground hover:text-foreground"
             >
                Cycles

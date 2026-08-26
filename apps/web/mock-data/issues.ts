@@ -1,3 +1,4 @@
+import { IssuePriority } from '@/constants/issue.constant';
 import { LexoRank } from '@/lib/utils';
 import { LabelInterface, labels } from './labels';
 import { Priority, priorities } from './priorities';
@@ -1317,11 +1318,11 @@ export function groupIssuesByStatus(issues: Issue[]): Record<string, Issue[]> {
 
 export function sortIssuesByPriority(issues: Issue[]): Issue[] {
    const priorityOrder: Record<string, number> = {
-      'urgent': 0,
-      'high': 1,
-      'medium': 2,
-      'low': 3,
-      'no-priority': 4,
+      [IssuePriority.URGENT]: 0,
+      [IssuePriority.HIGH]: 1,
+      [IssuePriority.MEDIUM]: 2,
+      [IssuePriority.LOW]: 3,
+      [IssuePriority.NO_PRIORITY]: 4,
    };
 
    return issues

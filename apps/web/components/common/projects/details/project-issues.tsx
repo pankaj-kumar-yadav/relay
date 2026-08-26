@@ -1,5 +1,6 @@
 'use client';
 
+import { projectsPath } from '@/constants/project.constant';
 import { GroupedIssuesView } from '@/components/common/issues/grouped-issues-view';
 import { applyIssueFilters } from '@/components/common/issues/issue-filter-columns';
 import { IssueFilterBar } from '@/components/common/issues/issue-filter-bar';
@@ -42,7 +43,7 @@ export default function ProjectIssues({ projectId }: ProjectIssuesProps) {
       return (
          <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-muted-foreground">
             <p>Project not found.</p>
-            <Link href={`/${orgId}/projects`} className="underline">
+            <Link href={projectsPath(orgId)} className="underline">
                Back to projects
             </Link>
          </div>

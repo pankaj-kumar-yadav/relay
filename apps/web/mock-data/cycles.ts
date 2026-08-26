@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns';
+import { DateFormat, formatDate, toDate } from '@/constants/date.constant';
 
 export type CycleStatus = 'planned' | 'upcoming' | 'current' | 'completed';
 
@@ -48,7 +48,7 @@ const generateBurnup = (
    startedTarget: number
 ): CycleBurnupPoint[] => {
    const points: CycleBurnupPoint[] = [];
-   const start = parseISO(startDate);
+   const start = toDate(startDate);
 
    for (let i = 0; i <= days; i++) {
       const t = i / days;
@@ -64,7 +64,7 @@ const generateBurnup = (
       date.setDate(start.getDate() + i);
 
       points.push({
-         date: format(date, 'yyyy-MM-dd'),
+         date: formatDate(date, DateFormat.ISO_DATE),
          scope,
          started: completed + Math.max(0, started),
          completed,
@@ -227,7 +227,7 @@ export function getCyclesByTeam(teamId: string): Cycle[] {
 }
 
 export function formatCycleDateRange(cycle: Cycle): string {
-   return `${format(parseISO(cycle.startDate), 'MMM d')} → ${format(parseISO(cycle.endDate), 'MMM d')}`;
+   return `${formatDate(cycle.startDate, DateFormat.MONTH_DAY)} → ${formatDate(cycle.endDate, DateFormat.MONTH_DAY)}`;
 }
 
 export const cycleStatusLabel: Record<CycleStatus, string> = {

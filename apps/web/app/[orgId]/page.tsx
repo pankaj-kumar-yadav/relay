@@ -1,7 +1,7 @@
 'use client';
 
 import { useTeams } from '@/hooks/use-teams';
-import { DEFAULT_TEAM_KEY, teamHomePath } from '@/lib/paths';
+import { DEFAULT_TEAM_KEY, teamHomePath } from '@/constants/team.constant';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { DateFormat, formatDate } from '@/constants/date.constant';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CircleCheck, CircleX, AlertCircle, HelpCircle, Bell } from 'lucide-react';
@@ -82,7 +83,7 @@ export function HealthPopover({ project }: HealthPopoverProps) {
                      <span className="text-xs text-muted-foreground">{project.lead.name}</span>
                      <span className="text-xs text-muted-foreground">·</span>
                      <span className="text-xs text-muted-foreground">
-                        {new Date(project.startDate).toLocaleDateString()}
+                        {formatDate(project.startDate, DateFormat.MONTH_DAY_YEAR)}
                      </span>
                   </div>
                </div>

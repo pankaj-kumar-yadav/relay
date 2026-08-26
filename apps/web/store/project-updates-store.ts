@@ -1,3 +1,4 @@
+import { toIsoDate } from '@/constants/date.constant';
 import { create } from 'zustand';
 import { ProjectUpdate, ProjectUpdateHealth } from '@/mock-data/project-details';
 import { users } from '@/mock-data/users';
@@ -21,7 +22,7 @@ export const useProjectUpdatesStore = create<ProjectUpdatesState>((set) => ({
          const update: ProjectUpdate = {
             id: `posted-${nextId++}`,
             author: users[0],
-            date: new Date().toISOString().slice(0, 10),
+            date: toIsoDate(),
             health,
             blocks: text
                .split(/\n{2,}/)

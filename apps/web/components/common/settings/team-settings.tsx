@@ -1,5 +1,6 @@
 'use client';
 
+import { teamOverviewPath } from '@/constants/team.constant';
 import { Button } from '@/components/ui/button';
 import { getCyclesByTeam } from '@/mock-data/cycles';
 import { status } from '@/mock-data/status';
@@ -69,7 +70,7 @@ export default function TeamSettings({ teamId }: TeamSettingsProps) {
                   </p>
                </div>
                <Link
-                  href={`/${orgId}/team/${team.id}/overview`}
+                  href={teamOverviewPath(orgId, team.id)}
                   className="text-sm inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                >
                   Team overview

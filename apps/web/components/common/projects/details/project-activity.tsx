@@ -1,5 +1,8 @@
 'use client';
 
+import { DateFormat, formatDate } from '@/constants/date.constant';
+import { IssueStatusCategory } from '@/constants/issue.constant';
+import { projectsPath } from '@/constants/project.constant';
 import { ContentBlocks } from '@/components/common/issues/details/content-blocks';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -20,7 +23,6 @@ import {
 import { useProject } from '@/hooks/use-projects';
 import { useIssuesStore } from '@/store/issues-store';
 import { useProjectUpdatesStore } from '@/store/project-updates-store';
-import { format, parseISO } from 'date-fns';
 import { Paperclip, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -53,7 +55,7 @@ function UpdateCard({ update }: { update: ProjectUpdate }) {
             </Avatar>
             <span className="font-medium">{update.author.name}</span>
             <span className="text-xs text-muted-foreground">
-               {format(parseISO(update.date), 'MMM d')}
+               {formatDate(update.date, DateFormat.MONTH_DAY)}
             </span>
             <span className="ml-auto">
                <HealthBadge health={update.health} />
@@ -89,7 +91,7 @@ export default function ProjectActivity({ projectId }: ProjectActivityProps) {
    const updatesByMonth = useMemo(() => {
       const groups = new Map<string, ProjectUpdate[]>();
       for (const update of updates) {
-         const month = format(parseISO(update.date), 'MMMM');
+         const month = formatDate(update.date, DateFormat.MONTH_LONG);
          groups.set(month, [...(groups.get(month) ?? []), update]);
       }
       return [...groups.entries()];
@@ -98,7 +100,8 @@ export default function ProjectActivity({ projectId }: ProjectActivityProps) {
    const completedPercent =
       issues.length > 0
          ? Math.round(
-              (issues.filter((issue) => issue.status.category === 'completed').length /
+              (issues.filter((issue) => issue.status.category === IssueStatusCategory.COMPLETED)
+                 .length /
                  issues.length) *
                  100
            )
@@ -112,7 +115,7 @@ export default function ProjectActivity({ projectId }: ProjectActivityProps) {
       return (
          <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-muted-foreground">
             <p>Project not found.</p>
-            <Link href={`/${orgId}/projects`} className="underline">
+            <Link href={projectsPath(orgId)} className="underline">
                Back to projects
             </Link>
          </div>
@@ -200,7 +203,7 @@ export default function ProjectActivity({ projectId }: ProjectActivityProps) {
                               set to{' '}
                               <span className="text-foreground">
                                  {project.targetDate
-                                    ? format(parseISO(project.targetDate), 'MMM do')
+                                    ? formatDate(project.targetDate, DateFormat.MONTH_DAY_ORDINAL)
                                     : '—'}
                               </span>
                            </span>

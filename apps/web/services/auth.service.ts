@@ -1,3 +1,5 @@
+import { AuthApiPath } from '@/constants/auth.constant';
+import { HttpStatus } from '@/constants/http.constant';
 import { api, ApiError } from '@/lib/api';
 
 export type AuthUser = {
@@ -10,7 +12,7 @@ export type AuthUser = {
 type UserResponse = { user: AuthUser };
 
 export async function loginApi(email: string, password: string): Promise<AuthUser> {
-  const data = await api<UserResponse>('/auth/login', {
+  const data = await api<UserResponse>(AuthApiPath.LOGIN, {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
@@ -22,7 +24,7 @@ export async function registerApi(input: {
   email: string;
   password: string;
 }): Promise<AuthUser> {
-  const data = await api<UserResponse>('/auth/register', {
+  const data = await api<UserResponse>(AuthApiPath.REGISTER, {
     method: 'POST',
     body: JSON.stringify(input),
   });
@@ -30,15 +32,15 @@ export async function registerApi(input: {
 }
 
 export async function logoutApi(): Promise<void> {
-  await api('/auth/logout', { method: 'POST' });
+  await api(AuthApiPath.LOGOUT, { method: 'POST' });
 }
 
 export async function getSessionApi(): Promise<AuthUser | null> {
   try {
-    const data = await api<UserResponse>('/auth/session');
+    const data = await api<UserResponse>(AuthApiPath.SESSION);
     return data.user;
   } catch (err) {
-    if (err instanceof ApiError && err.status === 401) {
+    if (err instanceof ApiError && err.status === HttpStatus.UNAUTHORIZED) {
       return null;
     }
     throw err;

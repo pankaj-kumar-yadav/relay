@@ -1,9 +1,9 @@
 'use client';
 
-import { issuePath } from '@/lib/paths';
+import { DateFormat, formatDate } from '@/constants/date.constant';
+import { issuePath } from '@/constants/issue.constant';
 import { Issue } from '@/mock-data/issues';
 import { useDisplaySettingsStore } from '@/store/display-settings-store';
-import { format } from 'date-fns';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { motion } from 'motion/react';
@@ -44,7 +44,7 @@ function IssueDragPreview({ issue }: { issue: Issue }) {
 
          <div className="flex items-center justify-between mt-auto pt-2">
             <span className="text-xs text-muted-foreground">
-               {format(new Date(issue.createdAt), 'MMM dd')}
+                        {formatDate(issue.createdAt, DateFormat.MONTH_DAY_PAD)}
             </span>
             <AssigneeUser user={issue.assignee} issueId={issue.id} />
          </div>
@@ -144,7 +144,7 @@ export function IssueGrid({ issue }: IssueGridProps) {
                <div className="flex items-center justify-between mt-auto pt-2">
                   {displayProperties.created ? (
                      <span className="text-xs text-muted-foreground">
-                        {format(new Date(issue.createdAt), 'MMM dd')}
+                                 {formatDate(issue.createdAt, DateFormat.MONTH_DAY_PAD)}
                      </span>
                   ) : (
                      <span />

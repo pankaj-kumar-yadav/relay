@@ -19,6 +19,10 @@ import { useIssuesStore } from '@/store/issues-store';
 import { useRightPanelStore } from '@/store/right-panel-store';
 import { useSearchStore } from '@/store/search-store';
 import { useViewStore } from '@/store/view-store';
+import {
+  LOCAL_TIME_REFRESH_MS,
+  formatLocalTime,
+} from '@/constants/date.constant';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { parseAsString, useQueryState } from 'nuqs';
 import { useEffect, useMemo, useState } from 'react';
@@ -73,20 +77,13 @@ function useClientTimes(member: User) {
    useEffect(() => {
       const update = () => {
          try {
-            setLocalTime(
-               new Intl.DateTimeFormat('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: false,
-                  timeZone: member.timezone,
-               }).format(new Date())
-            );
+            setLocalTime(formatLocalTime(new Date(), member.timezone));
          } catch {
             setLocalTime(null);
          }
       };
       update();
-      const interval = setInterval(update, 30_000);
+      const interval = setInterval(update, LOCAL_TIME_REFRESH_MS);
       setJoinedAgo(formatDistanceToNowStrict(new Date(member.joinedDate), { addSuffix: true }));
       return () => clearInterval(interval);
    }, [member]);

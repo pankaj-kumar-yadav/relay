@@ -1,5 +1,7 @@
 'use client';
 
+import { settingsPath } from '@/constants/org.constant';
+import { teamHomePath, teamMembersPath, teamsPath } from '@/constants/team.constant';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useTeams } from '@/hooks/use-teams';
@@ -24,7 +26,7 @@ export default function TeamOverview() {
       return (
          <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-muted-foreground">
             <p>Team {teamId} not found.</p>
-            <Link href={`/${orgId}/teams`} className="underline">
+            <Link href={teamsPath(orgId)} className="underline">
                Back to teams
             </Link>
          </div>
@@ -39,8 +41,8 @@ export default function TeamOverview() {
    };
 
    const goToLinks = [
-      { label: 'Team settings', icon: Settings, href: `/${orgId}/settings` },
-      { label: 'Issues', icon: CopyMinus, href: `/${orgId}/team/${team.id}/all` },
+      { label: 'Team settings', icon: Settings, href: settingsPath(orgId) },
+      { label: 'Issues', icon: CopyMinus, href: teamHomePath(orgId, team.id) },
    ];
 
    return (
@@ -79,7 +81,7 @@ export default function TeamOverview() {
          <div className="w-full lg:w-60 shrink-0">
             <h3 className="text-sm font-medium text-muted-foreground">Members</h3>
             <Link
-               href={`/${orgId}/team/${team.id}/members`}
+               href={teamMembersPath(orgId, team.id)}
                className="mt-2 flex items-center gap-2 hover:opacity-80"
             >
                <div className="flex -space-x-1.5">

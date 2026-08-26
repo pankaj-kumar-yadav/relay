@@ -1,3 +1,6 @@
+import { AuthApiPath } from '@/constants/auth.constant';
+import { ErrorCode, HttpStatus } from '@/constants/http.constant';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export class ApiError extends Error {
@@ -18,11 +21,19 @@ type ApiEnvelope<T> = {
   error: { code: string; message: string } | null;
 };
 
-const NO_REFRESH_PATHS = new Set(['/auth/refresh', '/auth/login', '/auth/register']);
+const NO_REFRESH_PATHS = new Set<string>([
+  AuthApiPath.REFRESH,
+  AuthApiPath.LOGIN,
+  AuthApiPath.REGISTER,
+]);
 
 function shouldAttemptRefresh(path: string, status: number, code: string) {
   if (NO_REFRESH_PATHS.has(path)) return false;
-  return status === 401 || code === 'TOKEN_EXPIRED' || code === 'UNAUTHORIZED';
+  return (
+    status === HttpStatus.UNAUTHORIZED ||
+    code === ErrorCode.TOKEN_EXPIRED ||
+    code === ErrorCode.UNAUTHORIZED
+  );
 }
 
 async function parseEnvelope<T>(res: Response): Promise<{
@@ -45,7 +56,7 @@ async function rawFetch(path: string, init?: RequestInit) {
 }
 
 async function refreshSession(): Promise<boolean> {
-  const res = await rawFetch('/auth/refresh', { method: 'POST', body: '{}' });
+  const res = await rawFetch(AuthApiPath.REFRESH, { method: 'POST', body: '{}' });
   const { body } = await parseEnvelope(res);
   return res.ok && body.success !== false;
 }
@@ -54,7 +65,7 @@ export async function api<T extends object>(path: string, init?: RequestInit): P
   const first = await parseEnvelope<T>(await rawFetch(path, init));
   let { res, body } = first;
 
-  const code = body.error?.code || 'ERROR';
+  const code = body.error?.code || ErrorCode.INTERNAL;
   if (!res.ok || body.success === false) {
     if (shouldAttemptRefresh(path, res.status, code)) {
       const refreshed = await refreshSession();
@@ -67,13 +78,13 @@ export async function api<T extends object>(path: string, init?: RequestInit): P
   if (!res.ok || body.success === false) {
     throw new ApiError(
       res.status,
-      body.error?.code || 'ERROR',
+      body.error?.code || ErrorCode.INTERNAL,
       body.error?.message || body.message || res.statusText,
     );
   }
 
   if (body.data == null) {
-    throw new ApiError(res.status, 'ERROR', body.message || 'Empty response data');
+    throw new ApiError(res.status, ErrorCode.INTERNAL, body.message || 'Empty response data');
   }
 
   return body.data;

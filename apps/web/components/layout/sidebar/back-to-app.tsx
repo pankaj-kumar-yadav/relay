@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { useTeams } from '@/hooks/use-teams';
-import { DEFAULT_TEAM_KEY } from '@/lib/paths';
+import { DEFAULT_TEAM_KEY, teamHomePath } from '@/constants/team.constant';
 
 export function BackToApp() {
    const { orgId } = useParams<{ orgId: string }>();
@@ -16,7 +16,7 @@ export function BackToApp() {
    return (
       <div className="w-full flex items-center justify-between gap-2">
          <Button className="w-fit" size="xs" variant="outline" asChild>
-            <Link href={`/${orgId}/team/${teamKey}/all`}>
+            <Link href={teamHomePath(orgId, teamKey)}>
                <ChevronLeft className="size-4" />
                Back to app
             </Link>

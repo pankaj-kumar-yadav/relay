@@ -1,5 +1,7 @@
 'use client';
 
+import { IssueStatusCategory } from '@/constants/issue.constant';
+import { projectOverviewPath } from '@/constants/project.constant';
 import ProjectsTimeline from '@/components/common/projects/projects-timeline';
 import { ProjectGroup } from '@/components/common/projects/projects';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -51,14 +53,28 @@ const formatTarget = (iso: string): string => {
 /* ------------------------------ projects table ---------------------------- */
 
 const GROUP_ORDER: { key: string; label: string; match: (project: Project) => boolean }[] = [
-   { key: 'in-progress', label: 'In Progress', match: (p) => p.status.category === 'started' },
-   { key: 'planned', label: 'Planned', match: (p) => p.status.category === 'unstarted' },
+   {
+      key: 'in-progress',
+      label: 'In Progress',
+      match: (p) => p.status.category === IssueStatusCategory.STARTED,
+   },
+   {
+      key: 'planned',
+      label: 'Planned',
+      match: (p) => p.status.category === IssueStatusCategory.UNSTARTED,
+   },
    {
       key: 'backlog',
       label: 'Backlog',
-      match: (p) => p.status.category === 'backlog' || p.status.category === 'triage',
+      match: (p) =>
+         p.status.category === IssueStatusCategory.BACKLOG ||
+         p.status.category === IssueStatusCategory.TRIAGE,
    },
-   { key: 'completed', label: 'Completed', match: (p) => p.status.category === 'completed' },
+   {
+      key: 'completed',
+      label: 'Completed',
+      match: (p) => p.status.category === IssueStatusCategory.COMPLETED,
+   },
 ];
 
 function ProjectsSection({ initiative }: { initiative: Initiative }) {
@@ -93,7 +109,7 @@ function ProjectsSection({ initiative }: { initiative: Initiative }) {
                {group.projects.map((project) => (
                   <Link
                      key={project.id}
-                     href={`/${orgId}/project/${project.id}/overview`}
+                     href={projectOverviewPath(orgId, project.id)}
                      className="flex items-center gap-2 py-2 text-sm hover:bg-sidebar/50 rounded-md px-1 -mx-1 transition-colors"
                   >
                      <project.icon className="size-4 text-muted-foreground shrink-0" />

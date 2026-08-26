@@ -1,5 +1,6 @@
 'use client';
 
+import { IssueStatusCategory } from '@/constants/issue.constant';
 import { projects } from '@/mock-data/projects';
 import { StatusCategory } from '@/mock-data/status';
 import { Plus } from 'lucide-react';
@@ -11,11 +12,11 @@ import { SettingsShell } from './shared';
  * workflow in the mock data) are mapped onto the five project categories.
  */
 const CATEGORY_GROUPS: { label: string; categories: StatusCategory[] }[] = [
-   { label: 'Backlog', categories: ['backlog', 'triage'] },
-   { label: 'Planned', categories: ['unstarted'] },
-   { label: 'In Progress', categories: ['started'] },
-   { label: 'Completed', categories: ['completed'] },
-   { label: 'Canceled', categories: ['canceled'] },
+   { label: 'Backlog', categories: [IssueStatusCategory.BACKLOG, IssueStatusCategory.TRIAGE] },
+   { label: 'Planned', categories: [IssueStatusCategory.UNSTARTED] },
+   { label: 'In Progress', categories: [IssueStatusCategory.STARTED] },
+   { label: 'Completed', categories: [IssueStatusCategory.COMPLETED] },
+   { label: 'Canceled', categories: [IssueStatusCategory.CANCELED] },
 ];
 
 /** Workspace "Project statuses" settings. */

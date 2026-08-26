@@ -6,7 +6,7 @@ import { LabelBadge } from '@/components/common/issues/label-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { issuePath } from '@/lib/paths';
+import { issuePath } from '@/constants/issue.constant';
 import { getNotificationIcon } from '@/lib/notification-utils';
 import { getIssueDetail } from '@/mock-data/issue-details';
 import { InboxItem } from '@/mock-data/inbox';

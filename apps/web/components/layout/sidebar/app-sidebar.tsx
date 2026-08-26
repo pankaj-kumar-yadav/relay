@@ -10,13 +10,14 @@ import { NavSettings } from '@/components/layout/sidebar/nav-settings';
 import { NavTeamsSettings } from '@/components/layout/sidebar/nav-teams-settings';
 import { OrgSwitcher } from '@/components/layout/sidebar/org-switcher';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
+import { OrgPath } from '@/constants/org.constant';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BackToApp } from '@/components/layout/sidebar/back-to-app';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
    const pathname = usePathname();
-   const isSettings = pathname.includes('/settings');
+   const isSettings = pathname.includes(OrgPath.SETTINGS);
    return (
       <Sidebar collapsible="offcanvas" {...props}>
          <SidebarHeader>{isSettings ? <BackToApp /> : <OrgSwitcher />}</SidebarHeader>

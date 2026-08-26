@@ -1,7 +1,7 @@
 'use client';
 
+import { DateFormat, formatDate } from '@/constants/date.constant';
 import { cycles } from '@/mock-data/cycles';
-import { format, parseISO } from 'date-fns';
 import { Fragment } from 'react';
 import CycleLine from './cycle-line';
 import { CycleBurnupChart, CycleProgressLegend } from './cycle-burnup-chart';
@@ -22,9 +22,9 @@ export default function Cycles() {
                      <div className="absolute right-[20.5px] top-0 bottom-0 w-px bg-border" />
                      <div className="flex items-center gap-2 h-12">
                         <span className="text-[11px] leading-tight text-muted-foreground text-right">
-                           {format(parseISO(cycle.startDate), 'MMM')}
+                           {formatDate(cycle.startDate, DateFormat.MONTH)}
                            <br />
-                           {format(parseISO(cycle.startDate), 'd')}
+                           {formatDate(cycle.startDate, DateFormat.DAY)}
                         </span>
                         <span
                            className={

@@ -1,5 +1,6 @@
 'use client';
 
+import { membersPath } from '@/constants/org.constant';
 import { IssueFilterTrigger } from '@/components/common/issues/issue-filter-trigger';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -138,7 +139,7 @@ export default function Header({ member }: { member: User }) {
                <SidebarTrigger className="" />
                <div className="flex items-center gap-1.5 text-sm min-w-0">
                   <Link
-                     href={`/${orgId}/members`}
+                     href={membersPath(orgId)}
                      className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                      Members

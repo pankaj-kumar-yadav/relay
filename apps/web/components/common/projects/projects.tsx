@@ -1,5 +1,9 @@
 'use client';
 
+import {
+   IssueStatusCategory,
+   type IssueStatusCategoryValue,
+} from '@/constants/issue.constant';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Project } from '@/mock-data/projects';
@@ -34,9 +38,17 @@ const TAB_ITEMS: { label: string; value: (typeof TABS)[number] }[] = [
 ];
 
 /** Status categories considered "active" for the Active projects tab. */
-const ACTIVE_CATEGORIES = new Set(['triage', 'backlog', 'unstarted', 'started']);
+const ACTIVE_CATEGORIES = new Set<IssueStatusCategoryValue>([
+   IssueStatusCategory.TRIAGE,
+   IssueStatusCategory.BACKLOG,
+   IssueStatusCategory.UNSTARTED,
+   IssueStatusCategory.STARTED,
+]);
 /** Categories hidden by "Show closed projects: Hide closed". */
-const CLOSED_CATEGORIES = new Set(['completed', 'canceled']);
+const CLOSED_CATEGORIES = new Set<IssueStatusCategoryValue>([
+   IssueStatusCategory.COMPLETED,
+   IssueStatusCategory.CANCELED,
+]);
 
 /**
  * Projects page. With a `teamId` the whole page (tabs, filters, display

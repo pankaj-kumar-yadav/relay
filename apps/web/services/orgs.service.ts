@@ -1,4 +1,5 @@
-import { DEFAULT_TEAM_KEY, teamHomePath } from '@/lib/paths';
+import { AppRoute } from '@/constants/auth.constant';
+import { DEFAULT_TEAM_KEY, teamHomePath } from '@/constants/team.constant';
 import { api } from '@/lib/api';
 import { listTeamsApi } from '@/services/teams.service';
 
@@ -29,7 +30,7 @@ export async function getOrgApi(slug: string) {
 
 export async function resolveHomePathApi(): Promise<string> {
   const { organizations } = await listOrgsApi();
-  if (organizations.length === 0) return '/new';
+  if (organizations.length === 0) return AppRoute.NEW;
   const org = organizations[0]!;
   const { teams } = await listTeamsApi(org.slug);
   const key = teams[0]?.key ?? DEFAULT_TEAM_KEY;

@@ -1,11 +1,12 @@
 'use client';
 
+import { TeamTab, teamPath } from '@/constants/team.constant';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 
 const TEAM_TABS = [
-   { label: 'Overview', segment: 'overview' },
+   { label: 'Overview', segment: TeamTab.OVERVIEW },
 ];
 
 export default function HeaderTabs() {
@@ -16,7 +17,7 @@ export default function HeaderTabs() {
       <div className="w-full flex justify-between items-center border-b py-1.5 px-6 h-10">
          <div className="flex items-center gap-1">
             {TEAM_TABS.map((tab) => {
-               const href = `/${orgId}/team/${teamId}/${tab.segment}`;
+               const href = teamPath(orgId, teamId, tab.segment);
                const isActive = pathname === href;
                return (
                   <Link
