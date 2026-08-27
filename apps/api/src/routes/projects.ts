@@ -9,8 +9,8 @@ import {
 } from '@/constants/project.constant.js';
 import { HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
-import { requireAuth } from '@/middleware/requireAuth.js';
-import { requireOrgMember } from '@/middleware/requireOrgMember.js';
+import { requireAuth } from '@/middleware/auth/requireAuth.js';
+import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { NotFoundError, sendError, ValidationError } from '@/utils/errors.js';
 import { findProject, projectSelect, publicProject } from '@/utils/projects.js';
 import { sendSuccess } from '@/utils/response.js';

@@ -3,7 +3,9 @@ description: Never commit (especially docs) unless the user explicitly asks
 alwaysApply: true
 ---
 
-# No unsolicited commits
+# Git — no unsolicited commits
+
+Canonical: `docs/project-rules/git-rules.md`
 
 ## Hard rules
 

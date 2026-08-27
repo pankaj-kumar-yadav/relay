@@ -42,6 +42,14 @@ pnpm --filter @relay/web dev
 pnpm --filter @relay/api dev
 ```
 
+## Seed + local login
+
+```bash
+pnpm --filter @relay/api db:seed
+```
+
+Sign in at http://localhost:3000/login with `owner@relay.local` / `password` (org slug `acme`). Full seed accounts: [apps/api/README.md](apps/api/README.md).
+
 ## Docs
 
 - [Docs index](docs/README.md)
@@ -49,4 +57,5 @@ pnpm --filter @relay/api dev
 - [ARCHITECTURE](docs/ARCHITECTURE.md) — system design
 - [STEPS](docs/STEPS.md) — implementation roadmap
 - [Step details](docs/steps/) — how to execute each step
-- [AGENTS](AGENTS.md) — agent rules
+- [Project rules](docs/project-rules/) — coding conventions
+- [AGENTS](AGENTS.md) — agent entrypoint

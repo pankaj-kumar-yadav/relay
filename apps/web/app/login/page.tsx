@@ -7,21 +7,16 @@ import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { AuthShell } from '@/components/common/auth/auth-shell';
 import { SocialProviderIcon } from '@/components/common/auth/social-provider-icons';
+import { SeedAccountPrefill } from '@/components/common/auth/seed-account-prefill';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import {
-   Select,
-   SelectContent,
-   SelectItem,
-   SelectTrigger,
-   SelectValue,
-} from '@/components/ui/select';
 import { ApiError } from '@/lib/api';
 import { AppRoute, AUTH_SOCIAL_PROVIDERS, nextPathFromSearch } from '@/constants/auth.constant';
 import { BRAND_NAME } from '@/constants/brand.constant';
-import { SEED_ACCOUNTS, SEED_PASSWORD } from '@/constants/seed.constant';
+import { NodeEnv } from '@/constants/env.constant';
+import { SEED_PASSWORD } from '@/constants/seed.constant';
 import { useLogin, useSession } from '@/hooks/use-session';
 import { useResolveHomePath } from '@/hooks/use-orgs';
 
@@ -147,7 +142,7 @@ export default function LoginPage() {
                   </span>
                </div>
 
-               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+               <div className="grid grid-cols-1 gap-2">
                   {AUTH_SOCIAL_PROVIDERS.map((provider) => (
                      <Button
                         key={provider.id}
@@ -173,26 +168,16 @@ export default function LoginPage() {
                </Link>
             </p>
 
-            {process.env.NODE_ENV === 'development' ? (
+            {process.env.NODE_ENV === NodeEnv.DEVELOPMENT ? (
                <div className="mt-6">
-                  <Select
-                     onValueChange={(value) => {
-                        setEmail(value);
+                  <SeedAccountPrefill
+                     selectedEmail={email}
+                     onSelect={(account) => {
+                        setEmail(account.email);
                         setPassword(SEED_PASSWORD);
                         setError(null);
                      }}
-                  >
-                     <SelectTrigger className="text-muted-foreground h-8 text-xs">
-                        <SelectValue placeholder="Prefill a seed account" />
-                     </SelectTrigger>
-                     <SelectContent>
-                        {SEED_ACCOUNTS.map((account) => (
-                           <SelectItem key={account.email} value={account.email}>
-                              {account.label}
-                           </SelectItem>
-                        ))}
-                     </SelectContent>
-                  </Select>
+                  />
                </div>
             ) : null}
          </div>

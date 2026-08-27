@@ -11,8 +11,8 @@ import { config } from '@/config.js';
 import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.js';
 import { HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
-import { loginRateLimit, registerRateLimit } from '@/middleware/authRateLimit.js';
-import { requireAuth } from '@/middleware/requireAuth.js';
+import { loginRateLimit, registerRateLimit } from '@/middleware/auth/authRateLimit.js';
+import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import {
   EmailTakenError,
   InvalidCredentialsError,

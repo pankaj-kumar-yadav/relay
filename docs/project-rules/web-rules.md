@@ -1,13 +1,8 @@
----
-description: Frontend API calls live only in *.service.ts as *Api fns; UI consumes them via TanStack Query
-alwaysApply: true
----
+# Web — API services, TanStack Query, unused UI
 
-# Web API services + TanStack Query
+## API services + TanStack Query
 
 `apps/web` talks to the API through **service files only**. That is the single source of truth for HTTP paths, methods, and request/response types. Components, pages, and stores never call `api()` / `fetch` themselves.
-
-## Layout
 
 | Kind | Home |
 |------|------|
@@ -17,13 +12,9 @@ alwaysApply: true
 
 One domain per file: `issues.service.ts`, `orgs.service.ts`, `members.service.ts`.
 
-## Naming — `Api` suffix
-
 Every function that hits the network **must** end with `Api` (camelCase, not `API`): `listIssuesApi`, `createIssueApi`, `getSessionApi`.
 
 Do **not** suffix hooks (`useCreateIssue`), store/UI helpers (`deleteIssue`, `getIssueById`), types, or non-HTTP utils (`teamHomePath`, `toQuery`).
-
-## Do
 
 ```ts
 // apps/web/services/issues.service.ts
@@ -35,24 +26,36 @@ export function listIssuesApi(orgSlug: string) {
 ```
 
 ```ts
-// hook — consume the service via TanStack Query
 const { data } = useQuery({
   queryKey: ['issues', orgSlug],
   queryFn: () => listIssuesApi(orgSlug),
 });
 ```
 
-## Don't
-
 ```ts
-await api(`/orgs/${orgSlug}/issues`); // in a component, page, or store
-export function listIssues() {}      // HTTP fn missing Api suffix
-export function listIssuesAPI() {}   // shouty acronym — use Api
+await api(`/orgs/${orgSlug}/issues`); // ❌ in a component, page, or store
+export function listIssues() {}      // ❌ HTTP fn missing Api suffix
+export function listIssuesAPI() {}   // ❌ shouty acronym — use Api
 ```
-
-## Agent habit
 
 - New endpoint → `*.service.ts` function named `*Api`, then wire UI with TanStack Query
 - Services stay HTTP-only (no React, no `useQuery`)
 - Query keys include org/resource ids so caches stay tenant-scoped
 - Zustand is for UI state only, not API caching
+- Callers type the **inner** payload (`api<{ user: AuthUser }>`), not the full envelope — see [api-rules.md](./api-rules.md)
+
+## Keep unused UI (comment out, do not delete)
+
+Circle leftover screens, nav items, and components are **out of MVP**, not dead. Do **not** remove them. Comment out usage (or hide) so they can be restored later.
+
+- Comment out JSX, imports, and nav entries that are not in current scope
+- Leave the component **file** in place even if nothing imports it
+- Prefer hide/disable over delete for out-of-MVP Circle routes (cycles, documents, agent, initiatives, …)
+
+```tsx
+// ✅ GOOD — keep the component, disable for now
+{/* <CyclesNavItem /> — out of MVP; restore later */}
+// import { CyclesNavItem } from '@/components/layout/cycles-nav-item';
+```
+
+Do not delete `.tsx` / component files, mock widgets, or Circle screens because they are unused today. Only delete a UI component if the user **explicitly** asks to remove that file.

@@ -26,6 +26,8 @@ Multi-tenant project management for teams: issues, projects, and org membership 
 - Cycles, documents, burn-up charts (UI may exist; API later)
 - Email polish beyond invite/reset basics
 
+Unused Circle/UI is still in scope to **keep**: do not delete components, screens, or nav items that are out of MVP. Comment them out or hide them — they may be needed later.
+
 ## Success criteria (v1)
 
 - User can create an org, invite a member, and create/edit issues scoped to that org
@@ -58,4 +60,5 @@ Multi-tenant project management for teams: issues, projects, and org membership 
 
 - Do **not** create git commits unless the human explicitly asks
 - Do **not** commit documentation (`docs/**`, specs, plans, `AGENTS.md`, README, Cursor rules) unless the human explicitly asks to commit those files — drafting specs/plans is fine; committing them is not automatic
+- Do **not** delete unused UI components — comment out or hide them (they may be needed later); see [project-rules/web-rules.md](./project-rules/web-rules.md)
 - Product scope above still governs *what* to build; this section governs *how* agents may touch git

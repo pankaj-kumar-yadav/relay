@@ -14,15 +14,15 @@ import {
 import { HttpStatus } from '@/constants/http.js';
 import { ListLimit } from '@/constants/list.js';
 import { prisma } from '@/db.js';
-import { requireAuth } from '@/middleware/requireAuth.js';
-import { requireOrgMember } from '@/middleware/requireOrgMember.js';
+import { requireAuth } from '@/middleware/auth/requireAuth.js';
+import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import {
   NotFoundError,
   sendError,
   ValidationError,
 } from '@/utils/errors.js';
-import { rankBetween } from '@/utils/issueRank.js';
-import { issueIdentifier, parseIssueRef } from '@/utils/issueRef.js';
+import { rankBetween } from '@/utils/issue/issueRank.js';
+import { issueIdentifier, parseIssueRef } from '@/utils/issue/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
 import { assertProjectOnTeam } from '@/utils/projects.js';
 import { ensureDefaultTeam, findTeam } from '@/utils/teams.js';

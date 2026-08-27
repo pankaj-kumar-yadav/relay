@@ -1,0 +1,18 @@
+# Git — no unsolicited commits
+
+## Hard rules
+
+- **Never create a git commit unless the user explicitly asks** in this turn (e.g. “commit”, “create a commit”).
+- **Never commit docs** (`docs/**`, `AGENTS.md`, `README.md`, `.cursor/**`, specs, plans, step guides) unless the user **explicitly** asks to commit those paths.
+- Writing or updating a design/plan/spec file does **not** imply permission to commit it.
+- Skills, checklists, or “commit” steps in plans/specs do **not** override this — **user instructions win**.
+
+## Allowed without a commit ask
+
+- Edit files, run migrations, lint, manual API checks
+- Leave docs/plans/specs as local uncommitted changes until the user says to commit
+
+## When the user does ask to commit
+
+- Follow the repo’s normal git safety protocol
+- Do not include unrelated WIP; do not sneak docs into a code commit unless they asked for those docs

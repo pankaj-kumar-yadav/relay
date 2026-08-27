@@ -4,6 +4,10 @@ import { rateLimit } from 'express-rate-limit';
 import { LOGIN_RATE_LIMIT, REGISTER_RATE_LIMIT } from '@/constants/auth.js';
 import { RateLimitError, sendError } from '@/utils/errors.js';
 
+const passthrough: RequestHandler = (_req, _res, next) => {
+  next();
+};
+
 export type AuthRateLimitOptions = {
   windowMs: number;
   max: number;
@@ -25,5 +29,9 @@ export function createAuthRateLimiter(options: AuthRateLimitOptions): RequestHan
   }) as RequestHandler;
 }
 
-export const loginRateLimit: RequestHandler = createAuthRateLimiter(LOGIN_RATE_LIMIT);
-export const registerRateLimit: RequestHandler = createAuthRateLimiter(REGISTER_RATE_LIMIT);
+export const loginRateLimit: RequestHandler = process.env.NODE_TEST_CONTEXT
+  ? passthrough
+  : createAuthRateLimiter(LOGIN_RATE_LIMIT);
+export const registerRateLimit: RequestHandler = process.env.NODE_TEST_CONTEXT
+  ? passthrough
+  : createAuthRateLimiter(REGISTER_RATE_LIMIT);

@@ -1,0 +1,69 @@
+# API — envelope and folders
+
+## Layer folders, domain subfolders
+
+Keep the layer (`middleware`, `routes`, `utils`, `constants`, `auth`). When a domain has **more than one file** in that layer (implementation, helpers, tests), nest them in a subdomain folder. Colocate tests next to the code they cover.
+
+```text
+# ✅ GOOD
+middleware/auth/requireAuth.ts
+middleware/auth/authRateLimit.ts
+middleware/auth/authRateLimit.test.ts
+middleware/org/requireOrgMember.ts
+middleware/org/requireOrgRole.ts
+middleware/org/requireOrgRole.test.ts
+routes/auth/auth.ts
+routes/auth/auth.integration.test.ts
+utils/issue/issueRef.ts
+utils/issue/issueRank.ts
+utils/issue/issueRef.test.ts
+
+# ❌ BAD — flat layer mixes domains and tests
+middleware/requireAuth.ts
+middleware/authRateLimit.ts
+middleware/authRateLimit.test.ts
+middleware/requireOrgRole.ts
+routes/auth.ts
+routes/auth.integration.test.ts
+```
+
+- A **single** standalone file may stay at the layer root (`utils/passwords.ts`, `utils/response.ts`)
+- Do **not** invert the tree (`auth/middleware/…`)
+- Do **not** invent a folder for one file (`utils/passwords/passwords.ts`)
+- New files follow this. When you next touch a flat domain that already has 2+ files, nest them. Do not mass-move unrelated folders in the same change.
+
+## Response envelope
+
+Every JSON response from `apps/api` MUST use this shape (all four keys always present):
+
+```ts
+{
+  success: boolean;
+  message: string;
+  data: object | null;  // non-null object when success; null when failure
+  error: { code: string; message: string } | null;  // null when success
+}
+```
+
+## Do
+
+```ts
+import { sendSuccess } from '@/utils/response.js';
+import { sendError, ValidationError } from '@/utils/errors.js';
+
+sendSuccess(res, { message: 'OK', data: { user } });
+sendSuccess(res, { status: HttpStatus.CREATED, message: 'Created', data: { issue } });
+// failures: throw ApiError subclass + sendError(res, err)
+```
+
+## Don't
+
+```ts
+res.json({ user });
+res.json({ ok: true });
+res.status(401).json({ error: { code, message } }); // missing success/message/data
+```
+
+## Web client
+
+`apps/web/lib/api.ts` unwraps `data` on success and throws `ApiError` from `error` on failure. Callers type the **inner** payload (`api<{ user: AuthUser }>`), not the full envelope.

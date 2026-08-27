@@ -8,7 +8,8 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System shape, tenancy, auth, ports |
 | [STEPS.md](./STEPS.md) | End-to-end implementation roadmap |
 | [steps/](./steps/) | Detailed instructions for each step |
-| [../AGENTS.md](../AGENTS.md) | Agent rules and commands |
+| [project-rules/](./project-rules/) | Coding conventions (git, shared, web, api) |
+| [../AGENTS.md](../AGENTS.md) | Agent entrypoint and commands |
 | [superpowers/specs/](./superpowers/specs/) | Design specs (auth KeyStore; orgs/memberships) |
 
 ## Step files
@@ -22,6 +23,6 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | 4 | [04-auth.md](./steps/04-auth.md) | Done |
 | 5 | [05-multi-tenant.md](./steps/05-multi-tenant.md) | Done |
 | 6 | [06-core-api.md](./steps/06-core-api.md) | Done |
-| 7 | [07-wire-ui.md](./steps/07-wire-ui.md) | Pending (leftover routes) |
-| 8 | [08-projects-teams.md](./steps/08-projects-teams.md) | Pending |
-| 9 | [09-hardening.md](./steps/09-hardening.md) | Pending |
+| 7 | [07-wire-ui.md](./steps/07-wire-ui.md) | Done |
+| 8 | [08-projects-teams.md](./steps/08-projects-teams.md) | Done |
+| 9 | [09-hardening.md](./steps/09-hardening.md) | Done |

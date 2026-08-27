@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
 import { prisma } from '@/db.js';
-import { requireAuth } from '@/middleware/requireAuth.js';
-import { requireOrgMember } from '@/middleware/requireOrgMember.js';
+import { requireAuth } from '@/middleware/auth/requireAuth.js';
+import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { sendError } from '@/utils/errors.js';
 import { sendSuccess } from '@/utils/response.js';
 

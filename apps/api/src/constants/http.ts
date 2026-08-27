@@ -28,3 +28,6 @@ export const ErrorCode = {
 } as const;
 
 export type ErrorCodeValue = (typeof ErrorCode)[keyof typeof ErrorCode];
+
+/** Express JSON body parser limit (issue descriptions, etc.). */
+export const JSON_BODY_LIMIT = '256kb';

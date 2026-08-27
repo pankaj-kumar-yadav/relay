@@ -85,7 +85,7 @@ requireAuth → requireOrgMember → query with req.org.id
 
 Never authorize from URL `orgId` alone. Prefix: `/orgs/:orgId/...` where `:orgId` is **slug**.
 
-JSON envelope: `{ success, message, data, error }` — see `.cursor/rules/api-response-envelope.mdc`.
+JSON envelope: `{ success, message, data, error }` — see [project-rules/api-rules.md](../project-rules/api-rules.md).
 
 Statuses/priorities: store Circle **ids** as strings (`to-do`, `in-progress`, `urgent`, …) so the UI mapper stays thin. Categories (`started`, `backlog`, …) can be derived in the API or mapped in web from the same const list.
 

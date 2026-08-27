@@ -6,14 +6,22 @@ import {
   DEFAULT_ISSUE_STATUS,
   DEFAULT_TEAM_KEY,
   DEFAULT_TEAM_NAME,
+  IssuePriority,
+  IssueStatus,
 } from '../src/constants/issue.js';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
 } from '../src/constants/project.constant.js';
 import { OrgRole, type OrgRoleValue } from '../src/constants/org.js';
-import { SEED_PASSWORD, SeedEmail, SeedOrgSlug } from '../src/constants/seed.constant.js';
-import { rankBetween } from '../src/utils/issueRank.js';
+import {
+  SEED_PASSWORD,
+  SEED_PREVIOUS_ACME_SLUG,
+  SEED_PROJECT_NAME,
+  SeedEmail,
+  SeedOrgSlug,
+} from '../src/constants/seed.constant.js';
+import { rankBetween } from '../src/utils/issue/issueRank.js';
 import { hashPassword } from '../src/utils/passwords.js';
 
 const prisma = new PrismaClient();
@@ -72,11 +80,31 @@ async function upsertUser(input: {
   });
 }
 
-async function upsertOrg(input: { name: string; slug: string }) {
-  return prisma.organization.upsert({
+async function upsertOrg(input: { name: string; slug: string; previousSlug?: string }) {
+  const existing = await prisma.organization.findUnique({
     where: { slug: input.slug },
-    update: { name: input.name },
-    create: input,
+  });
+  if (existing) {
+    return prisma.organization.update({
+      where: { id: existing.id },
+      data: { name: input.name },
+    });
+  }
+
+  if (input.previousSlug) {
+    const previous = await prisma.organization.findUnique({
+      where: { slug: input.previousSlug },
+    });
+    if (previous) {
+      return prisma.organization.update({
+        where: { id: previous.id },
+        data: { name: input.name, slug: input.slug },
+      });
+    }
+  }
+
+  return prisma.organization.create({
+    data: { name: input.name, slug: input.slug },
   });
 }
 
@@ -143,6 +171,7 @@ async function upsertProject(input: {
   organizationId: string;
   teamId: string;
   name: string;
+  previousName?: string;
   status?: string;
   health?: string;
 }) {
@@ -155,6 +184,24 @@ async function upsertProject(input: {
     select: { id: true },
   });
   if (existing) return existing;
+
+  if (input.previousName) {
+    const previous = await prisma.project.findFirst({
+      where: {
+        organizationId: input.organizationId,
+        teamId: input.teamId,
+        name: input.previousName,
+      },
+      select: { id: true },
+    });
+    if (previous) {
+      return prisma.project.update({
+        where: { id: previous.id },
+        data: { name: input.name },
+        select: { id: true },
+      });
+    }
+  }
 
   return prisma.project.create({
     data: {
@@ -188,6 +235,90 @@ async function seedMembers(
     users.push({ ...member, id: user.id });
   }
   return users;
+}
+
+const ACME_ISSUES = [
+  {
+    title: 'Set up the Acme workspace',
+    status: IssueStatus.DONE,
+    priority: IssuePriority.HIGH,
+  },
+  {
+    title: 'Invite the first teammate',
+    status: IssueStatus.IN_PROGRESS,
+    priority: IssuePriority.URGENT,
+  },
+  {
+    title: 'Triage inbound bugs',
+    status: IssueStatus.TRIAGE,
+    priority: IssuePriority.HIGH,
+  },
+  {
+    title: 'Plan Launch checklist',
+    status: IssueStatus.BACKLOG,
+    priority: IssuePriority.MEDIUM,
+  },
+  {
+    title: 'Ship Launch landing page',
+    status: IssueStatus.TO_DO,
+    priority: IssuePriority.MEDIUM,
+  },
+  {
+    title: 'Review onboarding copy',
+    status: IssueStatus.TECHNICAL_REVIEW,
+    priority: IssuePriority.LOW,
+  },
+  {
+    title: 'Paused: vendor integration',
+    status: IssueStatus.PAUSED,
+    priority: IssuePriority.LOW,
+  },
+  {
+    title: 'Canceled duplicate ticket',
+    status: IssueStatus.CANCELED,
+    priority: IssuePriority.NO_PRIORITY,
+  },
+] as const;
+
+async function syncTeamIssues(input: {
+  organizationId: string;
+  teamId: string;
+  projectId: string;
+  assigneeId: string;
+  issues: readonly { title: string; status: string; priority: string }[];
+}) {
+  let prevRank: string | null = null;
+  for (let i = 0; i < input.issues.length; i += 1) {
+    const number = i + 1;
+    const spec = input.issues[i]!;
+    const rank = rankBetween(prevRank, null);
+    prevRank = rank;
+
+    await prisma.issue.upsert({
+      where: {
+        teamId_number: { teamId: input.teamId, number },
+      },
+      update: {
+        title: spec.title,
+        status: spec.status,
+        priority: spec.priority,
+        assigneeId: input.assigneeId,
+        projectId: input.projectId,
+      },
+      create: {
+        organizationId: input.organizationId,
+        teamId: input.teamId,
+        number,
+        title: spec.title,
+        description: 'Seeded issue. Edit or create more from the UI.',
+        status: spec.status,
+        priority: spec.priority,
+        assigneeId: input.assigneeId,
+        projectId: input.projectId,
+        rank,
+      },
+    });
+  }
 }
 
 async function ensureWelcomeIssue(input: {
@@ -237,7 +368,11 @@ async function main() {
     isSuperAdmin: true,
   });
 
-  const acme = await upsertOrg({ name: 'Acme', slug: SeedOrgSlug.ACME });
+  const acme = await upsertOrg({
+    name: 'Acme',
+    slug: SeedOrgSlug.ACME,
+    previousSlug: SEED_PREVIOUS_ACME_SLUG,
+  });
   await upsertMembership({
     organizationId: acme.id,
     userId: owner.id,
@@ -246,10 +381,18 @@ async function main() {
   const acmeTeams = await syncTeams(acme.id, [
     { key: DEFAULT_TEAM_KEY, name: DEFAULT_TEAM_NAME },
   ]);
-  await upsertProject({
+  const launch = await upsertProject({
     organizationId: acme.id,
     teamId: acmeTeams[0].id,
-    name: 'Acme Launch',
+    name: SEED_PROJECT_NAME,
+    previousName: 'Acme Launch',
+  });
+  await syncTeamIssues({
+    organizationId: acme.id,
+    teamId: acmeTeams[0].id,
+    projectId: launch.id,
+    assigneeId: owner.id,
+    issues: ACME_ISSUES,
   });
 
   const techap = await upsertOrg({
@@ -299,7 +442,9 @@ async function main() {
   }
 
   console.log(`Password for all seed users: ${SEED_PASSWORD}`);
-  console.log(`Super-admin: ${SeedEmail.SUPER_ADMIN} → ${SeedOrgSlug.ACME} (${OrgRole.ADMIN})`);
+  console.log(
+    `Super-admin: ${SeedEmail.SUPER_ADMIN} → ${SeedOrgSlug.ACME} (${OrgRole.ADMIN}), team ${DEFAULT_TEAM_KEY}, project ${SEED_PROJECT_NAME}`,
+  );
   console.log(
     `${SeedOrgSlug.TECHAP}: 3 ${OrgRole.ADMIN}s (${SeedEmail.TECHAP_ADMIN} …) + 3 ${OrgRole.EMPLOYEE}s (${SeedEmail.TECHAP_EMPLOYEE} …)`,
   );

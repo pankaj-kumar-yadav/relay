@@ -1,10 +1,15 @@
 export const SEED_PASSWORD = 'password';
 
+export const SEED_PROJECT_NAME = 'Launch';
+
 export const SeedOrgSlug = {
   ACME: 'acme',
   TECHAP: 'techap-solutions',
   STRATXG: 'stratxg',
 } as const;
+
+/** Prior seed slug; seed migrates this org to `acme`. */
+export const SEED_PREVIOUS_ACME_SLUG = 'demo';
 
 export const SeedEmail = {
   SUPER_ADMIN: 'owner@relay.local',

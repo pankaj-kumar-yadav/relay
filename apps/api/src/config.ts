@@ -2,12 +2,13 @@ import {
   DEFAULT_ACCESS_TOKEN_VALIDITY_SEC,
   DEFAULT_REFRESH_TOKEN_VALIDITY_SEC,
 } from '@/constants/auth.js';
+import { NodeEnv } from '@/constants/env.constant.js';
 
 export const config = {
   port: Number(process.env.PORT) || 4000,
   webOrigin: process.env.WEB_ORIGIN || 'http://localhost:3000',
   databaseUrl: process.env.DATABASE_URL ?? '',
-  isProduction: process.env.NODE_ENV === 'production',
+  isProduction: process.env.NODE_ENV === NodeEnv.PRODUCTION,
   trustProxy: process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true',
   tokenInfo: {
     secret: process.env.TOKEN_SECRET ?? '',

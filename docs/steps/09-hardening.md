@@ -1,6 +1,6 @@
 # Step 9 — Hardening (MVP readiness)
 
-**Status:** Pending
+**Status:** Done
 
 ## Goal
 
@@ -17,7 +17,7 @@ Make the MVP safe and runnable for demos: seed data, consistent errors, env docs
 | Entity | Example |
 |--------|---------|
 | User | `owner@relay.local` / documented password |
-| Org | slug `demo` |
+| Org | slug `acme` |
 | Membership | owner |
 | Team | key `CORE` |
 | Project | “Launch” |
@@ -60,7 +60,7 @@ Map:
 
 Ensure `.env.example` files list every required var:
 
-**API:** `PORT`, `WEB_ORIGIN`, `DATABASE_URL`, `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` (optional `ACCESS_TOKEN_VALIDITY_SEC`, `REFRESH_TOKEN_VALIDITY_SEC`)  
+**API:** `PORT`, `WEB_ORIGIN`, `DATABASE_URL`, `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE`, `NODE_ENV` (`development` or `production`; optional `ACCESS_TOKEN_VALIDITY_SEC`, `REFRESH_TOKEN_VALIDITY_SEC`)  
 **Web:** `NEXT_PUBLIC_API_URL`
 
 Auth already revokes sessions via `KeyStore` delete on logout/refresh; hardening here is rate limits and prod cookie/CORS notes (see [ARCHITECTURE.md](../ARCHITECTURE.md)).
@@ -101,15 +101,15 @@ Update these when hardening finishes:
 - [ ] [SCOPE.md](../SCOPE.md) — confirm MVP still accurate
 - [ ] [ARCHITECTURE.md](../ARCHITECTURE.md) — ORM, auth mode, cookie details
 - [ ] [STEPS.md](../STEPS.md) — mark steps complete
-- [ ] Root [README.md](../../README.md) — how to run seed + demo login
+- [ ] Root [README.md](../../README.md) — how to run seed + local login
 
 ## Done when
 
-- [ ] Seed boots a demoable workspace
-- [ ] Error shape is consistent
-- [ ] Env examples are complete
-- [ ] Smoke checklist passes once on a clean DB
-- [ ] Out-of-MVP features remain out
+- [x] Seed boots a demoable workspace
+- [x] Error shape is consistent
+- [x] Env examples are complete
+- [x] Smoke checklist passes once on a clean DB
+- [x] Out-of-MVP features remain out
 
 ## After MVP
 

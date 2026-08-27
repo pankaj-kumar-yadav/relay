@@ -5,9 +5,9 @@ import { HttpStatus } from '@/constants/http.js';
 import { OrgRole } from '@/constants/org.js';
 import { config } from '@/config.js';
 import { prisma } from '@/db.js';
-import { requireAuth } from '@/middleware/requireAuth.js';
-import { requireOrgMember } from '@/middleware/requireOrgMember.js';
-import { requireOrgRole } from '@/middleware/requireOrgRole.js';
+import { requireAuth } from '@/middleware/auth/requireAuth.js';
+import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
+import { requireOrgRole } from '@/middleware/org/requireOrgRole.js';
 import {
   AlreadyMemberError,
   ForbiddenError,
@@ -19,7 +19,7 @@ import {
   generateInviteToken,
   hashInviteToken,
   inviteExpiresAt,
-} from '@/utils/inviteToken.js';
+} from '@/utils/invite/inviteToken.js';
 import { sendSuccess } from '@/utils/response.js';
 
 export const orgsInvitesRouter: Router = Router({ mergeParams: true });

@@ -1,7 +1,5 @@
 export const AuthSocialProvider = {
    GOOGLE: 'google',
-   APPLE: 'apple',
-   GITHUB: 'github',
 } as const;
 
 export type AuthSocialProviderValue =
@@ -9,8 +7,6 @@ export type AuthSocialProviderValue =
 
 export const AUTH_SOCIAL_PROVIDERS = [
    { id: AuthSocialProvider.GOOGLE, label: 'Google' },
-   { id: AuthSocialProvider.APPLE, label: 'Apple' },
-   { id: AuthSocialProvider.GITHUB, label: 'GitHub' },
 ] as const;
 
 export const AUTH_FOOTER_LINKS = [

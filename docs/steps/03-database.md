@@ -130,7 +130,7 @@ Document exact scripts in `apps/api/package.json` when added.
 Create a seed script (run manually):
 
 1. One user: `owner@relay.local` / known password
-2. One org: slug `demo`
+2. One org: slug `acme`
 3. Membership: owner
 4. Optional: one team + 2–3 sample issues
 

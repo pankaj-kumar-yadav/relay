@@ -35,7 +35,7 @@ relay/
 
 | App | File | Purpose |
 |-----|------|---------|
-| API | `apps/api/.env` | `PORT`, `WEB_ORIGIN`, `DATABASE_URL`, `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` |
+| API | `apps/api/.env` | `NODE_ENV` (`development` or `production`), `PORT`, `WEB_ORIGIN`, `DATABASE_URL`, `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` (optional `ACCESS_TOKEN_VALIDITY_SEC`, `REFRESH_TOKEN_VALIDITY_SEC`, `TRUST_PROXY`) |
 | Web | `apps/web/.env.local` | `NEXT_PUBLIC_API_URL` |
 
 Never commit real secrets. Keep `.env.example` files updated when new vars are added.

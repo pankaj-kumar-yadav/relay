@@ -15,7 +15,7 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 6. Core screens      ✅  (shell + issues + members; API+UI)
 7. Wire UI           ✅  (leftover Circle routes hidden or left mock)
 8. Projects/Teams    ✅  (teams + projects CRUD; sidebar, lists, issue selectors)
-9. Hardening         →   validation, errors, seed, basic tests
+9. Hardening         ✅  (seed, errors, env, smoke tests)
 ```
 
 ## Rules while executing steps
@@ -35,7 +35,7 @@ Full detail for each step lives under [`docs/steps/`](./steps/).
 - [x] Step 6 — Core screens (login/org shell, issues list/detail, members)
 - [x] Step 7 — Leftover Circle routes (hide or keep mock)
 - [x] Step 8 — Projects + teams API + remaining pages
-- [ ] Step 9 — Hardening (seed, errors, CORS/prod notes, smoke tests)
+- [x] Step 9 — Hardening (seed, errors, CORS/prod notes, smoke tests)
 
 ## Suggested order of reading for a new agent
 
