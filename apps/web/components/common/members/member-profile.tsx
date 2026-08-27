@@ -12,7 +12,8 @@ import { labels } from '@/mock-data/labels';
 import { priorities } from '@/mock-data/priorities';
 import { projects } from '@/mock-data/projects';
 import { teams } from '@/mock-data/teams';
-import { statusUserColors, User, users } from '@/mock-data/users';
+import { UserStatus, UserStatusColor } from '@/constants/user.constant';
+import { User, users } from '@/mock-data/users';
 import { displayOrderedStatus } from '@/mock-data/status';
 import { useFilterStore } from '@/store/filter-store';
 import { useIssuesStore } from '@/store/issues-store';
@@ -28,9 +29,9 @@ import { parseAsString, useQueryState } from 'nuqs';
 import { useEffect, useMemo, useState } from 'react';
 
 const presenceLabel: Record<User['status'], string> = {
-   online: 'Online now',
-   away: 'Away as of 11 minutes ago',
-   offline: 'Offline',
+   [UserStatus.ONLINE]: 'Online now',
+   [UserStatus.AWAY]: 'Away as of 11 minutes ago',
+   [UserStatus.OFFLINE]: 'Offline',
 };
 
 interface BreakdownRow {
@@ -243,7 +244,7 @@ export default function MemberProfile({ member }: { member: User }) {
                      </Avatar>
                      <span
                         className="border-background absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2"
-                        style={{ backgroundColor: statusUserColors[member.status] }}
+                        style={{ backgroundColor: UserStatusColor[member.status] }}
                      />
                   </div>
                   <div className="min-w-0">

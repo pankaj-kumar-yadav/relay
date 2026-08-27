@@ -19,6 +19,9 @@ model User {
   memberships    Membership[]
   invitesSent    Invite[]     @relation("InvitesSent")
   assignedIssues Issue[]      @relation("IssueAssignee")
+  commentsAuthored Comment[]    @relation("CommentAuthor")
+  issueEventsActed IssueEvent[] @relation("IssueEventActor")
+  commentReactions CommentReaction[]
 
   @@map("users")
 }
@@ -50,6 +53,9 @@ model Organization {
   teams       Team[]
   projects    Project[]
   issues      Issue[]
+  comments    Comment[]
+  issueEvents IssueEvent[]
+  commentReactions CommentReaction[]
 
   @@map("organizations")
 }
@@ -142,6 +148,8 @@ model Issue {
   team           Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
   assignee       User?        @relation("IssueAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  comments       Comment[]
+  events         IssueEvent[]
 
   @@unique([teamId, number])
   @@index([organizationId])
@@ -149,4 +157,53 @@ model Issue {
   @@index([assigneeId])
   @@index([organizationId, rank])
   @@map("issues")
+}
+
+model Comment {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  issueId        String       @map("issue_id") @db.Uuid
+  authorId       String       @map("author_id") @db.Uuid
+  body           String
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  issue          Issue        @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  author         User         @relation("CommentAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  reactions      CommentReaction[]
+
+  @@index([organizationId, issueId, createdAt])
+  @@map("comments")
+}
+
+model CommentReaction {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  commentId      String       @map("comment_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  emoji          String
+  createdAt      DateTime     @default(now()) @map("created_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  comment        Comment      @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId, emoji])
+  @@index([organizationId, commentId])
+  @@map("comment_reactions")
+}
+
+model IssueEvent {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  issueId        String       @map("issue_id") @db.Uuid
+  actorId        String       @map("actor_id") @db.Uuid
+  type           String
+  payload        Json
+  createdAt      DateTime     @default(now()) @map("created_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  issue          Issue        @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  actor          User         @relation("IssueEventActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, issueId, createdAt])
+  @@map("issue_events")
 }

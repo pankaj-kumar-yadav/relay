@@ -1,5 +1,6 @@
 import { DEFAULT_ISSUE_STATUS } from '@/constants/issue.constant';
 import { OrgRoleLabel } from '@/constants/org.constant';
+import { DEFAULT_USER_STATUS, dicebearAvatarUrl } from '@/constants/user.constant';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
@@ -14,16 +15,13 @@ import type { OrgMember } from '@/services/members.service';
 import type { ApiProject } from '@/services/projects.service';
 import { Folder } from 'lucide-react';
 
-const avatarUrl = (seed: string) =>
-  `https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(seed)}`;
-
 export function mapMemberToUser(member: OrgMember): User {
   return {
     id: member.id,
     name: member.name,
     email: member.email,
-    avatarUrl: avatarUrl(member.id),
-    status: 'offline',
+    avatarUrl: dicebearAvatarUrl(member.id),
+    status: DEFAULT_USER_STATUS,
     role: OrgRoleLabel[member.role] === 'Admin' ? 'Admin' : 'Member',
     joinedDate: member.joinedAt,
     teamIds: [],
@@ -37,8 +35,8 @@ export function mapAssigneeToUser(assignee: ApiAssignee): User | null {
     id: assignee.id,
     name: assignee.name,
     email: assignee.email,
-    avatarUrl: avatarUrl(assignee.id),
-    status: 'offline',
+    avatarUrl: dicebearAvatarUrl(assignee.id),
+    status: DEFAULT_USER_STATUS,
     role: 'Member',
     joinedDate: '',
     teamIds: [],

@@ -38,6 +38,12 @@ export const SeedAccountRoleLabel = {
 
 export type SeedAccountRole = 'super-admin' | OrgRoleValue;
 
+/** Dev login prefill: keep these visible but unselectable for now. */
+export const DISABLED_SEED_ACCOUNT_ROLES: readonly SeedAccountRole[] = [
+  'super-admin',
+  OrgRole.ADMIN,
+];
+
 export const SEED_ACCOUNTS: {
   org: (typeof SeedOrgSlug)[keyof typeof SeedOrgSlug];
   name: string;

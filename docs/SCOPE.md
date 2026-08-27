@@ -1,64 +1,40 @@
 # Relay — product scope
 
-## Goal
+Multi-tenant project management for teams. Linear-inspired UI, custom Node API.
 
-Multi-tenant project management for teams: issues, projects, and org membership — with a Linear-inspired UI and a custom Node backend.
+Scope is split by release so MVP (shipped) and v1 (in progress) stay readable:
 
-## MVP (in)
+| Release | File | Status |
+|---------|------|--------|
+| MVP | [SCOPE-MVP.md](./SCOPE-MVP.md) | Shipped (steps 1–9) |
+| v1 | [SCOPE-V1.md](./SCOPE-V1.md) | In progress (steps 10–17) |
 
-- Auth (register / login / logout / me / refresh; dual JWT HttpOnly cookies + KeyStore)
-- Organizations + memberships (multi-tenant)
-- Roles:
-  - **Super-admin** — single SaaS-owner role (platform-level; not an org membership)
-  - **Org roles** — each organization can have multiple **admins** and **employee** members
-- Issues CRUD (status, priority, assignee, ordering)
-- Projects (basic)
-- Teams (basic, if needed for Circle UI routes)
-- Wire Circle UI to real API (replace mock/Zustand data)
-
-## Out of MVP (later)
-
-- Billing / plans
-- SSO / SAML
-- Real-time collaboration
-- File uploads / attachments storage
-- AI agent features
-- Cycles, documents, burn-up charts (UI may exist; API later)
-- Email polish beyond invite/reset basics
-
-Unused Circle/UI is still in scope to **keep**: do not delete components, screens, or nav items that are out of MVP. Comment them out or hide them — they may be needed later.
-
-## Success criteria (v1)
-
-- User can create an org, invite a member, and create/edit issues scoped to that org
-- Data from org A is never visible to org B
-- Web talks only to Express API (no production reliance on mock-data)
+Roadmaps: [STEPS.md](./STEPS.md) → [STEPS-MVP.md](./STEPS-MVP.md) / [STEPS-V1.md](./STEPS-V1.md).
 
 ## Stack (locked)
 
 - Web: Next.js + TypeScript (+ Circle / shadcn UI) + TanStack Query
 - API: Node.js + Express + TypeScript
 - DB: PostgreSQL
+- Email (v1): nodemailer SMTP (optional in development; log the link if unset)
 
 ## Web API client (locked)
 
-- Endpoint wrappers live only in `apps/web/services/<domain>.service.ts` (single source of truth)
-- HTTP functions are named with an `Api` suffix (`listIssuesApi`, `createOrgApi`) — not hooks, stores, or local helpers
-- UI (components, pages, hooks) calls those services via TanStack Query (`useQuery` / `useMutation`)
+- Endpoint wrappers live only in `apps/web/services/<domain>.service.ts`
+- HTTP functions are named with an `Api` suffix (`listIssuesApi`, `createOrgApi`)
+- UI calls those services via TanStack Query (`useQuery` / `useMutation`)
 - Do not `fetch` / `api()` from components, pages, or Zustand stores — Zustand is UI state only
 
 ## Constants (locked)
 
-- Reused consts/enums live **only** in `constants/*.constant.ts`, **one domain per file** (`org`, `team`, `project`, `issue`, `auth`, `http`, `date`, `workspace`, …)
-- Do **not** put all constants in one file; do **not** add a new file for a single value — keep a balanced set of domain files
+- Reused consts live only in `constants/*.constant.ts`, **one domain per file**
 - API: `apps/api/src/constants/<domain>.constant.ts`
-- Web: `apps/web/constants/<domain>.constant.ts` — import these; do not hardcode roles, statuses, paths, or date formats in components
-- Path builders live in the matching domain (`teamHomePath` in `team.constant.ts`). Date/time display lives in `date.constant.ts`
-- Until `packages/shared` exists, domain values used on both sides are mirrored with the same keys and values
+- Web: `apps/web/constants/<domain>.constant.ts`
+- Path builders live in the matching domain. Date/time display lives in `date.constant.ts`
+- Until `packages/shared` exists, values used on both sides are mirrored with the same keys and values
 
 ## Agent process constraints
 
 - Do **not** create git commits unless the human explicitly asks
-- Do **not** commit documentation (`docs/**`, specs, plans, `AGENTS.md`, README, Cursor rules) unless the human explicitly asks to commit those files — drafting specs/plans is fine; committing them is not automatic
-- Do **not** delete unused UI components — comment out or hide them (they may be needed later); see [project-rules/web-rules.md](./project-rules/web-rules.md)
-- Product scope above still governs *what* to build; this section governs *how* agents may touch git
+- Do **not** commit documentation unless the human explicitly asks to commit those paths
+- Do **not** delete unused UI components — comment out or hide them; see [project-rules/web-rules.md](./project-rules/web-rules.md)

@@ -98,9 +98,9 @@ Do not block MVP on full coverage.
 
 Update these when hardening finishes:
 
-- [ ] [SCOPE.md](../SCOPE.md) — confirm MVP still accurate
+- [ ] [SCOPE-MVP.md](../SCOPE-MVP.md) — confirm MVP still accurate
 - [ ] [ARCHITECTURE.md](../ARCHITECTURE.md) — ORM, auth mode, cookie details
-- [ ] [STEPS.md](../STEPS.md) — mark steps complete
+- [ ] [STEPS-MVP.md](../STEPS-MVP.md) — mark steps complete
 - [ ] Root [README.md](../../README.md) — how to run seed + local login
 
 ## Done when
@@ -113,4 +113,4 @@ Update these when hardening finishes:
 
 ## After MVP
 
-Only then consider items from SCOPE “Out of MVP”: billing, SSO, realtime, uploads, AI, cycles/docs APIs.
+v1 continues at [10-comments-activity.md](./10-comments-activity.md). Billing, SSO, realtime, uploads, and AI stay out until they appear in [SCOPE-V1.md](../SCOPE-V1.md).

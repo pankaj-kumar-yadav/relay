@@ -11,16 +11,19 @@ import {
   statusesForCategories,
   type IssueStatusCategoryValue,
 } from '@/constants/issue.js';
+import { IssueEventType } from '@/constants/activity.constant.js';
 import { HttpStatus } from '@/constants/http.js';
 import { ListLimit } from '@/constants/list.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
+import { activityRouter } from '@/routes/issues/activity.js';
 import {
   NotFoundError,
   sendError,
   ValidationError,
 } from '@/utils/errors.js';
+import { eventPayload, recordIssueEvent } from '@/utils/issue/issueEvent.js';
 import { rankBetween } from '@/utils/issue/issueRank.js';
 import { issueIdentifier, parseIssueRef } from '@/utils/issue/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
@@ -30,6 +33,7 @@ import { ensureDefaultTeam, findTeam } from '@/utils/teams.js';
 export const issuesRouter: Router = Router({ mergeParams: true });
 
 issuesRouter.use(requireAuth, requireOrgMember);
+issuesRouter.use(activityRouter);
 
 const issueSelect = {
   id: true,
@@ -289,7 +293,7 @@ issuesRouter.post('/', async (req, res) => {
         select: { rank: true },
       });
 
-      return tx.issue.create({
+      const created = await tx.issue.create({
         data: {
           organizationId,
           teamId: team.id,
@@ -304,6 +308,14 @@ issuesRouter.post('/', async (req, res) => {
         },
         select: issueSelect,
       });
+      await recordIssueEvent(tx, {
+        organizationId,
+        issueId: created.id,
+        actorId: req.user!.id,
+        type: IssueEventType.CREATED,
+        payload: eventPayload(IssueEventType.CREATED),
+      });
+      return created;
     });
 
     sendSuccess(res, {
@@ -403,20 +415,62 @@ issuesRouter.patch('/:issueId', async (req, res) => {
       rank = rankBetween(before?.rank ?? null, after?.rank ?? null);
     }
 
-    const issue = await prisma.issue.update({
-      where: { id: existing.id },
-      data: {
-        ...(data.title !== undefined ? { title: data.title } : {}),
-        ...(data.description !== undefined ? { description: data.description } : {}),
-        ...(data.status !== undefined ? { status: data.status } : {}),
-        ...(data.priority !== undefined ? { priority: data.priority } : {}),
-        ...(data.assigneeId !== undefined ? { assigneeId: data.assigneeId } : {}),
-        ...(nextProjectId !== undefined ? { projectId: nextProjectId } : {}),
-        ...(teamId ? { teamId } : {}),
-        ...(nextNumber !== undefined ? { number: nextNumber } : {}),
-        ...(rank ? { rank } : {}),
-      },
-      select: issueSelect,
+    const issue = await prisma.$transaction(async (tx) => {
+      const updated = await tx.issue.update({
+        where: { id: existing.id },
+        data: {
+          ...(data.title !== undefined ? { title: data.title } : {}),
+          ...(data.description !== undefined ? { description: data.description } : {}),
+          ...(data.status !== undefined ? { status: data.status } : {}),
+          ...(data.priority !== undefined ? { priority: data.priority } : {}),
+          ...(data.assigneeId !== undefined ? { assigneeId: data.assigneeId } : {}),
+          ...(nextProjectId !== undefined ? { projectId: nextProjectId } : {}),
+          ...(teamId ? { teamId } : {}),
+          ...(nextNumber !== undefined ? { number: nextNumber } : {}),
+          ...(rank ? { rank } : {}),
+        },
+        select: issueSelect,
+      });
+
+      const actorId = req.user!.id;
+      if (data.status !== undefined && data.status !== existing.status) {
+        await recordIssueEvent(tx, {
+          organizationId,
+          issueId: existing.id,
+          actorId,
+          type: IssueEventType.STATUS,
+          payload: eventPayload(IssueEventType.STATUS, existing.status, data.status),
+        });
+      }
+      if (data.priority !== undefined && data.priority !== existing.priority) {
+        await recordIssueEvent(tx, {
+          organizationId,
+          issueId: existing.id,
+          actorId,
+          type: IssueEventType.PRIORITY,
+          payload: eventPayload(
+            IssueEventType.PRIORITY,
+            existing.priority,
+            data.priority,
+          ),
+        });
+      }
+      const previousAssigneeId = existing.assignee?.id ?? null;
+      if (data.assigneeId !== undefined && data.assigneeId !== previousAssigneeId) {
+        await recordIssueEvent(tx, {
+          organizationId,
+          issueId: existing.id,
+          actorId,
+          type: IssueEventType.ASSIGNEE,
+          payload: eventPayload(
+            IssueEventType.ASSIGNEE,
+            previousAssigneeId,
+            data.assigneeId,
+          ),
+        });
+      }
+
+      return updated;
     });
 
     sendSuccess(res, {

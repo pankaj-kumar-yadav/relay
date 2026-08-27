@@ -9,6 +9,7 @@ import {
   IssuePriority,
   IssueStatus,
 } from '../src/constants/issue.js';
+import { IssueEventType } from '../src/constants/activity.constant.js';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
@@ -358,6 +359,54 @@ async function ensureWelcomeIssue(input: {
   });
 }
 
+async function ensureAcmeActivity(input: {
+  organizationId: string;
+  authorId: string;
+}) {
+  const first = await prisma.issue.findFirst({
+    where: { organizationId: input.organizationId },
+    orderBy: { number: 'asc' },
+  });
+  if (!first) return;
+
+  const existingComments = await prisma.comment.count({
+    where: { issueId: first.id },
+  });
+  if (existingComments > 0) return;
+
+  const hasCreated = await prisma.issueEvent.findFirst({
+    where: { issueId: first.id, type: IssueEventType.CREATED },
+  });
+  if (!hasCreated) {
+    await prisma.issueEvent.create({
+      data: {
+        organizationId: input.organizationId,
+        issueId: first.id,
+        actorId: input.authorId,
+        type: IssueEventType.CREATED,
+        payload: {},
+      },
+    });
+  }
+
+  await prisma.comment.createMany({
+    data: [
+      {
+        organizationId: input.organizationId,
+        issueId: first.id,
+        authorId: input.authorId,
+        body: 'Seed comment: kickoff notes for Launch.',
+      },
+      {
+        organizationId: input.organizationId,
+        issueId: first.id,
+        authorId: input.authorId,
+        body: 'Seed comment: follow up after the first cycle.',
+      },
+    ],
+  });
+}
+
 async function main() {
   const passwordHash = await hashPassword(SEED_PASSWORD);
 
@@ -393,6 +442,10 @@ async function main() {
     projectId: launch.id,
     assigneeId: owner.id,
     issues: ACME_ISSUES,
+  });
+  await ensureAcmeActivity({
+    organizationId: acme.id,
+    authorId: owner.id,
   });
 
   const techap = await upsertOrg({

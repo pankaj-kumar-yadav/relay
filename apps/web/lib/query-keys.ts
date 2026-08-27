@@ -18,5 +18,7 @@ export const queryKeys = {
     list: (orgSlug: string, query: IssueListQuery = {}) =>
       ['issues', orgSlug, 'list', query] as const,
     detail: (orgSlug: string, issueId: string) => ['issues', orgSlug, 'detail', issueId] as const,
+    activity: (orgSlug: string, issueId: string) =>
+      ['issues', orgSlug, 'activity', issueId] as const,
   },
 } as const;

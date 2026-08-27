@@ -2,9 +2,9 @@
 
 Read these before changing code:
 
-1. [docs/SCOPE.md](docs/SCOPE.md) — MVP vs later
+1. [docs/SCOPE.md](docs/SCOPE.md) — then [SCOPE-V1.md](docs/SCOPE-V1.md) (current) or [SCOPE-MVP.md](docs/SCOPE-MVP.md) (shipped)
 2. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system shape and tenancy rules
-3. [docs/STEPS.md](docs/STEPS.md) — roadmap; then only the **current** file under [docs/steps/](docs/steps/)
+3. [docs/STEPS.md](docs/STEPS.md) — then [STEPS-V1.md](docs/STEPS-V1.md); only the **current** file under [docs/steps/](docs/steps/)
 4. [docs/README.md](docs/README.md) — docs index
 5. [docs/project-rules/](docs/project-rules/) — coding conventions (git, shared, web, api)
 

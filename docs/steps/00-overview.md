@@ -18,7 +18,7 @@ relay/
     web/          # Next.js UI
     api/          # Express API
   packages/       # shared packages (later)
-  docs/           # SCOPE, ARCHITECTURE, STEPS, step details
+  docs/           # SCOPE index + SCOPE-MVP / SCOPE-V1, STEPS, architecture
   AGENTS.md
   turbo.json
   pnpm-workspace.yaml
@@ -40,14 +40,12 @@ relay/
 
 Never commit real secrets. Keep `.env.example` files updated when new vars are added.
 
-## Definition of done for the whole MVP
+## Definition of done
 
-See [SCOPE.md](../SCOPE.md) success criteria:
+**MVP (steps 1–9)** is done: see [SCOPE-MVP.md](../SCOPE-MVP.md) — create org → invite member → create/edit issues; org A cannot see org B.
 
-- Create org → invite member → create/edit issues in that org
-- Org A cannot see Org B data
-- Production path does not depend on Circle mock-data
+**v1 (steps 10–17):** see [SCOPE-V1.md](../SCOPE-V1.md) — self-host, invite via email, comments → labels → cycles → inbox → saved views, leftover Circle hidden.
 
 ## Next
 
-Proceed to [01-monorepo.md](./01-monorepo.md) (already completed) or jump to [02-circle-ui.md](./02-circle-ui.md).
+Current work is [11-labels.md](./11-labels.md). Do not implement later v1 slices early.

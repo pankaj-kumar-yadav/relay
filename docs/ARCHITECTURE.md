@@ -84,6 +84,10 @@ JSON request bodies are capped at `256kb` (`JSON_BODY_LIMIT`).
 
 `apps/web` starts as a placeholder. Replace/merge with [Circle](https://github.com/ln-dev7/circle) under `apps/web`, then swap `mock-data` / Zustand mutations for API calls.
 
+## Email (v1, step 16)
+
+Transactional mail is SMTP via nodemailer (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`). If SMTP is unset in development, the API logs the link (same pattern as invite URLs today). Inbox notifications stay in-app only (polling).
+
 ## Implementation steps
 
-Follow [STEPS.md](./STEPS.md) and the detailed guides in [steps/](./steps/). Do not skip auth/tenancy before wiring real issue data into the UI.
+Follow [STEPS.md](./STEPS.md) ([MVP](./STEPS-MVP.md) done, [v1](./STEPS-V1.md) current). Detail in [steps/](./steps/). Current step: [11-labels.md](./steps/11-labels.md). Do not skip auth/tenancy before wiring real issue data into the UI.

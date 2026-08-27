@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns';
+import { formatDistanceToNowStrict, format, parseISO } from 'date-fns';
 
 /** date-fns format strings — import these instead of inlining patterns. */
 export const DateFormat = {
@@ -40,6 +40,10 @@ export const UTC_SHORT_MONTH_FORMAT: Intl.DateTimeFormatOptions = {
 
 export function toDate(value: Date | string): Date {
   return value instanceof Date ? value : parseISO(value);
+}
+
+export function formatRelativeTime(iso: string): string {
+  return formatDistanceToNowStrict(toDate(iso), { addSuffix: true });
 }
 
 export function formatDate(value: Date | string, pattern: DateFormatValue): string {

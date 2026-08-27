@@ -1,9 +1,16 @@
+import {
+  DicebearStyle,
+  UserStatus,
+  type UserStatusValue,
+  dicebearAvatarUrl,
+} from '@/constants/user.constant';
+
 export interface User {
    id: string;
    name: string;
    avatarUrl: string;
    email: string;
-   status: 'online' | 'offline' | 'away';
+   status: UserStatusValue;
    role: 'Member' | 'Admin' | 'Guest' | 'Application';
    joinedDate: string;
    teamIds: string[];
@@ -11,21 +18,13 @@ export interface User {
    timezone: string;
 }
 
-const avatarUrl = (seed: string) => `https://api.dicebear.com/9.x/glass/svg?seed=${seed}`;
-
-export const statusUserColors = {
-   online: '#00cc66',
-   offline: '#969696',
-   away: '#ffcc00',
-};
-
 export const users: User[] = [
    {
       id: 'ln',
       name: 'leonel.ngoya',
-      avatarUrl: avatarUrl('ln'),
+      avatarUrl: dicebearAvatarUrl('ln'),
       email: 'leonelngoya@gmail.com',
-      status: 'online',
+      status: UserStatus.ONLINE,
       role: 'Admin',
       joinedDate: '2022-01-01',
       timezone: 'Europe/Paris',
@@ -34,9 +33,9 @@ export const users: User[] = [
    {
       id: 'sophia',
       name: 'sophia.reed',
-      avatarUrl: avatarUrl('sophiareed'),
+      avatarUrl: dicebearAvatarUrl('sophiareed'),
       email: 'sophiareed@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Admin',
       joinedDate: '2023-06-04',
       timezone: 'America/New_York',
@@ -45,9 +44,9 @@ export const users: User[] = [
    {
       id: 'mason',
       name: 'mason.carter',
-      avatarUrl: avatarUrl('mason'),
+      avatarUrl: dicebearAvatarUrl('mason'),
       email: 'masoncarter@gmail.com',
-      status: 'away',
+      status: UserStatus.AWAY,
       role: 'Member',
       joinedDate: '2023-11-01',
       timezone: 'Europe/London',
@@ -56,9 +55,9 @@ export const users: User[] = [
    {
       id: 'emma',
       name: 'emma.jones',
-      avatarUrl: avatarUrl('emmajones'),
+      avatarUrl: dicebearAvatarUrl('emmajones'),
       email: 'emmajones@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Member',
       joinedDate: '2023-03-20',
       timezone: 'Asia/Tokyo',
@@ -67,9 +66,9 @@ export const users: User[] = [
    {
       id: 'alex',
       name: 'alex.zhang',
-      avatarUrl: avatarUrl('alexzhang'),
+      avatarUrl: dicebearAvatarUrl('alexzhang'),
       email: 'alexzhang@gmail.com',
-      status: 'online',
+      status: UserStatus.ONLINE,
       role: 'Member',
       joinedDate: '2023-05-15',
       timezone: 'America/Los_Angeles',
@@ -78,9 +77,9 @@ export const users: User[] = [
    {
       id: 'olivia',
       name: 'olivia.wilson',
-      avatarUrl: avatarUrl('oliviawilson'),
+      avatarUrl: dicebearAvatarUrl('oliviawilson'),
       email: 'oliviawilson@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Admin',
       joinedDate: '2022-08-22',
       timezone: 'Europe/Berlin',
@@ -89,9 +88,9 @@ export const users: User[] = [
    {
       id: 'lucas',
       name: 'lucas.martin',
-      avatarUrl: avatarUrl('lucasmartin'),
+      avatarUrl: dicebearAvatarUrl('lucasmartin'),
       email: 'lucasmartin@gmail.com',
-      status: 'away',
+      status: UserStatus.AWAY,
       role: 'Member',
       joinedDate: '2023-02-14',
       timezone: 'America/Sao_Paulo',
@@ -100,9 +99,9 @@ export const users: User[] = [
    {
       id: 'isabella',
       name: 'isabella.garcia',
-      avatarUrl: avatarUrl('isabellagarcia'),
+      avatarUrl: dicebearAvatarUrl('isabellagarcia'),
       email: 'isabellagarcia@gmail.com',
-      status: 'online',
+      status: UserStatus.ONLINE,
       role: 'Member',
       joinedDate: '2022-11-30',
       timezone: 'Asia/Singapore',
@@ -111,9 +110,9 @@ export const users: User[] = [
    {
       id: 'ethan',
       name: 'ethan.brown',
-      avatarUrl: avatarUrl('ethanbrown'),
+      avatarUrl: dicebearAvatarUrl('ethanbrown'),
       email: 'ethanbrown@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Member',
       joinedDate: '2023-07-18',
       timezone: 'Europe/Madrid',
@@ -122,9 +121,9 @@ export const users: User[] = [
    {
       id: 'amelia',
       name: 'amelia.kim',
-      avatarUrl: avatarUrl('ameliakim'),
+      avatarUrl: dicebearAvatarUrl('ameliakim'),
       email: 'ameliakim@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Guest',
       joinedDate: '2022-05-09',
       timezone: 'Africa/Douala',
@@ -133,9 +132,9 @@ export const users: User[] = [
    {
       id: 'noah',
       name: 'noah.davis',
-      avatarUrl: avatarUrl('noahdavis'),
+      avatarUrl: dicebearAvatarUrl('noahdavis'),
       email: 'noahdavis@gmail.com',
-      status: 'away',
+      status: UserStatus.AWAY,
       role: 'Member',
       joinedDate: '2023-09-27',
       timezone: 'America/Chicago',
@@ -144,9 +143,9 @@ export const users: User[] = [
    {
       id: 'charlotte',
       name: 'charlotte.miller',
-      avatarUrl: avatarUrl('charlottemiller'),
+      avatarUrl: dicebearAvatarUrl('charlottemiller'),
       email: 'charlottemiller@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Guest',
       joinedDate: '2022-04-03',
       timezone: 'Europe/Amsterdam',
@@ -155,9 +154,9 @@ export const users: User[] = [
    {
       id: 'aiden',
       name: 'aiden.thompson',
-      avatarUrl: avatarUrl('aidenthompson'),
+      avatarUrl: dicebearAvatarUrl('aidenthompson'),
       email: 'aidenthompson@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Admin',
       joinedDate: '2023-01-12',
       timezone: 'Asia/Dubai',
@@ -166,9 +165,9 @@ export const users: User[] = [
    {
       id: 'mia',
       name: 'mia.patel',
-      avatarUrl: avatarUrl('miapatel'),
+      avatarUrl: dicebearAvatarUrl('miapatel'),
       email: 'miapatel@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Member',
       joinedDate: '2022-10-05',
       timezone: 'Europe/Lisbon',
@@ -177,9 +176,9 @@ export const users: User[] = [
    {
       id: 'logan',
       name: 'logan.wright',
-      avatarUrl: avatarUrl('loganwright'),
+      avatarUrl: dicebearAvatarUrl('loganwright'),
       email: 'loganwright@gmail.com',
-      status: 'away',
+      status: UserStatus.AWAY,
       role: 'Guest',
       joinedDate: '2023-08-14',
       timezone: 'America/Toronto',
@@ -188,9 +187,9 @@ export const users: User[] = [
    {
       id: 'harper',
       name: 'harper.robinson',
-      avatarUrl: avatarUrl('harperrobinson'),
+      avatarUrl: dicebearAvatarUrl('harperrobinson'),
       email: 'harperrobinson@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Member',
       joinedDate: '2022-07-29',
       timezone: 'Europe/Stockholm',
@@ -199,9 +198,9 @@ export const users: User[] = [
    {
       id: 'gabriel',
       name: 'gabriel.nguyen',
-      avatarUrl: avatarUrl('gabrielnguyen'),
+      avatarUrl: dicebearAvatarUrl('gabrielnguyen'),
       email: 'gabrielnguyen@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Member',
       joinedDate: '2023-04-17',
       timezone: 'Asia/Seoul',
@@ -210,9 +209,9 @@ export const users: User[] = [
    {
       id: 'victoria',
       name: 'victoria.lee',
-      avatarUrl: avatarUrl('victorialee'),
+      avatarUrl: dicebearAvatarUrl('victorialee'),
       email: 'victorialee@gmail.com',
-      status: 'away',
+      status: UserStatus.AWAY,
       role: 'Guest',
       joinedDate: '2022-12-08',
       timezone: 'Europe/Zurich',
@@ -221,9 +220,9 @@ export const users: User[] = [
    {
       id: 'daniel',
       name: 'daniel.taylor',
-      avatarUrl: avatarUrl('danieltaylor'),
+      avatarUrl: dicebearAvatarUrl('danieltaylor'),
       email: 'danieltaylor@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Member',
       joinedDate: '2023-10-21',
       timezone: 'America/Denver',
@@ -232,9 +231,9 @@ export const users: User[] = [
    {
       id: 'abigail',
       name: 'abigail.moore',
-      avatarUrl: avatarUrl('abigailmoore'),
+      avatarUrl: dicebearAvatarUrl('abigailmoore'),
       email: 'abigailmoore@gmail.com',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Member',
       joinedDate: '2022-06-17',
       timezone: 'Europe/Dublin',
@@ -244,9 +243,9 @@ export const users: User[] = [
    {
       id: 'atlas',
       name: 'atlas',
-      avatarUrl: `https://api.dicebear.com/9.x/bottts/svg?seed=atlasagent`,
+      avatarUrl: dicebearAvatarUrl('atlasagent', DicebearStyle.BOTTTS),
       email: 'atlas@lndev-ui.dev',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Application',
       joinedDate: '2026-01-08',
       timezone: 'UTC',
@@ -255,9 +254,9 @@ export const users: User[] = [
    {
       id: 'nova',
       name: 'nova',
-      avatarUrl: `https://api.dicebear.com/9.x/bottts/svg?seed=novaagent`,
+      avatarUrl: dicebearAvatarUrl('novaagent', DicebearStyle.BOTTTS),
       email: 'nova@lndev-ui.dev',
-      status: 'offline',
+      status: UserStatus.OFFLINE,
       role: 'Application',
       joinedDate: '2026-01-15',
       timezone: 'UTC',

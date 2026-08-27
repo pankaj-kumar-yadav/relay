@@ -4,15 +4,21 @@ Canonical documentation for humans and agents. Read in this order when starting 
 
 | Doc | Purpose |
 |-----|---------|
-| [SCOPE.md](./SCOPE.md) | MVP in/out, success criteria, locked stack |
+| [SCOPE.md](./SCOPE.md) | Scope index + locked stack / conventions |
+| [SCOPE-MVP.md](./SCOPE-MVP.md) | MVP in/out (shipped) |
+| [SCOPE-V1.md](./SCOPE-V1.md) | v1 in/out (current) |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System shape, tenancy, auth, ports |
-| [STEPS.md](./STEPS.md) | End-to-end implementation roadmap |
-| [steps/](./steps/) | Detailed instructions for each step |
+| [STEPS.md](./STEPS.md) | Steps index + current phase |
+| [STEPS-MVP.md](./STEPS-MVP.md) | MVP roadmap (steps 1–9, done) |
+| [STEPS-V1.md](./STEPS-V1.md) | v1 roadmap (steps 10–17) |
+| [steps/](./steps/) | Per-step instructions |
 | [project-rules/](./project-rules/) | Coding conventions (git, shared, web, api) |
 | [../AGENTS.md](../AGENTS.md) | Agent entrypoint and commands |
-| [superpowers/specs/](./superpowers/specs/) | Design specs (auth KeyStore; orgs/memberships) |
+| [superpowers/specs/](./superpowers/specs/) | Design specs |
 
 ## Step files
+
+### MVP (done)
 
 | Step | File | Status |
 |------|------|--------|
@@ -26,3 +32,21 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | 7 | [07-wire-ui.md](./steps/07-wire-ui.md) | Done |
 | 8 | [08-projects-teams.md](./steps/08-projects-teams.md) | Done |
 | 9 | [09-hardening.md](./steps/09-hardening.md) | Done |
+
+### v1
+
+| Step | File | Status |
+|------|------|--------|
+| 10 | [10-comments-activity.md](./steps/10-comments-activity.md) | Done |
+| 11 | [11-labels.md](./steps/11-labels.md) | Current |
+| 12 | [12-inbox.md](./steps/12-inbox.md) | Planned |
+| 13 | [13-cycles.md](./steps/13-cycles.md) | Planned |
+| 14 | [14-saved-views.md](./steps/14-saved-views.md) | Planned |
+| 15 | [15-settings-chrome.md](./steps/15-settings-chrome.md) | Planned |
+| 16 | [16-email-auth.md](./steps/16-email-auth.md) | Planned |
+| 17 | [17-self-host.md](./steps/17-self-host.md) | Planned |
+
+## v1 design
+
+- [v1 product](./superpowers/specs/2026-08-27-v1-product-design.md)
+- [Comments + activity (step 10)](./superpowers/specs/2026-08-27-issue-comments-activity-design.md)

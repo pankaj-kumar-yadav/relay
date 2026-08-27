@@ -7,11 +7,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { OrgRole } from '@/constants/org.constant';
 import {
+   DISABLED_SEED_ACCOUNT_ROLES,
    SEED_ACCOUNTS,
    SEED_ORGS,
    SeedAccountRoleLabel,
    type SeedAccountRole,
 } from '@/constants/seed.constant';
+import { cn } from '@/lib/utils';
 
 type SeedAccount = (typeof SEED_ACCOUNTS)[number];
 
@@ -75,22 +77,31 @@ export function SeedAccountPrefill({
                            <p className="text-muted-foreground px-2 pt-1 text-[10px] font-medium tracking-wide uppercase">
                               {section.label}
                            </p>
-                           {section.accounts.map((account) => (
-                              <button
-                                 key={account.email}
-                                 type="button"
-                                 className="hover:bg-accent hover:text-accent-foreground rounded-sm px-2 py-1.5 text-left"
-                                 onClick={() => {
-                                    onSelect(account);
-                                    setOpen(false);
-                                 }}
-                              >
-                                 <span className="block text-sm">{account.name}</span>
-                                 <span className="text-muted-foreground block truncate text-xs">
-                                    {account.email}
-                                 </span>
-                              </button>
-                           ))}
+                           {section.accounts.map((account) => {
+                              const disabled = DISABLED_SEED_ACCOUNT_ROLES.includes(account.role);
+                              return (
+                                 <button
+                                    key={account.email}
+                                    type="button"
+                                    disabled={disabled}
+                                    className={cn(
+                                       'rounded-sm px-2 py-1.5 text-left',
+                                       disabled
+                                          ? 'cursor-not-allowed opacity-50'
+                                          : 'hover:bg-accent hover:text-accent-foreground',
+                                    )}
+                                    onClick={() => {
+                                       onSelect(account);
+                                       setOpen(false);
+                                    }}
+                                 >
+                                    <span className="block text-sm">{account.name}</span>
+                                    <span className="text-muted-foreground block truncate text-xs">
+                                       {account.email}
+                                    </span>
+                                 </button>
+                              );
+                           })}
                         </div>
                      ))}
                   </TabsContent>

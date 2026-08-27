@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { IssuePropertiesPanel } from './issue-properties-panel';
+import { ActivityFeed } from './activity-feed';
 import { Issue } from '@/mock-data/issues';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -74,6 +75,7 @@ export default function IssueDetails() {
                      );
                   }}
                />
+               <ActivityFeed orgSlug={orgId} issueId={issue.identifier} />
             </div>
          </div>
          <aside className="hidden lg:block w-80 shrink-0 border-l h-full overflow-y-auto bg-container px-5 py-6">
