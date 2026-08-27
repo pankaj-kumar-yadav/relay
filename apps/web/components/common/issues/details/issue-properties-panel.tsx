@@ -2,13 +2,13 @@
 
 import { CyclePlayIcon } from '@/components/common/cycles/cycle-line';
 import { ProjectSelector } from '@/components/layout/sidebar/create-new-issue/project-selector';
+import { LabelSelector } from '@/components/layout/sidebar/create-new-issue/label-selector';
 import { TeamSelector } from '@/components/layout/sidebar/create-new-issue/team-selector';
-import { Button } from '@/components/ui/button';
 import { useIssueMutations } from '@/hooks/use-issues';
 import { getCycleById } from '@/mock-data/cycles';
 import { IssueDetail } from '@/mock-data/issue-details';
 import { Issue } from '@/mock-data/issues';
-import { Ban, GitPullRequestArrow, Plus } from 'lucide-react';
+import { Ban, GitPullRequestArrow } from 'lucide-react';
 import { AssigneeUser } from '../assignee-user';
 import { LabelBadge } from '../label-badge';
 import { PrioritySelector } from '../priority-selector';
@@ -35,7 +35,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  */
 export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProps) {
    const cycle = issue.cycleId ? getCycleById(issue.cycleId) : undefined;
-   const { updateIssueProject, updateIssueTeam } = useIssueMutations();
+   const { updateIssueProject, updateIssueTeam, updateIssueLabels } = useIssueMutations();
    const teamKey = issue.identifier.split('-')[0] ?? issue.project?.teamId ?? '';
 
    return (
@@ -71,10 +71,11 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
 
          <Section title="Labels">
             <div className="flex items-center flex-wrap gap-1.5">
+               <LabelSelector
+                  selectedLabels={issue.labels}
+                  onChange={(labels) => updateIssueLabels(issue.id, labels)}
+               />
                <LabelBadge label={issue.labels} />
-               <Button variant="ghost" size="icon" className="size-6 rounded-full border">
-                  <Plus className="size-3.5" />
-               </Button>
             </div>
          </Section>
 

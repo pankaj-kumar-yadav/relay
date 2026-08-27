@@ -15,6 +15,8 @@ import {
   type IssueListQuery,
   type PatchIssueInput,
 } from '@/services/issues.service';
+import { setIssueLabelsApi } from '@/services/labels.service';
+import type { LabelInterface } from '@/mock-data/labels';
 import { useIssuesStore } from '@/store/issues-store';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
@@ -105,6 +107,26 @@ export function useIssueMutations() {
     },
   });
 
+  const setLabels = useMutation({
+    mutationFn: ({ issueId, labelIds }: { issueId: string; labelIds: string[] }) => {
+      if (!orgSlug) throw new Error('No organization selected');
+      return setIssueLabelsApi(orgSlug, issueId, labelIds);
+    },
+    onSettled: (_data, _error, vars) => {
+      if (!orgSlug) return;
+      void queryClient.invalidateQueries({ queryKey: queryKeys.issues.all(orgSlug) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.labels(orgSlug) });
+      if (vars?.issueId) {
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.issues.detail(orgSlug, vars.issueId),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.issues.activity(orgSlug, vars.issueId),
+        });
+      }
+    },
+  });
+
   return {
     updateIssueStatus: (issueId: string, status: Status) => {
       updateIssue(issueId, { status });
@@ -128,6 +150,10 @@ export function useIssueMutations() {
     patchIssueFields: (issueId: string, fields: Partial<Issue>, input: PatchIssueInput) => {
       updateIssue(issueId, fields);
       patch.mutate({ issueId, input });
+    },
+    updateIssueLabels: (issueId: string, labels: LabelInterface[]) => {
+      updateIssue(issueId, { labels });
+      setLabels.mutate({ issueId, labelIds: labels.map((label) => label.id) });
     },
   };
 }

@@ -10,6 +10,7 @@ import {
   IssueStatus,
 } from '../src/constants/issue.js';
 import { IssueEventType } from '../src/constants/activity.constant.js';
+import { LABEL_COLORS } from '../src/constants/label.constant.js';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
@@ -359,6 +360,43 @@ async function ensureWelcomeIssue(input: {
   });
 }
 
+const SEED_LABELS = [
+  { name: 'Bug', color: LABEL_COLORS[0] },
+  { name: 'Feature', color: LABEL_COLORS[3] },
+  { name: 'Design', color: LABEL_COLORS[6] },
+] as const;
+
+async function ensureOrgLabels(organizationId: string) {
+  const count = await prisma.label.count({ where: { organizationId } });
+  if (count > 0) return;
+  await prisma.label.createMany({
+    data: SEED_LABELS.map((label) => ({ organizationId, ...label })),
+  });
+}
+
+async function ensureAcmeIssueLabel(organizationId: string) {
+  const first = await prisma.issue.findFirst({
+    where: { organizationId },
+    orderBy: { number: 'asc' },
+    select: { id: true },
+  });
+  if (!first) return;
+  const existing = await prisma.issueLabel.count({ where: { issueId: first.id } });
+  if (existing > 0) return;
+  const bug = await prisma.label.findFirst({
+    where: { organizationId, name: 'Bug' },
+    select: { id: true },
+  });
+  if (!bug) return;
+  await prisma.issueLabel.create({
+    data: {
+      organizationId,
+      issueId: first.id,
+      labelId: bug.id,
+    },
+  });
+}
+
 async function ensureAcmeActivity(input: {
   organizationId: string;
   authorId: string;
@@ -447,6 +485,8 @@ async function main() {
     organizationId: acme.id,
     authorId: owner.id,
   });
+  await ensureOrgLabels(acme.id);
+  await ensureAcmeIssueLabel(acme.id);
 
   const techap = await upsertOrg({
     name: 'Techap Solutions',
@@ -474,6 +514,7 @@ async function main() {
       projectId: techapLms.id,
     });
   }
+  await ensureOrgLabels(techap.id);
 
   const stratxg = await upsertOrg({ name: 'StratXG', slug: SeedOrgSlug.STRATXG });
   const stratxgMembers = await seedMembers(stratxg.id, STRATXG_MEMBERS, passwordHash);
@@ -493,6 +534,7 @@ async function main() {
       projectId: stratxgLms.id,
     });
   }
+  await ensureOrgLabels(stratxg.id);
 
   console.log(`Password for all seed users: ${SEED_PASSWORD}`);
   console.log(

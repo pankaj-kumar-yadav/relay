@@ -7,7 +7,7 @@ Detail for each step: [`docs/steps/`](./steps/).
 | Release | File | Steps | Status |
 |---------|------|-------|--------|
 | MVP | [STEPS-MVP.md](./STEPS-MVP.md) | 1–9 | Done |
-| v1 | [STEPS-V1.md](./STEPS-V1.md) | 10–17 | **Current: step 11 — labels** |
+| v1 | [STEPS-V1.md](./STEPS-V1.md) | 10–17 | **Current: step 12 — inbox** |
 
 Scope: [SCOPE.md](./SCOPE.md) → [SCOPE-MVP.md](./SCOPE-MVP.md) / [SCOPE-V1.md](./SCOPE-V1.md).
 

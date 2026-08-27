@@ -1,121 +1,274 @@
 'use client';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { issues } from '@/mock-data/issues';
-import { labels } from '@/mock-data/labels';
-import { useMemo, useState } from 'react';
-import { SelectMenu } from './shared';
+import { DateFormat, formatDate } from '@/constants/date.constant';
+import { DEFAULT_LABEL_COLOR, LABEL_COLORS, LABEL_NAME_MAX } from '@/constants/label.constant';
+import { OrgRole } from '@/constants/org.constant';
+import { useCreateLabel, useDeleteLabel, useLabels, usePatchLabel } from '@/hooks/use-labels';
+import { useOrgs } from '@/hooks/use-orgs';
+import { cn } from '@/lib/utils';
+import type { ApiLabel } from '@/services/labels.service';
+import { Pencil, Trash2 } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useMemo, useState, useEffect } from 'react';
 
-/** Invented descriptions for a few labels (Linear shows a Description column). */
-const DESCRIPTIONS: Record<string, string> = {
-   bug: 'Something is broken and needs a fix',
-   accessibility: 'Keyboard, focus and screen-reader work',
-   performance: 'Speed, memory and bundle size work',
-};
+function formatCount(count: number) {
+  return count >= 1000 ? `${(count / 1000).toFixed(1)}K` : String(count);
+}
 
-const hashString = (value: string): number => {
-   let hash = 0;
-   for (let i = 0; i < value.length; i++) hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-   return hash;
-};
+function LabelFormDialog({
+  open,
+  title,
+  initial,
+  pending,
+  onOpenChange,
+  onSubmit,
+}: {
+  open: boolean;
+  title: string;
+  initial?: Pick<ApiLabel, 'name' | 'color'>;
+  pending: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (input: { name: string; color: string }) => void;
+}) {
+  const [name, setName] = useState(initial?.name ?? '');
+  const [color, setColor] = useState(initial?.color ?? DEFAULT_LABEL_COLOR);
 
-const LAST_APPLIED = [
-   '12 minutes ago',
-   '41 minutes ago',
-   '3 hours ago',
-   '17 hours ago',
-   '2 days ago',
-   '6 days ago',
-];
-const CREATED = ['Sep 2023', 'Jan 2024', 'Jun 2024', 'Feb 2025', 'Jun 2025', 'Jul 12'];
+  useEffect(() => {
+    if (!open) return;
+    setName(initial?.name ?? '');
+    setColor(initial?.color ?? DEFAULT_LABEL_COLOR);
+  }, [open, initial?.name, initial?.color]);
 
-const formatCount = (count: number) =>
-   count >= 1000 ? `${(count / 1000).toFixed(1)}K` : String(count);
-
-/** Workspace "Issue labels" settings: filterable table of every label. */
-export default function IssueLabelsSettings() {
-   const [query, setQuery] = useState('');
-
-   const rows = useMemo(() => {
-      const counts = new Map<string, number>();
-      for (const issue of issues) {
-         for (const label of issue.labels) {
-            counts.set(label.id, (counts.get(label.id) ?? 0) + 1);
-         }
-      }
-      return labels
-         .map((label) => ({
-            ...label,
-            issues: counts.get(label.id) ?? 0,
-            description: DESCRIPTIONS[label.id],
-            lastApplied: LAST_APPLIED[hashString(label.id) % LAST_APPLIED.length],
-            created: CREATED[hashString(label.name) % CREATED.length],
-         }))
-         .filter((label) => label.name.toLowerCase().includes(query.toLowerCase()))
-         .sort((a, b) => a.name.localeCompare(b.name));
-   }, [query]);
-
-   return (
-      <div className="w-full overflow-y-auto h-full">
-         <div className="max-w-5xl mx-auto px-6 py-10 pb-20">
-            <h1 className="text-2xl font-medium mb-6">Issue labels</h1>
-
-            <div className="flex items-center justify-between gap-3 mb-6">
-               <div className="flex items-center gap-2">
-                  <Input
-                     placeholder="Filter by name..."
-                     value={query}
-                     onChange={(event) => setQuery(event.target.value)}
-                     className="w-64 h-8"
-                  />
-                  <SelectMenu options={['Workspace', 'All teams']} />
-               </div>
-               <div className="flex items-center gap-2">
-                  <Button size="xs" variant="secondary">
-                     New group
-                  </Button>
-                  <Button size="xs">New label</Button>
-               </div>
-            </div>
-
-            {/* Header */}
-            <div className="flex items-center px-2 py-1.5 text-xs text-muted-foreground border-b">
-               <div className="flex-1 min-w-0">Name ↓</div>
-               <div className="hidden md:block w-[260px]">Description</div>
-               <div className="w-[70px]">Issues</div>
-               <div className="hidden sm:block w-[110px]">Last applied</div>
-               <div className="w-[80px]">Created</div>
-            </div>
-
-            {rows.map((label) => (
-               <div
-                  key={label.id}
-                  className="flex items-center px-2 py-2.5 text-sm border-b border-muted-foreground/5 hover:bg-sidebar/50"
-               >
-                  <div className="flex-1 min-w-0 flex items-center gap-2.5">
-                     <span
-                        className="size-2.5 rounded-full shrink-0"
-                        style={{ backgroundColor: label.color }}
-                     />
-                     <span className="truncate">{label.name}</span>
-                  </div>
-                  <div className="hidden md:block w-[260px] text-xs text-muted-foreground truncate pr-4">
-                     {label.description}
-                  </div>
-                  <div className="w-[70px] text-xs text-muted-foreground">
-                     {label.issues > 0 && formatCount(label.issues)}
-                  </div>
-                  <div className="hidden sm:block w-[110px] text-xs text-muted-foreground">
-                     {label.issues > 0 && label.lastApplied}
-                  </div>
-                  <div className="w-[80px] text-xs text-muted-foreground">{label.created}</div>
-               </div>
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (next) {
+          setName(initial?.name ?? '');
+          setColor(initial?.color ?? DEFAULT_LABEL_COLOR);
+        }
+        onOpenChange(next);
+      }}
+    >
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <Input
+            placeholder="Label name"
+            value={name}
+            maxLength={LABEL_NAME_MAX}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <div className="flex flex-wrap gap-2">
+            {LABEL_COLORS.map((swatch) => (
+              <button
+                key={swatch}
+                type="button"
+                aria-label={swatch}
+                onClick={() => setColor(swatch)}
+                className={cn(
+                  'size-6 rounded-full border border-transparent',
+                  color.toUpperCase() === swatch && 'ring-2 ring-offset-2 ring-ring',
+                )}
+                style={{ backgroundColor: swatch }}
+              />
             ))}
-            {rows.length === 0 && (
-               <p className="text-sm text-muted-foreground py-6">No labels match your filter.</p>
-            )}
-         </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            onClick={() => onSubmit({ name: name.trim(), color })}
+            disabled={!name.trim() || pending}
+          >
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export default function IssueLabelsSettings() {
+  const { orgId } = useParams<{ orgId: string }>();
+  const { data: orgs } = useOrgs();
+  const { data: labels = [], isLoading } = useLabels(orgId);
+  const createLabel = useCreateLabel();
+  const patchLabel = usePatchLabel();
+  const deleteLabel = useDeleteLabel();
+  const [query, setQuery] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<ApiLabel | null>(null);
+  const [deleting, setDeleting] = useState<ApiLabel | null>(null);
+
+  const isAdmin = orgs?.some(
+    (org) => org.slug === orgId && org.role === OrgRole.ADMIN,
+  );
+
+  const rows = useMemo(
+    () =>
+      labels.filter((label) =>
+        label.name.toLowerCase().includes(query.toLowerCase()),
+      ),
+    [labels, query],
+  );
+
+  return (
+    <div className="w-full overflow-y-auto h-full">
+      <div className="max-w-5xl mx-auto px-6 py-10 pb-20">
+        <h1 className="text-2xl font-medium mb-6">Issue labels</h1>
+
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <Input
+            placeholder="Filter by name..."
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            className="w-64 h-8"
+          />
+          {isAdmin && (
+            <Button size="xs" onClick={() => setCreating(true)}>
+              New label
+            </Button>
+          )}
+        </div>
+
+        <div className="flex items-center px-2 py-1.5 text-xs text-muted-foreground border-b">
+          <div className="flex-1 min-w-0">Name</div>
+          <div className="w-[70px]">Issues</div>
+          <div className="w-[110px]">Created</div>
+          {isAdmin && <div className="w-[72px]" />}
+        </div>
+
+        {isLoading && (
+          <p className="text-sm text-muted-foreground py-6">Loading labels…</p>
+        )}
+        {!isLoading &&
+          rows.map((label) => (
+            <div
+              key={label.id}
+              className="flex items-center px-2 py-2.5 text-sm border-b border-muted-foreground/5 hover:bg-sidebar/50"
+            >
+              <div className="flex-1 min-w-0 flex items-center gap-2.5">
+                <span
+                  className="size-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: label.color }}
+                />
+                <span className="truncate">{label.name}</span>
+              </div>
+              <div className="w-[70px] text-xs text-muted-foreground">
+                {label.issueCount > 0 && formatCount(label.issueCount)}
+              </div>
+              <div className="w-[110px] text-xs text-muted-foreground">
+                {formatDate(label.createdAt, DateFormat.MONTH_YEAR)}
+              </div>
+              {isAdmin && (
+                <div className="w-[72px] flex items-center justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    onClick={() => setEditing(label)}
+                    aria-label={`Edit ${label.name}`}
+                  >
+                    <Pencil className="size-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    onClick={() => setDeleting(label)}
+                    aria-label={`Delete ${label.name}`}
+                  >
+                    <Trash2 className="size-3.5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+        {!isLoading && rows.length === 0 && (
+          <p className="text-sm text-muted-foreground py-6">
+            {query ? 'No labels match your filter.' : 'No labels yet.'}
+          </p>
+        )}
       </div>
-   );
+
+      <LabelFormDialog
+        open={creating}
+        title="New label"
+        pending={createLabel.isPending}
+        onOpenChange={setCreating}
+        onSubmit={({ name, color }) => {
+          createLabel.mutate(
+            { name, color },
+            { onSuccess: () => setCreating(false) },
+          );
+        }}
+      />
+      <LabelFormDialog
+        key={editing?.id ?? 'edit'}
+        open={Boolean(editing)}
+        title="Edit label"
+        initial={editing ?? undefined}
+        pending={patchLabel.isPending}
+        onOpenChange={(open) => {
+          if (!open) setEditing(null);
+        }}
+        onSubmit={({ name, color }) => {
+          if (!editing) return;
+          patchLabel.mutate(
+            { labelId: editing.id, input: { name, color } },
+            { onSuccess: () => setEditing(null) },
+          );
+        }}
+      />
+      <AlertDialog
+        open={Boolean(deleting)}
+        onOpenChange={(open) => {
+          if (!open) setDeleting(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {deleting?.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes the label from every issue. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!deleting) return;
+                deleteLabel.mutate(deleting.id, {
+                  onSuccess: () => setDeleting(null),
+                });
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
 }

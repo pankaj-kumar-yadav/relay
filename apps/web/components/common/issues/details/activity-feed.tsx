@@ -8,7 +8,7 @@ import { formatRelativeTime } from '@/constants/date.constant';
 import { useCreateComment, useIssueActivity } from '@/hooks/use-activity';
 import { dicebearAvatarUrl } from '@/constants/user.constant';
 import type { ApiActivityComment, ApiActivityEvent } from '@/services/activity.service';
-import { CircleDot, PenLine, UserRound } from 'lucide-react';
+import { CircleDot, PenLine, Tag, UserRound } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
 const EVENT_ICONS: Record<string, ReactNode> = {
@@ -16,7 +16,17 @@ const EVENT_ICONS: Record<string, ReactNode> = {
   [IssueEventType.STATUS]: <CircleDot className="size-3.5" />,
   [IssueEventType.PRIORITY]: <CircleDot className="size-3.5" />,
   [IssueEventType.ASSIGNEE]: <UserRound className="size-3.5" />,
+  [IssueEventType.LABEL]: <Tag className="size-3.5" />,
 };
+
+function namesFrom(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) =>
+      item && typeof item === 'object' && 'name' in item ? String(item.name) : '',
+    )
+    .filter(Boolean);
+}
 
 function eventText(item: ApiActivityEvent): string {
   const to = item.payload.to;
@@ -29,6 +39,18 @@ function eventText(item: ApiActivityEvent): string {
       return `changed priority to ${String(to ?? '')}`;
     case IssueEventType.ASSIGNEE:
       return to == null ? 'unassigned the issue' : 'changed the assignee';
+    case IssueEventType.LABEL: {
+      const added = namesFrom(item.payload.added);
+      const removed = namesFrom(item.payload.removed);
+      const parts: string[] = [];
+      if (added.length > 0) {
+        parts.push(`added ${added.join(', ')}`);
+      }
+      if (removed.length > 0) {
+        parts.push(`removed ${removed.join(', ')}`);
+      }
+      return parts.join('; ') || 'updated labels';
+    }
     default:
       return item.type;
   }

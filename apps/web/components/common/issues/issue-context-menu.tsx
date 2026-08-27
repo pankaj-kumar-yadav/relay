@@ -37,12 +37,12 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useIssueMutations } from '@/hooks/use-issues';
+import { useLabels } from '@/hooks/use-labels';
 import { useProjects } from '@/hooks/use-projects';
 import { useIssuesStore } from '@/store/issues-store';
 import { status } from '@/mock-data/status';
 import { priorities } from '@/mock-data/priorities';
 import { users } from '@/mock-data/users';
-import { labels } from '@/mock-data/labels';
 import { toast } from 'sonner';
 import { useParams } from 'next/navigation';
 
@@ -54,11 +54,12 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
    const [isSubscribed, setIsSubscribed] = useState(false);
    const [isFavorite, setIsFavorite] = useState(false);
 
-   const { updateIssueStatus, updateIssuePriority, updateIssueAssignee, updateIssueProject } =
+   const { updateIssueStatus, updateIssuePriority, updateIssueAssignee, updateIssueProject, updateIssueLabels } =
       useIssueMutations();
-   const { addIssueLabel, removeIssueLabel, updateIssue, getIssueById } = useIssuesStore();
+   const { getIssueById, updateIssue } = useIssuesStore();
    const { orgId } = useParams<{ orgId: string }>();
    const { data: projects = [] } = useProjects(orgId);
+   const { data: labels = [] } = useLabels(orgId);
 
    const handleStatusChange = (statusId: string) => {
       if (!issueId) return;
@@ -88,19 +89,15 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
    const handleLabelToggle = (labelId: string) => {
       if (!issueId) return;
       const issue = getIssueById(issueId);
-      const label = labels.find((l) => l.id === labelId);
-
+      const label = labels.find((item) => item.id === labelId);
       if (!issue || !label) return;
 
-      const hasLabel = issue.labels.some((l) => l.id === labelId);
-
-      if (hasLabel) {
-         removeIssueLabel(issueId, labelId);
-         toast.success(`Removed label: ${label.name}`);
-      } else {
-         addIssueLabel(issueId, label);
-         toast.success(`Added label: ${label.name}`);
-      }
+      const hasLabel = issue.labels.some((item) => item.id === labelId);
+      const next = hasLabel
+         ? issue.labels.filter((item) => item.id !== labelId)
+         : [...issue.labels, label];
+      updateIssueLabels(issueId, next);
+      toast.success(hasLabel ? `Removed label: ${label.name}` : `Added label: ${label.name}`);
    };
 
    const handleProjectChange = (projectId: string | null) => {

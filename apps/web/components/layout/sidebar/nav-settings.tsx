@@ -70,7 +70,7 @@ export const settingsNav: SettingsNavGroup[] = [
    {
       label: 'Projects',
       items: [
-         { name: 'Labels', url: OrgPath.SETTINGS_PROJECT_LABELS, icon: Tag },
+         // { name: 'Labels', url: OrgPath.SETTINGS_PROJECT_LABELS, icon: Tag }, — out of v1; restore later
          { name: 'Templates', url: OrgPath.SETTINGS_PROJECT_TEMPLATES, icon: FileText },
          { name: 'Statuses', url: OrgPath.SETTINGS_PROJECT_STATUSES, icon: Target },
          { name: 'Updates', url: OrgPath.SETTINGS_PROJECT_UPDATES, icon: Zap },

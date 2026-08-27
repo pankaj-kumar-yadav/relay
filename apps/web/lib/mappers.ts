@@ -77,7 +77,7 @@ export function mapApiIssue(issue: ApiIssue): Issue {
     assignee: mapAssigneeToUser(issue.assignee),
     priority:
       priorities.find((item) => item.id === issue.priority) ?? priorities[0]!,
-    labels: [],
+    labels: issue.labels ?? [],
     createdAt: issue.createdAt,
     cycleId: '',
     project: issue.project

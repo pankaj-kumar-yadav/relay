@@ -48,4 +48,4 @@ Never commit real secrets. Keep `.env.example` files updated when new vars are a
 
 ## Next
 
-Current work is [11-labels.md](./11-labels.md). Do not implement later v1 slices early.
+Current work is [12-inbox.md](./12-inbox.md). Do not implement later v1 slices early.

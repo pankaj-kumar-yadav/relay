@@ -1,6 +1,6 @@
 # Implementation steps — v1
 
-**Status:** In progress — **current: step 11 (labels)**  
+**Status:** In progress — **current: step 12 (inbox)**  
 **Scope:** [SCOPE-V1.md](./SCOPE-V1.md)  
 **Design:** [2026-08-27-v1-product-design.md](./superpowers/specs/2026-08-27-v1-product-design.md)  
 **Index:** [STEPS.md](./STEPS.md)
@@ -11,8 +11,8 @@ Self-hosted Linear-lite on top of shipped MVP ([STEPS-MVP.md](./STEPS-MVP.md)).
 
 ```text
 10. Comments/activity  ✅  (done)
-11. Labels                 (current)
-12. Inbox
+11. Labels                 ✅  (done)
+12. Inbox                  (current)
 13. Cycles
 14. Saved views
 15. Settings chrome
@@ -23,7 +23,7 @@ Self-hosted Linear-lite on top of shipped MVP ([STEPS-MVP.md](./STEPS-MVP.md)).
 ## Checklist
 
 - [x] Step 10 — Comments + activity
-- [ ] Step 11 — Labels
+- [x] Step 11 — Labels
 - [ ] Step 12 — Inbox
 - [ ] Step 13 — Cycles
 - [ ] Step 14 — Saved views

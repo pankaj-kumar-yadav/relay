@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { StatusSelector } from './status-selector';
 import { PrioritySelector } from './priority-selector';
 import { AssigneeSelector } from './assignee-selector';
+import { LabelSelector } from './label-selector';
 import { ProjectSelector } from './project-selector';
 import { TeamSelector } from './team-selector';
 import { DialogTitle } from '@radix-ui/react-dialog';
@@ -80,6 +81,7 @@ export function CreateNewIssue() {
             assigneeId: addIssueForm.assignee?.id ?? null,
             teamId: selectedTeamKey,
             projectId: addIssueForm.project?.id ?? null,
+            labelIds: addIssueForm.labels.map((label) => label.id),
          });
          toast.success('Issue created');
          if (!createMore) {
@@ -157,6 +159,10 @@ export function CreateNewIssue() {
                      onChange={(newProject) =>
                         setAddIssueForm({ ...addIssueForm, project: newProject })
                      }
+                  />
+                  <LabelSelector
+                     selectedLabels={addIssueForm.labels}
+                     onChange={(labels) => setAddIssueForm({ ...addIssueForm, labels })}
                   />
                </div>
             </div>

@@ -23,6 +23,7 @@ export type ApiIssue = {
   project: { id: string; name: string } | null;
   team: { id: string; key: string; name: string };
   assignee: ApiAssignee;
+  labels: { id: string; name: string; color: string }[];
   createdAt: string;
   updatedAt: string;
 };
@@ -47,6 +48,7 @@ export type CreateIssueInput = {
   assigneeId?: string | null;
   teamId?: string;
   projectId?: string | null;
+  labelIds?: string[];
 };
 
 export type PatchIssueInput = {

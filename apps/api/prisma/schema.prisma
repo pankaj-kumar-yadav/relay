@@ -56,6 +56,8 @@ model Organization {
   comments    Comment[]
   issueEvents IssueEvent[]
   commentReactions CommentReaction[]
+  labels      Label[]
+  issueLabels IssueLabel[]
 
   @@map("organizations")
 }
@@ -150,6 +152,7 @@ model Issue {
   assignee       User?        @relation("IssueAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
   comments       Comment[]
   events         IssueEvent[]
+  issueLabels    IssueLabel[]
 
   @@unique([teamId, number])
   @@index([organizationId])
@@ -206,4 +209,35 @@ model IssueEvent {
 
   @@index([organizationId, issueId, createdAt])
   @@map("issue_events")
+}
+
+model Label {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  name           String
+  color          String
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  issueLabels    IssueLabel[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@map("labels")
+}
+
+model IssueLabel {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  issueId        String       @map("issue_id") @db.Uuid
+  labelId        String       @map("label_id") @db.Uuid
+  createdAt      DateTime     @default(now()) @map("created_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  issue          Issue        @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  label          Label        @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@unique([issueId, labelId])
+  @@index([organizationId])
+  @@index([labelId])
+  @@map("issue_labels")
 }

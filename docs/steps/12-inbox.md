@@ -1,6 +1,6 @@
 # Step 12 — Inbox
 
-**Status:** Planned
+**Status:** Current
 
 ## Goal
 

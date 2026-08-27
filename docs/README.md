@@ -38,8 +38,8 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | Step | File | Status |
 |------|------|--------|
 | 10 | [10-comments-activity.md](./steps/10-comments-activity.md) | Done |
-| 11 | [11-labels.md](./steps/11-labels.md) | Current |
-| 12 | [12-inbox.md](./steps/12-inbox.md) | Planned |
+| 11 | [11-labels.md](./steps/11-labels.md) | Done |
+| 12 | [12-inbox.md](./steps/12-inbox.md) | Current |
 | 13 | [13-cycles.md](./steps/13-cycles.md) | Planned |
 | 14 | [14-saved-views.md](./steps/14-saved-views.md) | Planned |
 | 15 | [15-settings-chrome.md](./steps/15-settings-chrome.md) | Planned |
@@ -50,3 +50,4 @@ Canonical documentation for humans and agents. Read in this order when starting 
 
 - [v1 product](./superpowers/specs/2026-08-27-v1-product-design.md)
 - [Comments + activity (step 10)](./superpowers/specs/2026-08-27-issue-comments-activity-design.md)
+- [Issue labels (step 11)](./superpowers/specs/2026-08-27-issue-labels-design.md)

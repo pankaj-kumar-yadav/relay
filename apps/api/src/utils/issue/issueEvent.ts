@@ -5,6 +5,8 @@ import {
   type IssueEventTypeValue,
 } from '@/constants/activity.constant.js';
 
+export type LabelEventItem = { id: string; name: string };
+
 export function eventPayload(
   type: IssueEventTypeValue,
   from?: string | null,
@@ -12,6 +14,13 @@ export function eventPayload(
 ): Prisma.InputJsonValue {
   if (type === IssueEventType.CREATED) return {};
   return { from: from ?? null, to: to ?? null };
+}
+
+export function labelEventPayload(
+  added: LabelEventItem[],
+  removed: LabelEventItem[],
+): Prisma.InputJsonValue {
+  return { added, removed };
 }
 
 type Tx = Prisma.TransactionClient;

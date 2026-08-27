@@ -13,6 +13,7 @@ import {
 } from '@/constants/issue.js';
 import { IssueEventType } from '@/constants/activity.constant.js';
 import { HttpStatus } from '@/constants/http.js';
+import { LABEL_IDS_MAX } from '@/constants/label.constant.js';
 import { ListLimit } from '@/constants/list.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
@@ -23,7 +24,8 @@ import {
   sendError,
   ValidationError,
 } from '@/utils/errors.js';
-import { eventPayload, recordIssueEvent } from '@/utils/issue/issueEvent.js';
+import { eventPayload, labelEventPayload, recordIssueEvent } from '@/utils/issue/issueEvent.js';
+import { loadOrgLabels, syncIssueLabels } from '@/utils/issue/issueLabels.js';
 import { rankBetween } from '@/utils/issue/issueRank.js';
 import { issueIdentifier, parseIssueRef } from '@/utils/issue/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
@@ -49,6 +51,10 @@ const issueSelect = {
   team: { select: { id: true, key: true, name: true } },
   project: { select: { id: true, name: true, teamId: true } },
   assignee: { select: { id: true, name: true, email: true } },
+  issueLabels: {
+    select: { label: { select: { id: true, name: true, color: true } } },
+    orderBy: { label: { name: 'asc' } },
+  },
 } satisfies Prisma.IssueSelect;
 
 type IssueRow = Prisma.IssueGetPayload<{ select: typeof issueSelect }>;
@@ -69,6 +75,7 @@ function publicIssue(issue: IssueRow) {
       : null,
     team: issue.team,
     assignee: issue.assignee,
+    labels: issue.issueLabels.map((row) => row.label),
     createdAt: issue.createdAt.toISOString(),
     updatedAt: issue.updatedAt.toISOString(),
   };
@@ -103,6 +110,7 @@ const createIssueSchema = z.object({
   assigneeId: z.string().uuid().optional().nullable(),
   teamId: z.string().optional(),
   projectId: z.string().uuid().optional().nullable(),
+  labelIds: z.array(z.string().uuid()).max(LABEL_IDS_MAX).optional(),
 });
 
 const patchIssueSchema = z.object({
@@ -116,6 +124,10 @@ const patchIssueSchema = z.object({
   rank: z.string().min(1).optional(),
   beforeIssueId: z.string().optional(),
   afterIssueId: z.string().optional(),
+});
+
+const setIssueLabelsSchema = z.object({
+  labelIds: z.array(z.string().uuid()).max(LABEL_IDS_MAX),
 });
 
 function parseLimit(raw: unknown): number {
@@ -257,6 +269,7 @@ issuesRouter.post('/', async (req, res) => {
       assigneeId,
       teamId,
       projectId,
+      labelIds,
     } = parsed.data;
 
     if (status && !isIssueStatus(status)) {
@@ -280,6 +293,8 @@ issuesRouter.post('/', async (req, res) => {
       const project = await assertProjectOnTeam(organizationId, projectId, team.id);
       resolvedProjectId = project.id;
     }
+
+    const labels = labelIds ? await loadOrgLabels(organizationId, labelIds) : [];
 
     const issue = await prisma.$transaction(async (tx) => {
       const last = await tx.issue.findFirst({
@@ -306,7 +321,7 @@ issuesRouter.post('/', async (req, res) => {
           projectId: resolvedProjectId,
           rank: rankBetween(lastRanked?.rank ?? null, null),
         },
-        select: issueSelect,
+        select: { id: true },
       });
       await recordIssueEvent(tx, {
         organizationId,
@@ -315,7 +330,24 @@ issuesRouter.post('/', async (req, res) => {
         type: IssueEventType.CREATED,
         payload: eventPayload(IssueEventType.CREATED),
       });
-      return created;
+      if (labels.length > 0) {
+        const { added } = await syncIssueLabels(tx, {
+          organizationId,
+          issueId: created.id,
+          labels,
+        });
+        await recordIssueEvent(tx, {
+          organizationId,
+          issueId: created.id,
+          actorId: req.user!.id,
+          type: IssueEventType.LABEL,
+          payload: labelEventPayload(added, []),
+        });
+      }
+      return tx.issue.findFirstOrThrow({
+        where: { id: created.id },
+        select: issueSelect,
+      });
     });
 
     sendSuccess(res, {
@@ -335,6 +367,50 @@ issuesRouter.get('/:issueId', async (req, res) => {
       throw new NotFoundError('Issue not found');
     }
     sendSuccess(res, { data: { issue: publicIssue(issue) } });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+issuesRouter.put('/:issueId/labels', async (req, res) => {
+  try {
+    const parsed = setIssueLabelsSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+
+    const organizationId = req.org!.id;
+    const existing = await loadIssue(organizationId, req.params.issueId);
+    if (!existing) {
+      throw new NotFoundError('Issue not found');
+    }
+
+    const labels = await loadOrgLabels(organizationId, parsed.data.labelIds);
+    const issue = await prisma.$transaction(async (tx) => {
+      const { added, removed } = await syncIssueLabels(tx, {
+        organizationId,
+        issueId: existing.id,
+        labels,
+      });
+      if (added.length > 0 || removed.length > 0) {
+        await recordIssueEvent(tx, {
+          organizationId,
+          issueId: existing.id,
+          actorId: req.user!.id,
+          type: IssueEventType.LABEL,
+          payload: labelEventPayload(added, removed),
+        });
+      }
+      return tx.issue.findFirstOrThrow({
+        where: { id: existing.id },
+        select: issueSelect,
+      });
+    });
+
+    sendSuccess(res, {
+      message: 'Labels updated',
+      data: { issue: publicIssue(issue) },
+    });
   } catch (err) {
     sendError(res, err);
   }
