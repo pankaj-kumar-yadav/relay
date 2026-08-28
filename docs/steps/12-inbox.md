@@ -1,6 +1,6 @@
 # Step 12 — Inbox
 
-**Status:** Current
+**Status:** Done
 
 ## Goal
 
@@ -12,15 +12,17 @@ In-app notifications for comment, assignee, and status changes. Polling only.
 
 ## Design
 
-[v1 product design](../superpowers/specs/2026-08-27-v1-product-design.md) §12. Write a slice spec/plan before code.
+- Product: [v1 product design](../superpowers/specs/2026-08-27-v1-product-design.md) §12
+- Slice: [inbox design](../superpowers/specs/2026-08-28-inbox-design.md)
+- Plan: [inbox plan](../superpowers/plans/2026-08-28-inbox.md)
 
 ## Done when
 
-- [ ] `notifications` table exists; list/mark-read/mark-all-read for the current user in the current org
-- [ ] Comment (not author), assignee change, and status change emit rows in the same request
-- [ ] Inbox is restored in the sidebar; TanStack Query polls (`refetchInterval` 15s)
-- [ ] User B cannot see user A’s notifications
-- [ ] No notification emails
+- [x] `notifications` table exists; list/mark-read/mark-all-read for the current user in the current org
+- [x] Comment (not author), assignee change, and status change emit rows in the same request
+- [x] Inbox is restored in the sidebar; TanStack Query polls (`refetchInterval` 5 mins)
+- [x] User B cannot see user A’s notifications
+- [x] No notification emails
 
 ## Out of scope
 

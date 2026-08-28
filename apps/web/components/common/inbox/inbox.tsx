@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import { useNotificationsStore } from '@/store/notifications-store';
+import { toInboxRow, type InboxRowView } from '@/components/common/inbox/inbox-row';
+import { useInbox, useMarkAllNotificationsRead, useMarkNotificationRead } from '@/hooks/use-inbox';
 import { Button } from '@/components/ui/button';
 import {
    DropdownMenu,
@@ -28,30 +27,32 @@ import IssueLine from './issue-line';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ChevronLeft } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 
 export default function Inbox() {
-   const {
-      notifications,
-      selectedNotification,
-      setSelectedNotification,
-      markAsRead,
-      markAllAsRead,
-      getUnreadNotifications,
-   } = useNotificationsStore();
-
+   const { orgId } = useParams<{ orgId: string }>();
+   const { data, isLoading } = useInbox(orgId);
+   const markRead = useMarkNotificationRead();
+   const markAll = useMarkAllNotificationsRead();
+   const [selectedId, setSelectedId] = useState<string | undefined>();
    const isMobile = useIsMobile();
    const [showRead, setShowRead] = useState(true);
-   const [showSnoozed, setShowSnoozed] = useState(false);
    const [showUnreadFirst, setShowUnreadFirst] = useState(false);
    const [ordering, setOrdering] = useState('newest');
    const [showId, setShowId] = useState(true);
    const [showStatusIcon, setShowStatusIcon] = useState(true);
 
-   // Filter and sort notifications based on settings
+   const notifications = useMemo(
+      () => (data?.notifications ?? []).map(toInboxRow),
+      [data?.notifications],
+   );
+   const unreadCount = data?.unreadCount ?? 0;
+
    const filteredNotifications = notifications
       .filter((notification) => {
          if (!showRead && notification.read) return false;
-         // Add snoozed filter logic here when implemented
          return true;
       })
       .sort((a, b) => {
@@ -59,22 +60,15 @@ export default function Inbox() {
             if (!a.read && b.read) return -1;
             if (a.read && !b.read) return 1;
          }
-         // Sort by timestamp (newest first by default)
          return ordering === 'newest'
-            ? new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-            : new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+            ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       });
 
-   const handleDeleteAllNotifications = () => {
-      console.log('Delete all notifications');
-   };
+   const selectedNotification = notifications.find((row) => row.id === selectedId);
 
-   const handleDeleteReadNotifications = () => {
-      console.log('Delete read notifications');
-   };
-
-   const handleDeleteCompletedIssues = () => {
-      console.log('Delete notifications for completed issues');
+   const selectNotification = (notification: InboxRowView) => {
+      setSelectedId(notification.id);
    };
 
    const listPane = (
@@ -90,15 +84,16 @@ export default function Inbox() {
                      </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
-                     <DropdownMenuItem onClick={handleDeleteAllNotifications}>
+                     {/* Delete / snooze stay Circle leftovers — not wired in v1 */}
+                     <DropdownMenuItem disabled>
                         <Trash2 className="w-4 h-4 mr-2" />
                         Delete all notifications
                      </DropdownMenuItem>
-                     <DropdownMenuItem onClick={handleDeleteReadNotifications}>
+                     <DropdownMenuItem disabled>
                         <CheckCheck className="w-4 h-4 mr-2" />
                         Delete all read notifications
                      </DropdownMenuItem>
-                     <DropdownMenuItem onClick={handleDeleteCompletedIssues}>
+                     <DropdownMenuItem disabled>
                         <Archive className="w-4 h-4 mr-2" />
                         Delete notifications for completed issues
                      </DropdownMenuItem>
@@ -110,8 +105,8 @@ export default function Inbox() {
                <Button
                   variant="ghost"
                   size="xs"
-                  onClick={markAllAsRead}
-                  disabled={getUnreadNotifications().length === 0}
+                  onClick={() => markAll.mutate()}
+                  disabled={unreadCount === 0 || markAll.isPending}
                >
                   <CheckCheck className="w-4 h-4" />
                </Button>
@@ -142,16 +137,6 @@ export default function Inbox() {
                      <DropdownMenuSeparator />
 
                      <div className="p-2 space-y-3">
-                        <div className="flex items-center justify-between">
-                           <Label htmlFor="show-snoozed" className="text-sm">
-                              Show snoozed
-                           </Label>
-                           <Switch
-                              id="show-snoozed"
-                              checked={showSnoozed}
-                              onCheckedChange={setShowSnoozed}
-                           />
-                        </div>
                         <div className="flex items-center justify-between">
                            <Label htmlFor="show-read" className="text-sm">
                               Show read
@@ -200,16 +185,22 @@ export default function Inbox() {
             </div>
          </div>
          <div className="w-full flex flex-col items-center justify-start overflow-y-scroll h-[calc(100%-40px)] pb-0.25">
-            {filteredNotifications.map((notification) => (
-               <IssueLine
-                  key={notification.id}
-                  notification={notification}
-                  isSelected={selectedNotification?.id === notification.id}
-                  onClick={() => setSelectedNotification(notification)}
-                  showId={showId}
-                  showStatusIcon={showStatusIcon}
-               />
-            ))}
+            {isLoading ? (
+               <p className="text-sm text-muted-foreground py-8">Loading inbox…</p>
+            ) : filteredNotifications.length === 0 ? (
+               <p className="text-sm text-muted-foreground py-8">No notifications yet.</p>
+            ) : (
+               filteredNotifications.map((notification) => (
+                  <IssueLine
+                     key={notification.id}
+                     notification={notification}
+                     isSelected={selectedNotification?.id === notification.id}
+                     onClick={() => selectNotification(notification)}
+                     showId={showId}
+                     showStatusIcon={showStatusIcon}
+                  />
+               ))
+            )}
          </div>
       </>
    );
@@ -218,14 +209,19 @@ export default function Inbox() {
       return selectedNotification ? (
          <div className="flex flex-col h-full w-full">
             <button
-               onClick={() => setSelectedNotification(undefined)}
+               onClick={() => setSelectedId(undefined)}
                className="flex items-center gap-1 px-4 h-10 border-b border-border text-sm text-muted-foreground hover:text-foreground shrink-0"
             >
                <ChevronLeft className="size-4" />
                Inbox
             </button>
             <div className="flex-1 min-h-0">
-               <NotificationPreview notification={selectedNotification} onMarkAsRead={markAsRead} />
+               <NotificationPreview
+                  notification={selectedNotification}
+                  unreadCount={unreadCount}
+                  onMarkAsRead={(id) => markRead.mutate(id)}
+                  markReadPending={markRead.isPending}
+               />
             </div>
          </div>
       ) : (
@@ -244,7 +240,12 @@ export default function Inbox() {
          </ResizablePanel>
          <ResizableHandle withHandle />
          <ResizablePanel defaultSize={350} maxSize={500}>
-            <NotificationPreview notification={selectedNotification} onMarkAsRead={markAsRead} />
+            <NotificationPreview
+               notification={selectedNotification}
+               unreadCount={unreadCount}
+               onMarkAsRead={(id) => markRead.mutate(id)}
+               markReadPending={markRead.isPending}
+            />
          </ResizablePanel>
       </ResizablePanelGroup>
    );

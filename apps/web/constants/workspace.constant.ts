@@ -2,7 +2,6 @@ import { orgPath } from '@/constants/org.constant';
 
 /** Circle leftover surfaces that are not first-class domains yet. */
 export const WorkspacePath = {
-  INBOX: '/inbox',
   REVIEWS: '/reviews',
   REVIEWS_CREATED: '/reviews/created',
   AGENT: '/agent',

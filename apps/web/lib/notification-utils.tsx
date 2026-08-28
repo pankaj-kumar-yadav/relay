@@ -10,15 +10,16 @@ import {
    Plus,
    Upload,
 } from 'lucide-react';
-import { NotificationType } from '@/mock-data/inbox';
+import { NotificationType as InboxNotificationType } from '@/constants/inbox.constant';
 import { cn } from '@/lib/utils';
 
-export function getNotificationIcon(type: NotificationType, className?: string) {
+export function getNotificationIcon(type: string, className?: string) {
    switch (type) {
       case 'comment':
          return <MessageCircle className={cn('text-blue-500', className)} />;
       case 'mention':
          return <AtSign className={cn('text-orange-500', className)} />;
+      case InboxNotificationType.ASSIGNEE:
       case 'assignment':
          return <UserPlus className={cn('text-green-500', className)} />;
       case 'status':

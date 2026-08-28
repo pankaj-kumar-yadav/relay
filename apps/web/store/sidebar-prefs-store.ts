@@ -29,7 +29,7 @@ interface SidebarPrefsState {
 }
 
 const DEFAULT_VISIBILITY: Record<SidebarItemKey, SidebarVisibility> = {
-   'inbox': 'never',
+   'inbox': 'always',
    'reviews': 'never',
    'my-issues': 'always',
    /** @deprecated Hidden from UI; retained so persisted prefs stay valid. */
@@ -47,7 +47,7 @@ const DEFAULT_VISIBILITY: Record<SidebarItemKey, SidebarVisibility> = {
  * sidebar keeps its shape across sessions.
  */
 const DEFAULT_ORDER: Record<SidebarSection, SidebarItemKey[]> = {
-   personal: ['my-issues'],
+   personal: ['inbox', 'my-issues'],
    workspace: ['teams', 'projects', 'members'],
 };
 
@@ -71,16 +71,27 @@ export const useSidebarPrefsStore = create<SidebarPrefsState>()(
       }),
       {
          name: 'sidebar-prefs',
-         version: 1,
+         version: 2,
          migrate: (persisted, version) => {
             const state = persisted as SidebarPrefsState;
+            let next = state;
             if (version < 1) {
-               return {
-                  ...state,
-                  visibility: { ...state.visibility, projects: 'always' },
+               next = {
+                  ...next,
+                  visibility: { ...next.visibility, projects: 'always' },
                };
             }
-            return state;
+            if (version < 2) {
+               next = {
+                  ...next,
+                  visibility: { ...next.visibility, inbox: 'always' },
+                  order: {
+                     ...next.order,
+                     personal: resolveOrder(next.order?.personal, ['inbox', 'my-issues']),
+                  },
+               };
+            }
+            return next;
          },
       },
    )

@@ -1,3 +1,4 @@
+import { InboxPath } from '@/constants/inbox.constant';
 import { IssuePath } from '@/constants/issue.constant';
 import { OrgPath } from '@/constants/org.constant';
 import { ProjectPath } from '@/constants/project.constant';
@@ -26,7 +27,7 @@ import {
 export const inboxItems = [
    {
       name: 'Inbox',
-      url: WorkspacePath.INBOX,
+      url: InboxPath.INBOX,
       icon: Inbox,
    },
    {

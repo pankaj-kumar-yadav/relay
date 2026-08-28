@@ -46,7 +46,7 @@ Reusable strings, numbers, roles, statuses, codes, **app paths**, and **date/tim
 - **One domain per file**: `org`, `team`, `project`, `issue`, `auth`, `http`, `date`, `workspace`, `brand`, `seed`
 - Path builders live **in that domain** (`teamHomePath` in `team.constant.ts`, not a catch-all `route.constant.ts`)
 - Cross-cutting display formats live in `date.constant.ts`
-- Circle leftovers (inbox, reviews, initiatives, views) share `workspace.constant.ts` until they are first-class domains
+- Circle leftovers (reviews, initiatives, views) share `workspace.constant.ts` until they are first-class domains
 
 ```ts
 // ✅ GOOD — domain file

@@ -13,6 +13,7 @@ import {
 } from '@/constants/issue.js';
 import { IssueEventType } from '@/constants/activity.constant.js';
 import { HttpStatus } from '@/constants/http.js';
+import { NotificationType } from '@/constants/inbox.constant.js';
 import { LABEL_IDS_MAX } from '@/constants/label.constant.js';
 import { ListLimit } from '@/constants/list.js';
 import { prisma } from '@/db.js';
@@ -24,6 +25,7 @@ import {
   sendError,
   ValidationError,
 } from '@/utils/errors.js';
+import { notifyIfRecipient } from '@/utils/inbox/notify.js';
 import { eventPayload, labelEventPayload, recordIssueEvent } from '@/utils/issue/issueEvent.js';
 import { loadOrgLabels, syncIssueLabels } from '@/utils/issue/issueLabels.js';
 import { rankBetween } from '@/utils/issue/issueRank.js';
@@ -543,6 +545,24 @@ issuesRouter.patch('/:issueId', async (req, res) => {
             previousAssigneeId,
             data.assigneeId,
           ),
+        });
+        await notifyIfRecipient(tx, {
+          organizationId,
+          issueId: existing.id,
+          actorId,
+          recipientId: data.assigneeId,
+          type: NotificationType.ASSIGNEE,
+        });
+      }
+
+      const nextAssigneeId = updated.assignee?.id ?? null;
+      if (data.status !== undefined && data.status !== existing.status) {
+        await notifyIfRecipient(tx, {
+          organizationId,
+          issueId: existing.id,
+          actorId,
+          recipientId: nextAssigneeId,
+          type: NotificationType.STATUS,
         });
       }
 

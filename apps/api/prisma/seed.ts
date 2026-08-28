@@ -10,13 +10,14 @@ import {
   IssueStatus,
 } from '../src/constants/issue.js';
 import { IssueEventType } from '../src/constants/activity.constant.js';
-import { LABEL_COLORS } from '../src/constants/label.constant.js';
+import { NotificationType } from '../src/constants/inbox.constant.js';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
 } from '../src/constants/project.constant.js';
 import { OrgRole, type OrgRoleValue } from '../src/constants/org.js';
 import {
+  SEED_LABELS,
   SEED_PASSWORD,
   SEED_PREVIOUS_ACME_SLUG,
   SEED_PROJECT_NAME,
@@ -360,17 +361,102 @@ async function ensureWelcomeIssue(input: {
   });
 }
 
-const SEED_LABELS = [
-  { name: 'Bug', color: LABEL_COLORS[0] },
-  { name: 'Feature', color: LABEL_COLORS[3] },
-  { name: 'Design', color: LABEL_COLORS[6] },
-] as const;
+async function ensureEmployeeInbox(input: {
+  organizationId: string;
+  teamId: string;
+  projectId?: string;
+  actorId: string;
+  employees: Array<{ id: string; name: string }>;
+}) {
+  const types = [
+    NotificationType.COMMENT,
+    NotificationType.ASSIGNEE,
+    NotificationType.STATUS,
+  ] as const;
+
+  for (const employee of input.employees) {
+    if (employee.id === input.actorId) continue;
+
+    const existing = await prisma.notification.findMany({
+      where: { organizationId: input.organizationId, userId: employee.id },
+      select: { type: true, issueId: true },
+    });
+    const have = new Set(existing.map((row) => row.type));
+    const missing = types.filter((type) => !have.has(type));
+    if (missing.length === 0) continue;
+
+    let issueId = existing[0]?.issueId;
+    if (!issueId) {
+      const assigned = await prisma.issue.findFirst({
+        where: {
+          organizationId: input.organizationId,
+          assigneeId: employee.id,
+        },
+        orderBy: { number: 'asc' },
+        select: { id: true },
+      });
+      issueId = assigned?.id;
+    }
+    if (!issueId) {
+      const last = await prisma.issue.findFirst({
+        where: { teamId: input.teamId },
+        orderBy: { number: 'desc' },
+        select: { number: true },
+      });
+      const created = await prisma.issue.create({
+        data: {
+          organizationId: input.organizationId,
+          teamId: input.teamId,
+          number: (last?.number ?? 0) + 1,
+          title: `Inbox for ${employee.name}`,
+          description: 'Seeded issue so this member has inbox notifications.',
+          status: DEFAULT_ISSUE_STATUS,
+          priority: DEFAULT_ISSUE_PRIORITY,
+          assigneeId: employee.id,
+          projectId: input.projectId ?? null,
+          rank: rankBetween(null, null),
+        },
+        select: { id: true },
+      });
+      issueId = created.id;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      if (missing.includes(NotificationType.COMMENT)) {
+        await tx.comment.create({
+          data: {
+            organizationId: input.organizationId,
+            issueId,
+            authorId: input.actorId,
+            body: 'Seed comment: welcome to the workspace.',
+          },
+        });
+      }
+      await tx.notification.createMany({
+        data: missing.map((type) => ({
+          organizationId: input.organizationId,
+          userId: employee.id,
+          issueId: issueId!,
+          actorId: input.actorId,
+          type,
+        })),
+      });
+    });
+  }
+}
 
 async function ensureOrgLabels(organizationId: string) {
-  const count = await prisma.label.count({ where: { organizationId } });
-  if (count > 0) return;
+  const existing = await prisma.label.findMany({
+    where: { organizationId },
+    select: { name: true },
+  });
+  const existingNames = new Set(existing.map((label) => label.name.toLowerCase()));
+  const missing = SEED_LABELS.filter(
+    (label) => !existingNames.has(label.name.toLowerCase()),
+  );
+  if (missing.length === 0) return;
   await prisma.label.createMany({
-    data: SEED_LABELS.map((label) => ({ organizationId, ...label })),
+    data: missing.map((label) => ({ organizationId, ...label })),
   });
 }
 
@@ -504,14 +590,26 @@ async function main() {
     teamId: techapTeams[1].id,
     name: 'Continuum Mobile',
   });
-  const techapEmployee = techapMembers.find((member) => member.role === OrgRole.EMPLOYEE);
-  if (techapEmployee) {
+  const techapAdmin = techapMembers.find((member) => member.role === OrgRole.ADMIN);
+  const techapEmployees = techapMembers.filter(
+    (member) => member.role === OrgRole.EMPLOYEE,
+  );
+  if (techapEmployees[0]) {
     await ensureWelcomeIssue({
       organizationId: techap.id,
       teamId: techapTeams[0].id,
-      assigneeId: techapEmployee.id,
+      assigneeId: techapEmployees[0].id,
       title: 'Welcome to Techap Solutions',
       projectId: techapLms.id,
+    });
+  }
+  if (techapAdmin) {
+    await ensureEmployeeInbox({
+      organizationId: techap.id,
+      teamId: techapTeams[0].id,
+      projectId: techapLms.id,
+      actorId: techapAdmin.id,
+      employees: techapEmployees,
     });
   }
   await ensureOrgLabels(techap.id);
@@ -524,14 +622,26 @@ async function main() {
     teamId: stratxgTeams[0].id,
     name: 'LMS Platform',
   });
-  const stratxgEmployee = stratxgMembers.find((member) => member.role === OrgRole.EMPLOYEE);
-  if (stratxgEmployee) {
+  const stratxgAdmin = stratxgMembers.find((member) => member.role === OrgRole.ADMIN);
+  const stratxgEmployees = stratxgMembers.filter(
+    (member) => member.role === OrgRole.EMPLOYEE,
+  );
+  if (stratxgEmployees[0]) {
     await ensureWelcomeIssue({
       organizationId: stratxg.id,
       teamId: stratxgTeams[0].id,
-      assigneeId: stratxgEmployee.id,
+      assigneeId: stratxgEmployees[0].id,
       title: 'Welcome to StratXG',
       projectId: stratxgLms.id,
+    });
+  }
+  if (stratxgAdmin) {
+    await ensureEmployeeInbox({
+      organizationId: stratxg.id,
+      teamId: stratxgTeams[0].id,
+      projectId: stratxgLms.id,
+      actorId: stratxgAdmin.id,
+      employees: stratxgEmployees,
     });
   }
   await ensureOrgLabels(stratxg.id);

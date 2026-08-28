@@ -39,8 +39,8 @@ Canonical documentation for humans and agents. Read in this order when starting 
 |------|------|--------|
 | 10 | [10-comments-activity.md](./steps/10-comments-activity.md) | Done |
 | 11 | [11-labels.md](./steps/11-labels.md) | Done |
-| 12 | [12-inbox.md](./steps/12-inbox.md) | Current |
-| 13 | [13-cycles.md](./steps/13-cycles.md) | Planned |
+| 12 | [12-inbox.md](./steps/12-inbox.md) | Done |
+| 13 | [13-cycles.md](./steps/13-cycles.md) | Current |
 | 14 | [14-saved-views.md](./steps/14-saved-views.md) | Planned |
 | 15 | [15-settings-chrome.md](./steps/15-settings-chrome.md) | Planned |
 | 16 | [16-email-auth.md](./steps/16-email-auth.md) | Planned |

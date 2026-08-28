@@ -7,6 +7,7 @@ import {
   COMMENT_REACTION_EMOJI_MAX,
 } from '@/constants/activity.constant.js';
 import { HttpStatus } from '@/constants/http.js';
+import { NotificationType } from '@/constants/inbox.constant.js';
 import { prisma } from '@/db.js';
 import {
   ForbiddenError,
@@ -15,6 +16,7 @@ import {
   ValidationError,
 } from '@/utils/errors.js';
 import { aggregateCommentReactions, isCommentReactionEmoji } from '@/utils/issue/commentReaction.js';
+import { notifyIfRecipient } from '@/utils/inbox/notify.js';
 import { parseIssueRef } from '@/utils/issue/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
 
@@ -43,7 +45,7 @@ async function findIssueInOrg(organizationId: string, rawId: string) {
   if (ref.kind === 'id') {
     return prisma.issue.findFirst({
       where: { id: ref.id, organizationId },
-      select: { id: true },
+      select: { id: true, assigneeId: true },
     });
   }
 
@@ -53,7 +55,7 @@ async function findIssueInOrg(organizationId: string, rawId: string) {
       number: ref.number,
       team: { key: ref.teamKey, organizationId },
     },
-    select: { id: true },
+    select: { id: true, assigneeId: true },
   });
 }
 
@@ -149,19 +151,29 @@ activityRouter.post('/:issueId/comments', async (req, res) => {
       throw new NotFoundError('Issue not found');
     }
 
-    const comment = await prisma.comment.create({
-      data: {
+    const comment = await prisma.$transaction(async (tx) => {
+      const created = await tx.comment.create({
+        data: {
+          organizationId,
+          issueId: issue.id,
+          authorId: req.user!.id,
+          body: parsed.data.body,
+        },
+        select: {
+          id: true,
+          body: true,
+          createdAt: true,
+          author: { select: actorSelect },
+        },
+      });
+      await notifyIfRecipient(tx, {
         organizationId,
         issueId: issue.id,
-        authorId: req.user!.id,
-        body: parsed.data.body,
-      },
-      select: {
-        id: true,
-        body: true,
-        createdAt: true,
-        author: { select: actorSelect },
-      },
+        actorId: req.user!.id,
+        recipientId: issue.assigneeId,
+        type: NotificationType.COMMENT,
+      });
+      return created;
     });
 
     sendSuccess(res, {

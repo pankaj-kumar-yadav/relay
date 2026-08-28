@@ -23,6 +23,7 @@ import {
    ContactRound,
    FolderKanban,
    GripVertical,
+   Inbox,
    LucideIcon,
    UserRound,
 } from 'lucide-react';
@@ -37,6 +38,7 @@ interface ItemConfig {
 }
 
 export const PERSONAL_ITEMS: ItemConfig[] = [
+   { key: 'inbox', label: 'Inbox', icon: Inbox, badged: true },
    { key: 'my-issues', label: 'My issues', icon: FolderKanban },
 ];
 

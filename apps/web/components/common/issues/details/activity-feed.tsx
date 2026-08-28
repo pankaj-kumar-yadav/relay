@@ -122,6 +122,8 @@ export function ActivityFeed({
   };
 
   const items = data?.items ?? [];
+  const events = items.filter((item) => item.kind === 'event');
+  const comments = items.filter((item) => item.kind === 'comment');
 
   return (
     <div className="mt-10">
@@ -131,18 +133,17 @@ export function ActivityFeed({
         <p className="text-sm text-muted-foreground">Loading activity…</p>
       ) : (
         <div className="flex flex-col">
-          {items.map((item) =>
-            item.kind === 'event' ? (
-              <EventRow key={item.id} item={item} />
-            ) : (
-              <CommentCard
-                key={item.id}
-                orgSlug={orgSlug}
-                issueId={issueId}
-                item={item}
-              />
-            ),
-          )}
+          {events.map((item) => (
+            <EventRow key={item.id} item={item} />
+          ))}
+          {comments.map((item) => (
+            <CommentCard
+              key={item.id}
+              orgSlug={orgSlug}
+              issueId={issueId}
+              item={item}
+            />
+          ))}
         </div>
       )}
 

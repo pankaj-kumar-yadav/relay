@@ -22,6 +22,8 @@ model User {
   commentsAuthored Comment[]    @relation("CommentAuthor")
   issueEventsActed IssueEvent[] @relation("IssueEventActor")
   commentReactions CommentReaction[]
+  notificationsReceived Notification[] @relation("NotificationRecipient")
+  notificationsActed    Notification[] @relation("NotificationActor")
 
   @@map("users")
 }
@@ -58,6 +60,7 @@ model Organization {
   commentReactions CommentReaction[]
   labels      Label[]
   issueLabels IssueLabel[]
+  notifications Notification[]
 
   @@map("organizations")
 }
@@ -153,6 +156,7 @@ model Issue {
   comments       Comment[]
   events         IssueEvent[]
   issueLabels    IssueLabel[]
+  notifications  Notification[]
 
   @@unique([teamId, number])
   @@index([organizationId])
@@ -240,4 +244,23 @@ model IssueLabel {
   @@index([organizationId])
   @@index([labelId])
   @@map("issue_labels")
+}
+
+model Notification {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  issueId        String       @map("issue_id") @db.Uuid
+  actorId        String       @map("actor_id") @db.Uuid
+  type           String
+  readAt         DateTime?    @map("read_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor          User         @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Restrict)
+  issue          Issue        @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@index([userId, organizationId, createdAt])
+  @@index([organizationId])
+  @@map("notifications")
 }

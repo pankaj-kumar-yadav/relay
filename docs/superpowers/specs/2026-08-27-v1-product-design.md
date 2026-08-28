@@ -104,7 +104,7 @@ Detail: [2026-08-27-issue-comments-activity-design.md](./2026-08-27-issue-commen
 - Table: `notifications` (`user_id`, `organization_id`, `type`, `issue_id`, `actor_id`, `read_at`)
 - Emit on: comment (if recipient is not the author), assignee change (new assignee), status change (assignee if set)
 - API: list, mark one read, mark all read — current user in current org
-- UI: restore Inbox in `nav-inbox.tsx`; poll with `refetchInterval` (default 15s)
+- UI: restore Inbox in `nav-inbox.tsx`; poll with `refetchInterval` (default 5 mins)
 - No notification emails in v1
 
 ### 13 — Cycles
