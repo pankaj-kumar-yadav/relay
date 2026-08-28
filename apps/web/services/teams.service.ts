@@ -4,16 +4,19 @@ export type TeamSummary = {
   id: string;
   key: string;
   name: string;
+  icon: string;
 };
 
 export type CreateTeamInput = {
   name: string;
   key: string;
+  icon?: string;
 };
 
 export type PatchTeamInput = {
   name?: string;
   key?: string;
+  icon?: string;
 };
 
 export async function listTeamsApi(orgSlug: string) {

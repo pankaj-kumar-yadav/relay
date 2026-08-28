@@ -1,10 +1,11 @@
 'use client';
 
+import { TeamEmojiButton } from '@/components/common/teams/team-icon-picker';
 import { issuePath } from '@/constants/issue.constant';
 import { teamOverviewPath } from '@/constants/team.constant';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { teams } from '@/mock-data/teams';
+import { useTeams } from '@/hooks/use-teams';
 import { useIssuesStore } from '@/store/issues-store';
 import { ChevronDown, ChevronRight, ChevronUp, MoreHorizontal, Star } from 'lucide-react';
 import Link from 'next/link';
@@ -17,8 +18,10 @@ import { useParams } from 'next/navigation';
 export default function HeaderNav() {
    const { orgId, issueId } = useParams<{ orgId: string; issueId: string }>();
    const { issues } = useIssuesStore();
+   const { data: teams = [] } = useTeams(orgId);
+   const teamKey = issueId.split('-')[0] ?? '';
+   const team = teams.find((candidate) => candidate.key === teamKey);
 
-   const team = teams[0];
    const index = issues.findIndex((candidate) => candidate.identifier === issueId);
    const issue = index >= 0 ? issues[index] : undefined;
 
@@ -29,15 +32,24 @@ export default function HeaderNav() {
       <div className="w-full flex justify-between items-center border-b py-1.5 px-6 h-10 gap-4">
          <div className="flex items-center gap-2 min-w-0">
             <SidebarTrigger />
-            <Link
-               href={teamOverviewPath(orgId, team.id)}
-               className="flex items-center gap-1.5 shrink-0 hover:opacity-80"
-            >
-               <div className="inline-flex size-5 bg-muted/50 items-center justify-center rounded shrink-0 text-xs">
-                  {team.icon}
-               </div>
-               <span className="text-sm font-medium hidden md:inline">{team.name}</span>
-            </Link>
+            <div className="flex items-center gap-1.5 shrink-0">
+               {team ? (
+                  <TeamEmojiButton
+                     teamId={team.id}
+                     icon={team.icon}
+                     teamKey={team.key}
+                     className="size-5 text-xs"
+                  />
+               ) : null}
+               <Link
+                  href={teamOverviewPath(orgId, team?.key ?? teamKey)}
+                  className="hover:opacity-80"
+               >
+                  <span className="text-sm font-medium hidden md:inline">
+                     {team?.name ?? teamKey}
+                  </span>
+               </Link>
+            </div>
             <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
             {issue && (
                <span className="text-sm min-w-0 truncate">

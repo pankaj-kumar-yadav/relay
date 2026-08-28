@@ -11,7 +11,7 @@ const projectSelect = {
   targetDate: true,
   createdAt: true,
   updatedAt: true,
-  team: { select: { id: true, key: true, name: true } },
+  team: { select: { id: true, key: true, name: true, icon: true } },
 } as const;
 
 export type ProjectRow = {
@@ -23,7 +23,7 @@ export type ProjectRow = {
   targetDate: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  team: { id: string; key: string; name: string };
+  team: { id: string; key: string; name: string; icon: string };
 };
 
 export function publicProject(project: ProjectRow) {

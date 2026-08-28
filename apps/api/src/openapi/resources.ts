@@ -10,6 +10,7 @@ export const publicTeamSchema = z.object({
   id: z.string(),
   key: z.string(),
   name: z.string(),
+  icon: z.string(),
 });
 
 export const publicActorSchema = z.object({

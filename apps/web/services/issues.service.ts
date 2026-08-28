@@ -21,7 +21,7 @@ export type ApiIssue = {
   rank: string;
   projectId: string | null;
   project: { id: string; name: string } | null;
-  team: { id: string; key: string; name: string };
+  team: { id: string; key: string; name: string; icon: string };
   assignee: ApiAssignee;
   labels: { id: string; name: string; color: string }[];
   cycleId: string | null;

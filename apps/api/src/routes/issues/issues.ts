@@ -55,7 +55,7 @@ const issueSelect = {
   cycleId: true,
   createdAt: true,
   updatedAt: true,
-  team: { select: { id: true, key: true, name: true } },
+  team: { select: { id: true, key: true, name: true, icon: true } },
   project: { select: { id: true, name: true, teamId: true } },
   cycle: { select: { id: true, name: true, status: true, teamId: true } },
   assignee: { select: { id: true, name: true, email: true } },

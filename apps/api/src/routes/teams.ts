@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { Router } from 'express';
 
 import { HttpStatus } from '@/constants/http.js';
-import { isTeamKey, normalizeTeamKey } from '@/constants/team.constant.js';
+import { TEAM_ICON_MAX, isTeamKey, normalizeTeamKey } from '@/constants/team.constant.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
@@ -15,21 +15,25 @@ import {
   ValidationError,
 } from '@/utils/errors.js';
 import { sendSuccess } from '@/utils/response.js';
-import { ensureDefaultTeam, findTeam, publicTeam } from '@/utils/teams.js';
+import { ensureDefaultTeam, findTeam, publicTeam, teamSelect } from '@/utils/teams.js';
 
 export const teamsRouter: Router = Router({ mergeParams: true });
 
 teamsRouter.use(requireAuth, requireOrgMember);
 teamsRouter.use('/:teamId/cycles', cyclesRouter);
 
+const teamIconSchema = z.string().trim().max(TEAM_ICON_MAX);
+
 export const createTeamBodySchema = z.object({
   name: z.string().trim().min(1),
   key: z.string().trim().min(1),
+  icon: teamIconSchema.optional(),
 });
 
 export const patchTeamBodySchema = z.object({
   name: z.string().trim().min(1).optional(),
   key: z.string().trim().min(1).optional(),
+  icon: teamIconSchema.optional(),
 });
 
 function parseTeamKey(raw: string): string {
@@ -52,7 +56,7 @@ teamsRouter.get('/', async (req, res) => {
     const teams = await prisma.team.findMany({
       where: { organizationId },
       orderBy: { createdAt: 'asc' },
-      select: { id: true, key: true, name: true },
+      select: teamSelect,
     });
 
     sendSuccess(res, { data: { teams: teams.map(publicTeam) } });
@@ -74,8 +78,8 @@ teamsRouter.post('/', async (req, res) => {
 
     try {
       const team = await prisma.team.create({
-        data: { organizationId, name, key },
-        select: { id: true, key: true, name: true },
+        data: { organizationId, name, key, icon: parsed.data.icon ?? '' },
+        select: teamSelect,
       });
       sendSuccess(res, {
         status: HttpStatus.CREATED,
@@ -119,7 +123,8 @@ teamsRouter.patch('/:teamId', async (req, res) => {
 
     const name = parsed.data.name;
     const key = parsed.data.key !== undefined ? parseTeamKey(parsed.data.key) : undefined;
-    if (name === undefined && key === undefined) {
+    const icon = parsed.data.icon;
+    if (name === undefined && key === undefined && icon === undefined) {
       throw new ValidationError('No fields to update');
     }
 
@@ -129,8 +134,9 @@ teamsRouter.patch('/:teamId', async (req, res) => {
         data: {
           ...(name !== undefined ? { name } : {}),
           ...(key !== undefined ? { key } : {}),
+          ...(icon !== undefined ? { icon } : {}),
         },
-        select: { id: true, key: true, name: true },
+        select: teamSelect,
       });
       sendSuccess(res, {
         message: 'Team updated',

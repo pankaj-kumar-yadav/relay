@@ -2,6 +2,7 @@
 
 import { teamCyclesPath, teamOverviewPath } from '@/constants/team.constant';
 import { CyclePlayIcon } from '@/components/common/cycles/cycle-line';
+import { TeamEmojiButton } from '@/components/common/teams/team-icon-picker';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { CycleStatus } from '@/constants/cycle.constant';
 import { useCycles } from '@/hooks/use-cycles';
@@ -22,13 +23,18 @@ export default function HeaderNav({ cycleView }: { cycleView: CycleView }) {
       <div className="w-full flex justify-between items-center border-b py-1.5 px-6 h-10">
          <div className="flex items-center gap-2 min-w-0">
             <SidebarTrigger />
+            {team ? (
+               <TeamEmojiButton
+                  teamId={team.id}
+                  icon={team.icon}
+                  teamKey={team.key}
+                  className="size-5 text-xs"
+               />
+            ) : null}
             <Link
                href={teamOverviewPath(orgId, teamId)}
-               className="flex items-center gap-1.5 min-w-0 hover:opacity-80"
+               className="min-w-0 hover:opacity-80"
             >
-               <div className="inline-flex size-5 bg-muted/50 items-center justify-center rounded shrink-0 text-xs">
-                  {team?.key.slice(0, 1) ?? '•'}
-               </div>
                <span className="text-sm font-medium truncate">{team?.name ?? teamId}</span>
             </Link>
             <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />

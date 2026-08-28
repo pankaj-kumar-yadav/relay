@@ -2,6 +2,7 @@
 
 import { teamCyclesPath, teamHomePath, teamOverviewPath } from '@/constants/team.constant';
 import { CyclePlayIcon } from '@/components/common/cycles/cycle-line';
+import { TeamEmojiButton } from '@/components/common/teams/team-icon-picker';
 import { ChevronRight, CopyMinus, Home, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -44,9 +45,11 @@ export function NavTeams() {
                   <SidebarMenuItem>
                      <CollapsibleTrigger asChild>
                         <SidebarMenuButton tooltip={item.name}>
-                           <div className="inline-flex size-6 bg-muted/50 items-center justify-center rounded shrink-0">
-                              <div className="text-sm">{item.key.slice(0, 1)}</div>
-                           </div>
+                           <TeamEmojiButton
+                              teamId={item.id}
+                              icon={item.icon}
+                              teamKey={item.key}
+                           />
                            <span className="text-sm">{item.name}</span>
                            <span className="w-3 shrink-0">
                               <ChevronRight className="w-full transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />

@@ -1,5 +1,6 @@
 'use client';
 
+import { TeamIconPicker } from '@/components/common/teams/team-icon-picker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { isTeamKey, normalizeTeamKey, teamHomePath } from '@/constants/team.constant';
@@ -23,6 +24,7 @@ export default function NewTeam() {
   const createTeam = useCreateTeam();
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
+  const [icon, setIcon] = useState('');
   const [keyTouched, setKeyTouched] = useState(false);
 
   const derivedKey = useMemo(() => suggestedKey(name), [name]);
@@ -42,6 +44,7 @@ export default function NewTeam() {
       const { team } = await createTeam.mutateAsync({
         name: name.trim(),
         key: teamKey,
+        icon: icon || undefined,
       });
       toast.success('Team created');
       router.push(teamHomePath(orgId, team.key));
@@ -58,6 +61,7 @@ export default function NewTeam() {
       <SettingsSection title="Create a new team">
         <SettingsCard>
           <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+            <TeamIconPicker icon={icon} teamKey={teamKey || 'TE'} onChange={setIcon} />
             <Input
               placeholder="Team name, e.g. Mobile"
               className="h-8 flex-1"

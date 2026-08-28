@@ -8,10 +8,10 @@ type TeamDb = PrismaClient | Prisma.TransactionClient;
 export const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const teamSelect = { id: true, key: true, name: true } as const;
+export const teamSelect = { id: true, key: true, name: true, icon: true } as const;
 
-export function publicTeam(team: { id: string; key: string; name: string }) {
-  return { id: team.id, key: team.key, name: team.name };
+export function publicTeam(team: { id: string; key: string; name: string; icon: string }) {
+  return { id: team.id, key: team.key, name: team.name, icon: team.icon };
 }
 
 export async function findTeam(organizationId: string, teamId: string) {
@@ -31,7 +31,7 @@ export async function ensureDefaultTeam(db: TeamDb, organizationId: string) {
   const existing = await db.team.findFirst({
     where: { organizationId },
     orderBy: { createdAt: 'asc' },
-    select: { id: true, key: true, name: true },
+    select: teamSelect,
   });
   if (existing) return existing;
 
@@ -41,7 +41,7 @@ export async function ensureDefaultTeam(db: TeamDb, organizationId: string) {
       key: DEFAULT_TEAM_KEY,
       name: DEFAULT_TEAM_NAME,
     },
-    select: { id: true, key: true, name: true },
+    select: teamSelect,
   });
 }
 
@@ -52,6 +52,6 @@ export async function createDefaultTeam(db: TeamDb, organizationId: string) {
       key: DEFAULT_TEAM_KEY,
       name: DEFAULT_TEAM_NAME,
     },
-    select: { id: true, key: true, name: true },
+    select: teamSelect,
   });
 }

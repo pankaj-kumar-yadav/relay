@@ -127,7 +127,7 @@ async function upsertTeam(input: {
       },
     },
     update: { name: input.name },
-    create: input,
+    create: { ...input, icon: '' },
   });
 }
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { TeamEmojiButton } from '@/components/common/teams/team-icon-picker';
 import { settingsPath } from '@/constants/org.constant';
 import { teamHomePath, teamMembersPath, teamsPath } from '@/constants/team.constant';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -36,7 +37,7 @@ export default function TeamOverview() {
    const team = {
       id: apiTeam.key,
       name: apiTeam.name,
-      icon: '🛠️',
+      icon: apiTeam.icon,
       members: [] as { id: string; name: string; avatarUrl: string }[],
    };
 
@@ -50,9 +51,12 @@ export default function TeamOverview() {
          {/* Main column */}
          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-4">
-               <div className="inline-flex size-12 bg-muted/50 items-center justify-center rounded-lg text-2xl shrink-0">
-                  {team.icon}
-               </div>
+               <TeamEmojiButton
+                  teamId={apiTeam.id}
+                  icon={apiTeam.icon}
+                  teamKey={apiTeam.key}
+                  className="size-12 rounded-lg text-2xl"
+               />
                <h1 className="text-3xl font-semibold">{team.name}</h1>
             </div>
 

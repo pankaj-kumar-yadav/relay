@@ -15,7 +15,7 @@ export async function listOrgsApi() {
 }
 
 export async function createOrgApi(input: { name: string; slug: string }) {
-  return api<{ organization: OrgSummary; role: string; team: { id: string; key: string; name: string } }>(
+  return api<{ organization: OrgSummary; role: string; team: { id: string; key: string; name: string; icon: string } }>(
     '/orgs',
     {
       method: 'POST',

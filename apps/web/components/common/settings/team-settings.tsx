@@ -1,6 +1,7 @@
 'use client';
 
 import { teamOverviewPath } from '@/constants/team.constant';
+import { TeamEmojiButton } from '@/components/common/teams/team-icon-picker';
 import { Button } from '@/components/ui/button';
 import { getCyclesByTeam } from '@/mock-data/cycles';
 import { status } from '@/mock-data/status';
@@ -50,7 +51,6 @@ export default function TeamSettings({ teamId }: TeamSettingsProps) {
    const team = {
       id: apiTeam.key,
       name: apiTeam.name,
-      icon: '🛠️',
       members: [] as { id: string }[],
    };
 
@@ -60,9 +60,12 @@ export default function TeamSettings({ teamId }: TeamSettingsProps) {
       <div className="w-full overflow-y-auto h-full">
          <div className="max-w-2xl mx-auto px-6 py-10 pb-20">
             <div className="flex items-center gap-3">
-               <span className="inline-flex size-9 bg-muted/50 items-center justify-center rounded-md text-lg">
-                  {team.icon}
-               </span>
+               <TeamEmojiButton
+                  teamId={apiTeam.id}
+                  icon={apiTeam.icon}
+                  teamKey={apiTeam.key}
+                  className="size-9 text-lg"
+               />
                <div className="flex-1">
                   <h1 className="text-2xl font-medium">{team.name}</h1>
                   <p className="text-sm text-muted-foreground">

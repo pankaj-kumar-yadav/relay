@@ -17,7 +17,7 @@ export default function Teams() {
          apiTeams.map((team) => ({
             id: team.key,
             name: team.name,
-            icon: '🛠️',
+            icon: team.icon || team.key.slice(0, 1),
             joined: true,
             color: '#FF0000',
             members: [],
