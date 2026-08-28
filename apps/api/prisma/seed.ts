@@ -6,10 +6,13 @@ import {
   DEFAULT_ISSUE_STATUS,
   DEFAULT_TEAM_KEY,
   DEFAULT_TEAM_NAME,
+  ISSUE_STATUS_CATEGORY,
   IssuePriority,
   IssueStatus,
+  IssueStatusCategory,
 } from '../src/constants/issue.js';
 import { IssueEventType } from '../src/constants/activity.constant.js';
+import { CycleStatus } from '../src/constants/cycle.constant.js';
 import { NotificationType } from '../src/constants/inbox.constant.js';
 import {
   DEFAULT_PROJECT_HEALTH,
@@ -483,6 +486,269 @@ async function ensureAcmeIssueLabel(organizationId: string) {
   });
 }
 
+function utcDay(offsetDays: number, now = new Date()): Date {
+  return new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + offsetDays),
+  );
+}
+
+const TEAM_CYCLE_SPECS = [
+  { name: 'Cycle 1', startOffset: -70, endOffset: -56, status: CycleStatus.COMPLETED },
+  { name: 'Cycle 2', startOffset: -56, endOffset: -42, status: CycleStatus.COMPLETED },
+  { name: 'Cycle 3', startOffset: -42, endOffset: -28, status: CycleStatus.COMPLETED },
+  { name: 'Cycle 4', startOffset: -14, endOffset: 0, status: CycleStatus.ACTIVE },
+  { name: 'Cycle 5', startOffset: 0, endOffset: 14, status: CycleStatus.UPCOMING },
+] as const;
+
+const TEAM_PROJECT_NAMES: Record<string, readonly string[]> = {
+  [DEFAULT_TEAM_KEY]: [SEED_PROJECT_NAME],
+  LMS: ['LMS Platform', 'LMS Mobile'],
+  CONT: ['Continuum Mobile', 'Continuum Web'],
+  EXG: ['EXG Exchange', 'EXG Clearing'],
+  PULSE: ['Pulse Analytics', 'Pulse Alerts'],
+  ATLAS: ['Atlas Ops', 'Atlas Research'],
+};
+
+const SAMPLE_ISSUE_SPECS = [
+  { title: 'Close out Cycle 1', status: IssueStatus.DONE, priority: IssuePriority.LOW },
+  { title: 'Ship Cycle 2 wrap-up', status: IssueStatus.SHIPPED, priority: IssuePriority.LOW },
+  { title: 'Finish Cycle 3 leftovers', status: IssueStatus.DONE, priority: IssuePriority.MEDIUM },
+  { title: 'Ship this cycle’s milestone', status: IssueStatus.IN_PROGRESS, priority: IssuePriority.HIGH },
+  { title: 'Review in-progress work', status: IssueStatus.TECHNICAL_REVIEW, priority: IssuePriority.MEDIUM },
+  { title: 'Todo for the active cycle', status: IssueStatus.TO_DO, priority: IssuePriority.HIGH },
+  { title: 'Triage inbound bugs', status: IssueStatus.TRIAGE, priority: IssuePriority.URGENT },
+  { title: 'Backlog: polish and follow-ups', status: IssueStatus.BACKLOG, priority: IssuePriority.MEDIUM },
+] as const;
+
+async function ensureTeamProjects(input: {
+  organizationId: string;
+  teamId: string;
+  teamKey: string;
+  teamName: string;
+}) {
+  const names = [...(TEAM_PROJECT_NAMES[input.teamKey] ?? [input.teamName])];
+  const [first, ...rest] = names;
+  await upsertProject({
+    organizationId: input.organizationId,
+    teamId: input.teamId,
+    name: first ?? input.teamName,
+    previousName: input.teamName !== first ? input.teamName : undefined,
+  });
+  for (const name of rest) {
+    await upsertProject({
+      organizationId: input.organizationId,
+      teamId: input.teamId,
+      name,
+    });
+  }
+  return prisma.project.findMany({
+    where: { organizationId: input.organizationId, teamId: input.teamId },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true },
+  });
+}
+
+async function ensureTeamSampleIssues(input: {
+  organizationId: string;
+  teamId: string;
+  projects: Array<{ id: string }>;
+  assigneeId: string;
+  teamName: string;
+}) {
+  const existingTitles = new Set(
+    (
+      await prisma.issue.findMany({
+        where: { teamId: input.teamId },
+        select: { title: true },
+      })
+    ).map((issue) => issue.title),
+  );
+  const last = await prisma.issue.findFirst({
+    where: { teamId: input.teamId },
+    orderBy: { number: 'desc' },
+    select: { number: true, rank: true },
+  });
+  let prevRank = last?.rank ?? null;
+  let number = last?.number ?? 0;
+  let created = 0;
+  for (const spec of SAMPLE_ISSUE_SPECS) {
+    const title = `${input.teamName}: ${spec.title}`;
+    if (existingTitles.has(title)) continue;
+    number += 1;
+    const rank = rankBetween(prevRank, null);
+    prevRank = rank;
+    const project = input.projects[created % input.projects.length];
+    await prisma.issue.create({
+      data: {
+        organizationId: input.organizationId,
+        teamId: input.teamId,
+        projectId: project?.id ?? null,
+        number,
+        title,
+        description: 'Seeded issue so this team has cycle work.',
+        status: spec.status,
+        priority: spec.priority,
+        assigneeId: input.assigneeId,
+        rank,
+      },
+    });
+    existingTitles.add(title);
+    created += 1;
+  }
+}
+
+function pickCycleForIssue(
+  status: string,
+  buckets: {
+    completed: Array<{ id: string }>;
+    active: { id: string } | undefined;
+    upcoming: { id: string } | undefined;
+  },
+  completedIndex: number,
+) {
+  const category = ISSUE_STATUS_CATEGORY[status as keyof typeof ISSUE_STATUS_CATEGORY];
+  if (
+    category === IssueStatusCategory.COMPLETED ||
+    category === IssueStatusCategory.CANCELED
+  ) {
+    if (buckets.completed.length === 0) return buckets.active;
+    return buckets.completed[completedIndex % buckets.completed.length];
+  }
+  if (
+    category === IssueStatusCategory.STARTED ||
+    category === IssueStatusCategory.UNSTARTED
+  ) {
+    return buckets.active ?? buckets.upcoming;
+  }
+  if (
+    category === IssueStatusCategory.BACKLOG ||
+    category === IssueStatusCategory.TRIAGE
+  ) {
+    return buckets.upcoming ?? buckets.active;
+  }
+  return buckets.active ?? buckets.upcoming ?? buckets.completed[0];
+}
+
+async function assignIssuesToTeamCycles(teamId: string) {
+  const cycles = await prisma.cycle.findMany({
+    where: { teamId },
+    orderBy: { startsAt: 'asc' },
+    select: { id: true, status: true },
+  });
+  if (cycles.length === 0) return;
+
+  const buckets = {
+    completed: cycles.filter((cycle) => cycle.status === CycleStatus.COMPLETED),
+    active: cycles.find((cycle) => cycle.status === CycleStatus.ACTIVE),
+    upcoming: cycles.find((cycle) => cycle.status === CycleStatus.UPCOMING),
+  };
+  const issues = await prisma.issue.findMany({
+    where: { teamId },
+    orderBy: { number: 'asc' },
+    select: { id: true, status: true },
+  });
+
+  let completedIndex = 0;
+  for (const issue of issues) {
+    const cycle = pickCycleForIssue(issue.status, buckets, completedIndex);
+    const category = ISSUE_STATUS_CATEGORY[issue.status as keyof typeof ISSUE_STATUS_CATEGORY];
+    if (
+      category === IssueStatusCategory.COMPLETED ||
+      category === IssueStatusCategory.CANCELED
+    ) {
+      completedIndex += 1;
+    }
+    if (!cycle) continue;
+    await prisma.issue.update({
+      where: { id: issue.id },
+      data: { cycleId: cycle.id },
+    });
+  }
+}
+
+async function ensureTeamCycles(input: {
+  organizationId: string;
+  teamId: string;
+}) {
+  const existing = await prisma.cycle.findMany({
+    where: { teamId: input.teamId },
+    select: { id: true, name: true },
+  });
+  const byName = new Map(existing.map((cycle) => [cycle.name, cycle]));
+
+  for (const spec of TEAM_CYCLE_SPECS) {
+    if (byName.has(spec.name)) continue;
+    const created = await prisma.cycle.create({
+      data: {
+        organizationId: input.organizationId,
+        teamId: input.teamId,
+        name: spec.name,
+        startsAt: utcDay(spec.startOffset),
+        endsAt: utcDay(spec.endOffset),
+        status: CycleStatus.COMPLETED,
+      },
+      select: { id: true, name: true },
+    });
+    byName.set(spec.name, created);
+  }
+
+  await prisma.cycle.updateMany({
+    where: { teamId: input.teamId },
+    data: { status: CycleStatus.COMPLETED },
+  });
+
+  for (const spec of TEAM_CYCLE_SPECS) {
+    const row = byName.get(spec.name);
+    if (!row) continue;
+    await prisma.cycle.update({
+      where: { id: row.id },
+      data: {
+        startsAt: utcDay(spec.startOffset),
+        endsAt: utcDay(spec.endOffset),
+        status: CycleStatus.COMPLETED,
+      },
+    });
+  }
+
+  for (const spec of TEAM_CYCLE_SPECS) {
+    if (spec.status === CycleStatus.COMPLETED) continue;
+    const row = byName.get(spec.name);
+    if (!row) continue;
+    await prisma.cycle.update({
+      where: { id: row.id },
+      data: { status: spec.status },
+    });
+  }
+
+  await assignIssuesToTeamCycles(input.teamId);
+}
+
+async function ensureOrgCycles(input: {
+  organizationId: string;
+  teams: Array<{ id: string; key: string; name: string }>;
+  assigneeId: string;
+}) {
+  for (const team of input.teams) {
+    const projects = await ensureTeamProjects({
+      organizationId: input.organizationId,
+      teamId: team.id,
+      teamKey: team.key,
+      teamName: team.name,
+    });
+    await ensureTeamSampleIssues({
+      organizationId: input.organizationId,
+      teamId: team.id,
+      projects,
+      assigneeId: input.assigneeId,
+      teamName: team.name,
+    });
+    await ensureTeamCycles({
+      organizationId: input.organizationId,
+      teamId: team.id,
+    });
+  }
+}
+
 async function ensureAcmeActivity(input: {
   organizationId: string;
   authorId: string;
@@ -573,6 +839,11 @@ async function main() {
   });
   await ensureOrgLabels(acme.id);
   await ensureAcmeIssueLabel(acme.id);
+  await ensureOrgCycles({
+    organizationId: acme.id,
+    teams: acmeTeams,
+    assigneeId: owner.id,
+  });
 
   const techap = await upsertOrg({
     name: 'Techap Solutions',
@@ -613,6 +884,11 @@ async function main() {
     });
   }
   await ensureOrgLabels(techap.id);
+  await ensureOrgCycles({
+    organizationId: techap.id,
+    teams: techapTeams,
+    assigneeId: (techapAdmin ?? techapEmployees[0])!.id,
+  });
 
   const stratxg = await upsertOrg({ name: 'StratXG', slug: SeedOrgSlug.STRATXG });
   const stratxgMembers = await seedMembers(stratxg.id, STRATXG_MEMBERS, passwordHash);
@@ -645,6 +921,11 @@ async function main() {
     });
   }
   await ensureOrgLabels(stratxg.id);
+  await ensureOrgCycles({
+    organizationId: stratxg.id,
+    teams: stratxgTeams,
+    assigneeId: (stratxgAdmin ?? stratxgEmployees[0])!.id,
+  });
 
   console.log(`Password for all seed users: ${SEED_PASSWORD}`);
   console.log(

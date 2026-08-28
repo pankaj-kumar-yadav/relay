@@ -24,6 +24,8 @@ export type ApiIssue = {
   team: { id: string; key: string; name: string };
   assignee: ApiAssignee;
   labels: { id: string; name: string; color: string }[];
+  cycleId: string | null;
+  cycle: { id: string; name: string; status: string } | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -36,6 +38,7 @@ export type IssueListQuery = {
   projectId?: string;
   q?: string;
   statusCategory?: string;
+  cycleId?: string;
   cursor?: string;
   limit?: number;
 };
@@ -49,6 +52,7 @@ export type CreateIssueInput = {
   teamId?: string;
   projectId?: string | null;
   labelIds?: string[];
+  cycleId?: string | null;
 };
 
 export type PatchIssueInput = {
@@ -62,6 +66,7 @@ export type PatchIssueInput = {
   afterIssueId?: string;
   teamId?: string;
   projectId?: string | null;
+  cycleId?: string | null;
 };
 
 function toQuery(params: IssueListQuery) {

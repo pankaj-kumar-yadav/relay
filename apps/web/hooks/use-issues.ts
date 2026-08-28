@@ -22,7 +22,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 
-export function useIssuesList(orgSlug: string | undefined, query: IssueListQuery = {}) {
+export function useIssuesList(
+  orgSlug: string | undefined,
+  query: IssueListQuery = {},
+  options: { enabled?: boolean } = {},
+) {
   const setIssues = useIssuesStore((s) => s.setIssues);
   const result = useQuery({
     queryKey: queryKeys.issues.list(orgSlug ?? '', query),
@@ -30,7 +34,7 @@ export function useIssuesList(orgSlug: string | undefined, query: IssueListQuery
       const { issues } = await listIssuesApi(orgSlug!, query);
       return issues.map(mapApiIssue);
     },
-    enabled: Boolean(orgSlug),
+    enabled: Boolean(orgSlug) && options.enabled !== false,
   });
 
   useEffect(() => {

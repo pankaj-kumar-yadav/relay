@@ -1,15 +1,17 @@
 'use client';
 
 import { CycleDetailsPanel } from '@/components/common/cycles/cycle-details-panel';
-import { getCurrentCycle, getUpcomingCycle } from '@/mock-data/cycles';
+import { CycleStatus } from '@/constants/cycle.constant';
+import { useCycles } from '@/hooks/use-cycles';
+import { useIssuesList } from '@/hooks/use-issues';
 import { displayOrderedStatus } from '@/mock-data/status';
 import { useFilterStore } from '@/store/filter-store';
-import { useIssuesStore } from '@/store/issues-store';
 import { applyIssueFilters } from './issue-filter-columns';
 import { IssueFilterBar } from './issue-filter-bar';
 import { useRightPanelStore } from '@/store/right-panel-store';
 import { useSearchStore } from '@/store/search-store';
 import { useViewStore } from '@/store/view-store';
+import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 import { GroupedIssuesView } from './grouped-issues-view';
 import { InsightsPanel } from './insights-panel';
@@ -18,35 +20,48 @@ import { SearchIssues } from './search-issues';
 export type CycleView = 'active' | 'upcoming';
 
 interface CycleIssuesProps {
-   /** 'active' = current cycle, 'upcoming' = next cycle. */
    cycleView: CycleView;
 }
 
-/**
- * Issue view scoped to a cycle — same behavior as AllIssues (search,
- * filters, list/board) plus the cycle details / insights side panels.
- */
 export default function CycleIssues({ cycleView }: CycleIssuesProps) {
+   const { orgId, teamId } = useParams<{ orgId: string; teamId: string }>();
    const { isSearchOpen, searchQuery } = useSearchStore();
    const { viewType } = useViewStore();
    const { filters } = useFilterStore();
-   const { issues } = useIssuesStore();
    const { openPanel } = useRightPanelStore();
+   const { data: cycles = [], isLoading: cyclesLoading } = useCycles(orgId, teamId);
 
-   const cycle = cycleView === 'active' ? getCurrentCycle() : getUpcomingCycle();
+   const wanted = cycleView === 'active' ? CycleStatus.ACTIVE : CycleStatus.UPCOMING;
+   const cycle = cycles.find((item) => item.status === wanted);
+
+   const { data: cycleIssues = [], isLoading: issuesLoading } = useIssuesList(
+      orgId,
+      {
+         teamId,
+         cycleId: cycle?.id,
+      },
+      { enabled: Boolean(cycle?.id) },
+   );
 
    const isSearching = isSearchOpen && searchQuery.trim() !== '';
    const isViewTypeGrid = viewType === 'grid';
 
-   const cycleIssues = useMemo(
-      () => issues.filter((issue) => issue.cycleId === cycle.id),
-      [issues, cycle.id]
-   );
-
    const displayedIssues = useMemo(
       () => applyIssueFilters(cycleIssues, filters),
-      [cycleIssues, filters]
+      [cycleIssues, filters],
    );
+
+   if (cyclesLoading || (cycle && issuesLoading)) {
+      return <div className="w-full py-8 text-sm text-muted-foreground px-6">Loading cycle…</div>;
+   }
+
+   if (!cycle) {
+      return (
+         <div className="w-full py-8 text-sm text-muted-foreground px-6">
+            No {cycleView} cycle for this team.
+         </div>
+      );
+   }
 
    if (isSearching) {
       return (

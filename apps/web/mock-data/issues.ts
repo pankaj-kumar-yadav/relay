@@ -18,6 +18,7 @@ export interface Issue {
    createdAt: string;
    /** Cycle the issue belongs to. Empty string = no cycle (backlog stock). */
    cycleId: string;
+   cycleName?: string;
    project?: Project;
    subissues?: string[];
    rank: string;

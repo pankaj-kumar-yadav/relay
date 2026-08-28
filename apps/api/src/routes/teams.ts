@@ -7,6 +7,7 @@ import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { z } from '@/openapi/zod.js';
+import { cyclesRouter } from '@/routes/cycles/cycles.js';
 import {
   NotFoundError,
   sendError,
@@ -19,6 +20,7 @@ import { ensureDefaultTeam, findTeam, publicTeam } from '@/utils/teams.js';
 export const teamsRouter: Router = Router({ mergeParams: true });
 
 teamsRouter.use(requireAuth, requireOrgMember);
+teamsRouter.use('/:teamId/cycles', cyclesRouter);
 
 export const createTeamBodySchema = z.object({
   name: z.string().trim().min(1),

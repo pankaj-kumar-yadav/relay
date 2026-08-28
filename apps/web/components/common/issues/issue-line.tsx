@@ -1,7 +1,6 @@
 'use client';
 
 import { Issue } from '@/mock-data/issues';
-import { getCycleById } from '@/mock-data/cycles';
 import { DateFormat, formatDate } from '@/constants/date.constant';
 import { issuePath } from '@/constants/issue.constant';
 import { useDisplaySettingsStore } from '@/store/display-settings-store';
@@ -20,7 +19,8 @@ import { IssueContextMenu } from './issue-context-menu';
 export function IssueLine({ issue, layoutId = false }: { issue: Issue; layoutId?: boolean }) {
    const { orgId } = useParams<{ orgId: string }>();
    const { displayProperties } = useDisplaySettingsStore();
-   const cycle = displayProperties.cycle && issue.cycleId ? getCycleById(issue.cycleId) : undefined;
+   const cycleName =
+      displayProperties.cycle && issue.cycleId ? issue.cycleName : undefined;
 
    return (
       <ContextMenu>
@@ -58,9 +58,9 @@ export function IssueLine({ issue, layoutId = false }: { issue: Issue; layoutId?
                         <ProjectBadge project={issue.project} />
                      )}
                   </div>
-                  {cycle && (
+                  {cycleName && (
                      <span className="text-xs text-muted-foreground border border-border rounded-md px-1.5 py-0.5 shrink-0 hidden lg:inline-block">
-                        {cycle.name}
+                        {cycleName}
                      </span>
                   )}
                   {displayProperties.dueDate && issue.dueDate && (

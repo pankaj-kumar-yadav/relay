@@ -1,11 +1,11 @@
 'use client';
 
+import { CycleStatus, cycleStatusLabel, formatCycleDateRange } from '@/constants/cycle.constant';
 import { CycleViewPath, teamCycleViewPath } from '@/constants/team.constant';
-import { Cycle, cycleStatusLabel } from '@/mock-data/cycles';
 import { cn } from '@/lib/utils';
+import type { ApiCycle } from '@/services/cycles.service';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { CapacityRing } from './capacity-ring';
 
 export function CyclePlayIcon({ className }: { className?: string }) {
    return (
@@ -25,20 +25,16 @@ export function CyclePlayIcon({ className }: { className?: string }) {
 }
 
 interface CycleLineProps {
-   cycle: Cycle;
+   cycle: Pick<ApiCycle, 'id' | 'name' | 'status' | 'startsAt' | 'endsAt' | 'issueCount'>;
 }
 
-/**
- * One row of the cycles timeline. Current / upcoming cycles link to their
- * dedicated issue views ("/cycle/active" and "/cycle/upcoming").
- */
 export default function CycleLine({ cycle }: CycleLineProps) {
    const { orgId, teamId } = useParams<{ orgId: string; teamId: string }>();
 
    const href =
-      cycle.status === 'current'
+      cycle.status === CycleStatus.ACTIVE
          ? teamCycleViewPath(orgId, teamId, CycleViewPath.ACTIVE)
-         : cycle.status === 'upcoming'
+         : cycle.status === CycleStatus.UPCOMING
            ? teamCycleViewPath(orgId, teamId, CycleViewPath.UPCOMING)
            : undefined;
 
@@ -53,31 +49,14 @@ export default function CycleLine({ cycle }: CycleLineProps) {
             <span className="text-xs px-2 py-1 rounded-md bg-accent text-muted-foreground whitespace-nowrap">
                {cycleStatusLabel[cycle.status]}
             </span>
-
-            {cycle.status === 'completed' ? (
-               <>
-                  <div className="hidden sm:flex items-center gap-2 w-28 justify-end">
-                     <CapacityRing value={cycle.successRate ?? 0} color="#6771c5" />
-                     <span className="text-sm">
-                        {cycle.successRate ?? 0}%{' '}
-                        <span className="text-muted-foreground">success</span>
-                     </span>
-                  </div>
-                  <span className="hidden md:inline-block text-sm w-28 text-right">
-                     {cycle.completed} <span className="text-muted-foreground">completed</span>
-                  </span>
-               </>
-            ) : (
-               <div className="hidden sm:flex items-center gap-2 w-36 justify-end whitespace-nowrap">
-                  <CapacityRing value={cycle.capacity} color="#6771c5" />
-                  <span className="text-sm">
-                     {cycle.capacity}% <span className="text-muted-foreground">of capacity</span>
-                  </span>
-               </div>
-            )}
-
+            <span className="hidden sm:inline-block text-sm text-muted-foreground whitespace-nowrap">
+               {formatCycleDateRange(cycle)}
+            </span>
             <span className="text-sm w-14 sm:w-20 text-right whitespace-nowrap">
-               {cycle.scope} <span className="text-muted-foreground">scope</span>
+               {cycle.issueCount}{' '}
+               <span className="text-muted-foreground">
+                  {cycle.issueCount === 1 ? 'issue' : 'issues'}
+               </span>
             </span>
          </div>
       </div>

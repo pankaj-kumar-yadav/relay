@@ -29,13 +29,14 @@ import {
   ValidationError,
 } from '@/utils/errors.js';
 import { notifyIfRecipient } from '@/utils/inbox/notify.js';
+import { assertCycleOnTeam } from '@/utils/cycle/cycle.js';
 import { eventPayload, labelEventPayload, recordIssueEvent } from '@/utils/issue/issueEvent.js';
 import { loadOrgLabels, syncIssueLabels } from '@/utils/issue/issueLabels.js';
 import { rankBetween } from '@/utils/issue/issueRank.js';
 import { issueIdentifier, parseIssueRef } from '@/utils/issue/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
 import { assertProjectOnTeam } from '@/utils/projects.js';
-import { ensureDefaultTeam, findTeam } from '@/utils/teams.js';
+import { ensureDefaultTeam, findTeam, UUID_RE } from '@/utils/teams.js';
 
 export const issuesRouter: Router = Router({ mergeParams: true });
 
@@ -51,10 +52,12 @@ const issueSelect = {
   priority: true,
   rank: true,
   projectId: true,
+  cycleId: true,
   createdAt: true,
   updatedAt: true,
   team: { select: { id: true, key: true, name: true } },
   project: { select: { id: true, name: true, teamId: true } },
+  cycle: { select: { id: true, name: true, status: true, teamId: true } },
   assignee: { select: { id: true, name: true, email: true } },
   issueLabels: {
     select: { label: { select: { id: true, name: true, color: true } } },
@@ -77,6 +80,10 @@ function publicIssue(issue: IssueRow) {
     projectId: issue.projectId,
     project: issue.project
       ? { id: issue.project.id, name: issue.project.name }
+      : null,
+    cycleId: issue.cycleId,
+    cycle: issue.cycle
+      ? { id: issue.cycle.id, name: issue.cycle.name, status: issue.cycle.status }
       : null,
     team: issue.team,
     assignee: issue.assignee,
@@ -185,6 +192,26 @@ issuesRouter.get('/', async (req, res) => {
     if (priority) where.priority = priority;
     if (assigneeId) where.assigneeId = assigneeId;
     if (projectId) where.projectId = projectId;
+    const cycleIdRaw = typeof req.query.cycleId === 'string' ? req.query.cycleId : undefined;
+    if (cycleIdRaw) {
+      if (!UUID_RE.test(cycleIdRaw)) {
+        sendSuccess(res, {
+          data: { issues: [], nextCursor: null },
+        });
+        return;
+      }
+      const cycle = await prisma.cycle.findFirst({
+        where: { id: cycleIdRaw, organizationId },
+        select: { id: true },
+      });
+      if (!cycle) {
+        sendSuccess(res, {
+          data: { issues: [], nextCursor: null },
+        });
+        return;
+      }
+      where.cycleId = cycle.id;
+    }
     if (q) {
       where.OR = [
         { title: { contains: q, mode: 'insensitive' } },
@@ -247,6 +274,7 @@ issuesRouter.post('/', async (req, res) => {
       teamId,
       projectId,
       labelIds,
+      cycleId,
     } = parsed.data;
 
     if (status && !isIssueStatus(status)) {
@@ -273,6 +301,18 @@ issuesRouter.post('/', async (req, res) => {
 
     const labels = labelIds ? await loadOrgLabels(organizationId, labelIds) : [];
 
+    let resolvedCycleId: string | null = null;
+    let createdCycleName: string | null = null;
+    if (cycleId) {
+      const cycle = await assertCycleOnTeam({
+        organizationId,
+        teamId: team.id,
+        cycleId,
+      });
+      resolvedCycleId = cycle.id;
+      createdCycleName = cycle.name;
+    }
+
     const issue = await prisma.$transaction(async (tx) => {
       const last = await tx.issue.findFirst({
         where: { teamId: team.id },
@@ -296,6 +336,7 @@ issuesRouter.post('/', async (req, res) => {
           priority: priority ?? DEFAULT_ISSUE_PRIORITY,
           assigneeId: assigneeId ?? null,
           projectId: resolvedProjectId,
+          cycleId: resolvedCycleId,
           rank: rankBetween(lastRanked?.rank ?? null, null),
         },
         select: { id: true },
@@ -319,6 +360,15 @@ issuesRouter.post('/', async (req, res) => {
           actorId: req.user!.id,
           type: IssueEventType.LABEL,
           payload: labelEventPayload(added, []),
+        });
+      }
+      if (createdCycleName) {
+        await recordIssueEvent(tx, {
+          organizationId,
+          issueId: created.id,
+          actorId: req.user!.id,
+          type: IssueEventType.CYCLE,
+          payload: eventPayload(IssueEventType.CYCLE, null, createdCycleName),
         });
       }
       return tx.issue.findFirstOrThrow({
@@ -441,6 +491,26 @@ issuesRouter.patch('/:issueId', async (req, res) => {
       nextProjectId = null;
     }
 
+    let nextCycleId: string | null | undefined;
+    let nextCycleName: string | null | undefined;
+    if (data.cycleId !== undefined) {
+      if (data.cycleId === null) {
+        nextCycleId = null;
+        nextCycleName = null;
+      } else {
+        const cycle = await assertCycleOnTeam({
+          organizationId,
+          teamId: effectiveTeamId,
+          cycleId: data.cycleId,
+        });
+        nextCycleId = cycle.id;
+        nextCycleName = cycle.name;
+      }
+    } else if (teamId && existing.cycle && existing.cycle.teamId !== teamId) {
+      nextCycleId = null;
+      nextCycleName = null;
+    }
+
     let nextNumber: number | undefined;
     if (teamId && teamId !== existing.team.id) {
       const last = await prisma.issue.findFirst({
@@ -478,6 +548,7 @@ issuesRouter.patch('/:issueId', async (req, res) => {
           ...(data.priority !== undefined ? { priority: data.priority } : {}),
           ...(data.assigneeId !== undefined ? { assigneeId: data.assigneeId } : {}),
           ...(nextProjectId !== undefined ? { projectId: nextProjectId } : {}),
+          ...(nextCycleId !== undefined ? { cycleId: nextCycleId } : {}),
           ...(teamId ? { teamId } : {}),
           ...(nextNumber !== undefined ? { number: nextNumber } : {}),
           ...(rank ? { rank } : {}),
@@ -538,6 +609,21 @@ issuesRouter.patch('/:issueId', async (req, res) => {
           actorId,
           recipientId: nextAssigneeId,
           type: NotificationType.STATUS,
+        });
+      }
+
+      const previousCycleId = existing.cycleId;
+      if (nextCycleId !== undefined && nextCycleId !== previousCycleId) {
+        await recordIssueEvent(tx, {
+          organizationId,
+          issueId: existing.id,
+          actorId,
+          type: IssueEventType.CYCLE,
+          payload: eventPayload(
+            IssueEventType.CYCLE,
+            existing.cycle?.name ?? null,
+            nextCycleName ?? null,
+          ),
         });
       }
 

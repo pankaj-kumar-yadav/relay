@@ -4,6 +4,7 @@ export const IssueEventType = {
   PRIORITY: 'priority',
   ASSIGNEE: 'assignee',
   LABEL: 'label',
+  CYCLE: 'cycle',
 } as const;
 
 export type IssueEventTypeValue =

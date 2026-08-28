@@ -79,7 +79,8 @@ export function mapApiIssue(issue: ApiIssue): Issue {
       priorities.find((item) => item.id === issue.priority) ?? priorities[0]!,
     labels: issue.labels ?? [],
     createdAt: issue.createdAt,
-    cycleId: '',
+    cycleId: issue.cycleId ?? '',
+    cycleName: issue.cycle?.name,
     project: issue.project
       ? mapApiProject({
           id: issue.project.id,

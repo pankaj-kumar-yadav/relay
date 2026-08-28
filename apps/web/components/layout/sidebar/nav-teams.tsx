@@ -1,6 +1,7 @@
 'use client';
 
-import { teamHomePath, teamOverviewPath } from '@/constants/team.constant';
+import { teamCyclesPath, teamHomePath, teamOverviewPath } from '@/constants/team.constant';
+import { CyclePlayIcon } from '@/components/common/cycles/cycle-line';
 import { ChevronRight, CopyMinus, Home, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -88,6 +89,14 @@ export function NavTeams() {
                                  <Link href={teamHomePath(orgId, item.key)}>
                                     <CopyMinus size={14} />
                                     <span>Issues</span>
+                                 </Link>
+                              </SidebarMenuSubButton>
+                           </SidebarMenuSubItem>
+                           <SidebarMenuSubItem>
+                              <SidebarMenuSubButton asChild>
+                                 <Link href={teamCyclesPath(orgId, item.key)}>
+                                    <CyclePlayIcon className="size-3.5" />
+                                    <span>Cycles</span>
                                  </Link>
                               </SidebarMenuSubButton>
                            </SidebarMenuSubItem>

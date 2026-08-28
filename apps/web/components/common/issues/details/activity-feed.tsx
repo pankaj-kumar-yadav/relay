@@ -8,7 +8,7 @@ import { formatRelativeTime } from '@/constants/date.constant';
 import { useCreateComment, useIssueActivity } from '@/hooks/use-activity';
 import { dicebearAvatarUrl } from '@/constants/user.constant';
 import type { ApiActivityComment, ApiActivityEvent } from '@/services/activity.service';
-import { CircleDot, PenLine, Tag, UserRound } from 'lucide-react';
+import { CircleDot, PenLine, Repeat, Tag, UserRound } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
 const EVENT_ICONS: Record<string, ReactNode> = {
@@ -17,6 +17,7 @@ const EVENT_ICONS: Record<string, ReactNode> = {
   [IssueEventType.PRIORITY]: <CircleDot className="size-3.5" />,
   [IssueEventType.ASSIGNEE]: <UserRound className="size-3.5" />,
   [IssueEventType.LABEL]: <Tag className="size-3.5" />,
+  [IssueEventType.CYCLE]: <Repeat className="size-3.5" />,
 };
 
 function namesFrom(value: unknown): string[] {
@@ -51,6 +52,10 @@ function eventText(item: ApiActivityEvent): string {
       }
       return parts.join('; ') || 'updated labels';
     }
+    case IssueEventType.CYCLE:
+      return to == null
+        ? 'removed the issue from its cycle'
+        : `added the issue to ${String(to)}`;
     default:
       return item.type;
   }

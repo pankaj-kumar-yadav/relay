@@ -40,6 +40,18 @@ export const publicLabelSchema = z.object({
   issueCount: z.number().int(),
 });
 
+export const publicCycleSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  status: z.string(),
+  startsAt: z.string(),
+  endsAt: z.string(),
+  teamId: z.string(),
+  issueCount: z.number().int(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
 export const publicProjectSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -69,6 +81,14 @@ export const publicIssueSchema = z.object({
   rank: z.string(),
   projectId: z.string().nullable(),
   project: z.object({ id: z.string(), name: z.string() }).nullable(),
+  cycleId: z.string().nullable(),
+  cycle: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      status: z.string(),
+    })
+    .nullable(),
   team: publicTeamSchema,
   assignee: z
     .object({

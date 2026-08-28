@@ -1,6 +1,6 @@
 # Step 13 — Cycles
 
-**Status:** Current
+**Status:** Done
 
 ## Goal
 
@@ -12,16 +12,18 @@ Per-team timeboxed cycles; issues may belong to a cycle. One active cycle per te
 
 ## Design
 
-[v1 product design](../superpowers/specs/2026-08-27-v1-product-design.md) §13. Write a slice spec/plan before code.
+- Product: [v1 product design](../superpowers/specs/2026-08-27-v1-product-design.md) §13
+- Slice: [cycles design](../superpowers/specs/2026-08-28-cycles-design.md)
+- Plan: [cycles plan](../superpowers/plans/2026-08-28-cycles.md)
 
 ## Done when
 
-- [ ] `cycles` table + `issues.cycle_id` (nullable, `ON DELETE SET NULL`)
-- [ ] API enforces one **active** cycle per team
-- [ ] List/create/update cycles; filter issues by `cycleId`; patch issue cycle
-- [ ] Team nav cycle links restored; Circle cycle pages use the API for list + dates
-- [ ] Burn-up charts stay mock or hidden
-- [ ] Non-members cannot read another org’s cycles
+- [x] `cycles` table + `issues.cycle_id` (nullable, `ON DELETE SET NULL`)
+- [x] API enforces one **active** cycle per team
+- [x] List/create/update cycles; filter issues by `cycleId`; patch issue cycle
+- [x] Team nav cycle links restored; Circle cycle pages use the API for list + dates
+- [x] Burn-up charts stay mock or hidden
+- [x] Non-members cannot read another org’s cycles
 
 ## Out of scope
 

@@ -5,7 +5,6 @@ import { ProjectSelector } from '@/components/layout/sidebar/create-new-issue/pr
 import { LabelSelector } from '@/components/layout/sidebar/create-new-issue/label-selector';
 import { TeamSelector } from '@/components/layout/sidebar/create-new-issue/team-selector';
 import { useIssueMutations } from '@/hooks/use-issues';
-import { getCycleById } from '@/mock-data/cycles';
 import { IssueDetail } from '@/mock-data/issue-details';
 import { Issue } from '@/mock-data/issues';
 import { Ban, GitPullRequestArrow } from 'lucide-react';
@@ -34,7 +33,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  * assignee), cycle, labels, project + milestone, relations and linked PRs.
  */
 export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProps) {
-   const cycle = issue.cycleId ? getCycleById(issue.cycleId) : undefined;
+   const cycleName = issue.cycleName;
    const { updateIssueProject, updateIssueTeam, updateIssueLabels } = useIssueMutations();
    const teamKey = issue.identifier.split('-')[0] ?? issue.project?.teamId ?? '';
 
@@ -54,10 +53,10 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
                   <AssigneeUser user={issue.assignee} issueId={issue.id} />
                   <span className="text-sm">{issue.assignee ? issue.assignee.name : 'Assign'}</span>
                </div>
-               {cycle && (
+               {cycleName && (
                   <div className="flex items-center gap-2 mt-0.5">
                      <CyclePlayIcon className="size-4" />
-                     <span className="text-sm">{cycle.name}</span>
+                     <span className="text-sm">{cycleName}</span>
                   </div>
                )}
                <div className="flex items-center gap-1.5 mt-0.5">

@@ -23,6 +23,8 @@ const DOCUMENTED_PATHS = [
   '/invites/{token}/accept',
   '/orgs/{orgId}/teams',
   '/orgs/{orgId}/teams/{teamId}',
+  '/orgs/{orgId}/teams/{teamId}/cycles',
+  '/orgs/{orgId}/teams/{teamId}/cycles/{cycleId}',
   '/orgs/{orgId}/projects',
   '/orgs/{orgId}/projects/{projectId}',
   '/orgs/{orgId}/members',
