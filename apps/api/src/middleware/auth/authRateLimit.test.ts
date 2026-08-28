@@ -1,24 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import type { AddressInfo } from 'node:net';
 import express from 'express';
-import type { Server } from 'node:http';
+
+import { close, listen } from '@/test/http.js';
 
 import { createAuthRateLimiter } from './authRateLimit.js';
-
-async function listen(app: express.Express): Promise<{ server: Server; origin: string }> {
-  const server = await new Promise<Server>((resolve) => {
-    const s = app.listen(0, '127.0.0.1', () => resolve(s));
-  });
-  const { port } = server.address() as AddressInfo;
-  return { server, origin: `http://127.0.0.1:${port}` };
-}
-
-async function close(server: Server): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
-    server.close((err) => (err ? reject(err) : resolve()));
-  });
-}
 
 async function post(url: string): Promise<number> {
   const res = await fetch(url, { method: 'POST' });

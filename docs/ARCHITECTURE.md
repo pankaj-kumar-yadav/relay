@@ -80,7 +80,7 @@ Development and production: Scalar at `GET /docs` and the generated spec at `GET
 - **Local:** web `http://localhost:3000`, API `http://localhost:4000`. CORS allows `WEB_ORIGIN` with `credentials: true`. Cookies are `HttpOnly`, `Secure=false`, `SameSite=Lax`.
 - **Production:** set `WEB_ORIGIN` to the exact web origin (no wildcards). Serve both apps over HTTPS. Cookies become `Secure=true` and `SameSite=None` when `NODE_ENV=production`. Set `TRUST_PROXY=1` if the API sits behind a reverse proxy so rate limits see the real client IP.
 
-`NODE_ENV` is only `development` or `production` (never `test`). Tests run as development; skip rate limits in the Node test runner via `NODE_TEST_CONTEXT`.
+`NODE_ENV` is only `development` or `production` (never `test`). Tests run as development; skip rate limits in the Node test runner via `NODE_TEST_CONTEXT`. API tests use `node:test`; HTTP harness is `apps/api/src/test/http.ts` (`@/test/http.js`).
 
 JSON request bodies are capped at `256kb` (`JSON_BODY_LIMIT`).
 

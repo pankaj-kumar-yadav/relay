@@ -1,41 +1,10 @@
 import 'dotenv/config';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import type { AddressInfo } from 'node:net';
-import type { Server } from 'node:http';
 
-import { createApp } from '@/app.js';
 import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
-
-const canRun = Boolean(
-  process.env.DATABASE_URL &&
-    process.env.TOKEN_SECRET &&
-    process.env.TOKEN_ISSUER &&
-    process.env.TOKEN_AUDIENCE,
-);
-
-async function listen(): Promise<{ server: Server; origin: string }> {
-  const app = createApp();
-  const server = await new Promise<Server>((resolve) => {
-    const s = app.listen(0, '127.0.0.1', () => resolve(s));
-  });
-  const { port } = server.address() as AddressInfo;
-  return { server, origin: `http://127.0.0.1:${port}` };
-}
-
-async function close(server: Server): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
-    server.close((err) => (err ? reject(err) : resolve()));
-  });
-}
-
-function cookieHeader(res: Response): string {
-  return res.headers
-    .getSetCookie()
-    .map((part) => part.split(';')[0])
-    .join('; ');
-}
+import { canRun, close, cookieHeader, listen } from '@/test/http.js';
 
 test(
   'register then login returns the success envelope',

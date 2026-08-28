@@ -1,5 +1,5 @@
 ---
-description: API folder layout (layer/domain), JSON envelope, and generated OpenAPI docs
+description: API folder layout (layer/domain), JSON envelope, generated OpenAPI docs, and tests
 globs: apps/api/**
 alwaysApply: false
 ---
@@ -10,7 +10,7 @@ Canonical: `docs/project-rules/api-rules.md`
 
 ## Layer folders, domain subfolders
 
-Keep the layer (`middleware`, `routes`, `utils`, `constants`, `auth`, `openapi`). When a domain has **more than one file** in that layer (implementation, helpers, tests), nest them in a subdomain folder. Colocate tests next to the code they cover.
+Keep the layer (`middleware`, `routes`, `utils`, `constants`, `auth`, `openapi`, `test`). When a domain has **more than one file** in that layer (implementation, helpers, tests), nest them in a subdomain folder. Colocate `*.test.ts` next to the code they cover.
 
 ```text
 # ✅ GOOD
@@ -32,6 +32,7 @@ openapi/openapi.test.ts
 utils/issue/issueRef.ts
 utils/issue/issueRank.ts
 utils/issue/issueRef.test.ts
+test/http.ts
 
 # ❌ BAD — flat layer mixes domains and tests
 middleware/requireAuth.ts
@@ -44,8 +45,27 @@ routes/auth.integration.test.ts
 
 - A **single** standalone file may stay at the layer root (`utils/passwords.ts`, `utils/response.ts`)
 - Do **not** invert the tree (`auth/middleware/…`)
-- Do **not** invent a folder for one file (`utils/passwords/passwords.ts`)
+- Do **not** invent a folder for one file (`utils/passwords/passwords.ts`). `test/` is a layer (shared harness, excluded from `dist`) — keep helpers there even if it is one file today
 - New files follow this. When you next touch a flat domain that already has 2+ files, nest them. Do not mass-move unrelated folders in the same change.
+
+## Tests
+
+Runner: Node `node:test` + `node:assert/strict` (`pnpm --filter @relay/api test`). Do not add Vitest, Jest, or Supertest.
+
+- Shared HTTP harness: `src/test/http.ts` — `listen`, `close`, `cookieHeader`, `register`, `canRun`, `Envelope`
+- HTTP tests import from `@/test/http.js`. Pass a custom app when needed: `listen(createApp({ docs: false }))` or `listen(app)`
+- Do not copy `listen` / `close` / cookie / register helpers into new tests
+
+```ts
+// ✅ GOOD
+import { canRun, close, listen, register } from '@/test/http.js';
+
+const { server, origin } = await listen();
+const user = await register(origin, { name, email, password });
+
+// ❌ BAD — local copies of the harness
+async function listen() { /* ... */ }
+```
 
 ## Response envelope
 

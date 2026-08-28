@@ -33,6 +33,13 @@ Roadmaps: [STEPS.md](./STEPS.md) → [STEPS-MVP.md](./STEPS-MVP.md) / [STEPS-V1.
 - Path builders live in the matching domain. Date/time display lives in `date.constant.ts`
 - Until `packages/shared` exists, values used on both sides are mirrored with the same keys and values
 
+## API tests (locked)
+
+- Runner: Node `node:test` + `node:assert/strict` — no Vitest, Jest, or Supertest
+- HTTP tests share `apps/api/src/test/http.ts` (`listen`, `close`, `cookieHeader`, `register`, `canRun`)
+- Import from `@/test/http.js`. Do not copy those helpers into each test file
+- Detail: [project-rules/api-rules.md](./project-rules/api-rules.md)
+
 ## Agent process constraints
 
 - Do **not** create git commits unless the human explicitly asks

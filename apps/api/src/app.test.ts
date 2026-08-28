@@ -1,25 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import type { AddressInfo } from 'node:net';
-import type { Server } from 'node:http';
 
-import { createApp } from '@/app.js';
 import { API_PREFIX, ErrorCode, HttpStatus, JSON_BODY_LIMIT } from '@/constants/http.js';
-
-async function listen(): Promise<{ server: Server; origin: string }> {
-  const app = createApp();
-  const server = await new Promise<Server>((resolve) => {
-    const s = app.listen(0, '127.0.0.1', () => resolve(s));
-  });
-  const { port } = server.address() as AddressInfo;
-  return { server, origin: `http://127.0.0.1:${port}` };
-}
-
-async function close(server: Server): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
-    server.close((err) => (err ? reject(err) : resolve()));
-  });
-}
+import { close, listen } from '@/test/http.js';
 
 test('GET /api/v1/health is versioned; unprefixed /health is not found', async () => {
   const { server, origin } = await listen();

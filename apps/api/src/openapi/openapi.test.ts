@@ -1,7 +1,5 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import type { AddressInfo } from 'node:net';
-import type { Server } from 'node:http';
 
 import { createApp } from '@/app.js';
 import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
@@ -10,21 +8,7 @@ import {
   OPENAPI_HTTP_CLIENT,
   OPENAPI_JSON_PATH,
 } from '@/constants/openapi.constant.js';
-
-async function listen(docs?: boolean): Promise<{ server: Server; origin: string }> {
-  const app = docs === undefined ? createApp() : createApp({ docs });
-  const server = await new Promise<Server>((resolve) => {
-    const s = app.listen(0, '127.0.0.1', () => resolve(s));
-  });
-  const { port } = server.address() as AddressInfo;
-  return { server, origin: `http://127.0.0.1:${port}` };
-}
-
-async function close(server: Server): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
-    server.close((err) => (err ? reject(err) : resolve()));
-  });
-}
+import { close, listen } from '@/test/http.js';
 
 const DOCUMENTED_PATHS = [
   '/health',
@@ -95,7 +79,7 @@ test('GET /docs serves the Scalar API reference', async () => {
 });
 
 test('docs routes are absent when disabled', async () => {
-  const { server, origin } = await listen(false);
+  const { server, origin } = await listen(createApp({ docs: false }));
   try {
     const docsRes = await fetch(`${origin}${OPENAPI_DOCS_PATH}`);
     const docsBody = (await docsRes.json()) as {
