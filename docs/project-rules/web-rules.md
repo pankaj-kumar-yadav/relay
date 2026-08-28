@@ -44,18 +44,24 @@ export function listIssuesAPI() {}   // ❌ shouty acronym — use Api
 - Zustand is for UI state only, not API caching
 - Callers type the **inner** payload (`api<{ user: AuthUser }>`), not the full envelope — see [api-rules.md](./api-rules.md)
 
-## Keep unused UI (comment out, do not delete)
+## Keep Circle UI (do not delete, do not rewrite)
 
-Circle leftover screens, nav items, and components are **out of MVP**, not dead. Do **not** remove them. Comment out usage (or hide) so they can be restored later.
+`apps/web` is the [Circle](https://github.com/ln-dev7/circle) frontend. Relay wires the Express API into it.
 
-- Comment out JSX, imports, and nav entries that are not in current scope
-- Leave the component **file** in place even if nothing imports it
-- Prefer hide/disable over delete for out-of-MVP Circle routes (cycles, documents, agent, initiatives, …)
+- **Do not delete** Circle `.tsx` / screens / nav / mock widgets — even when unused this step
+- **Do not rewrite** a Circle layout from scratch (e.g. replacing issue details with a custom form)
+- Comment out or hide leftover chrome; leave the component **file** in place
+- Write new frontend **only** where Circle has no component for that surface
+- Only delete a UI file if the user **explicitly** asks to remove that file
 
 ```tsx
-// ✅ GOOD — keep the component, disable for now
-{/* <CyclesNavItem /> — out of MVP; restore later */}
-// import { CyclesNavItem } from '@/components/layout/cycles-nav-item';
-```
+// ✅ GOOD — keep Circle chrome, wire API into it
+<h1 className="text-3xl font-semibold leading-tight text-balance">{issue.title}</h1>
+{/* <SubscribeButton /> — out of v1; restore later */}
 
-Do not delete `.tsx` / component files, mock widgets, or Circle screens because they are unused today. Only delete a UI component if the user **explicitly** asks to remove that file.
+// ❌ BAD — custom rewrite of a screen Circle already has
+<div className="flex flex-col gap-4">
+  <Input className="text-3xl" value={issue.title} />
+  <Textarea className="min-h-40" value={issue.description} />
+</div>
+```

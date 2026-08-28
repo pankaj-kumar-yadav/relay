@@ -39,6 +39,7 @@ const DOCUMENTED_PATHS = [
   '/orgs/{orgId}/issues/{issueId}/activity',
   '/orgs/{orgId}/issues/{issueId}/comments',
   '/orgs/{orgId}/issues/{issueId}/comments/{commentId}',
+  '/orgs/{orgId}/issues/{issueId}/reactions',
   '/orgs/{orgId}/issues/{issueId}/comments/{commentId}/reactions',
 ] as const;
 

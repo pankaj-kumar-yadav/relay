@@ -25,6 +25,16 @@ Roadmaps: [STEPS.md](./STEPS.md) → [STEPS-MVP.md](./STEPS-MVP.md) / [STEPS-V1.
 - UI calls those services via TanStack Query (`useQuery` / `useMutation`)
 - Do not `fetch` / `api()` from components, pages, or Zustand stores — Zustand is UI state only
 
+## Circle frontend (locked)
+
+`apps/web` is the [Circle](https://github.com/ln-dev7/circle) UI. Relay adds the Express API behind it — it is not a new frontend.
+
+- **Do not delete** Circle components, screens, nav items, or chrome
+- **Do not replace** Circle layouts with a custom rewrite
+- Hide or comment out unused pieces; leave the files in place
+- Write new UI **only** where Circle has no component for that surface
+- Detail: [project-rules/web-rules.md](./project-rules/web-rules.md)
+
 ## Constants (locked)
 
 - Reused consts live only in `constants/*.constant.ts`, **one domain per file**

@@ -21,6 +21,8 @@ A demoable multi-tenant core: auth, orgs, invites, issues, teams, and projects â
 - Invites (copy-link / server log; email is v1)
 - Core Circle screens wired to the API (issues, members, teams, projects)
 
+Circle is the frontend ([ln-dev7/circle](https://github.com/ln-dev7/circle)): do not delete its UI; do not rewrite screens that already exist; write new UI only where Circle has none.
+
 ## Out (deferred to v1 or later)
 
 At MVP time these were out. **v1 takes some of them** (comments, labels, inbox, cycles, views, SMTP, Docker) â€” see [SCOPE-V1.md](./SCOPE-V1.md). Still later than v1: billing, SSO, realtime, uploads, AI, reviews, documents.

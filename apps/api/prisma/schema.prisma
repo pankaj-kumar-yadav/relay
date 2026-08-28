@@ -22,6 +22,7 @@ model User {
   commentsAuthored Comment[]    @relation("CommentAuthor")
   issueEventsActed IssueEvent[] @relation("IssueEventActor")
   commentReactions CommentReaction[]
+  issueReactions    IssueReaction[]
   notificationsReceived Notification[] @relation("NotificationRecipient")
   notificationsActed    Notification[] @relation("NotificationActor")
 
@@ -58,6 +59,7 @@ model Organization {
   comments    Comment[]
   issueEvents IssueEvent[]
   commentReactions CommentReaction[]
+  issueReactions IssueReaction[]
   labels      Label[]
   issueLabels IssueLabel[]
   notifications Notification[]
@@ -161,6 +163,7 @@ model Issue {
   comments       Comment[]
   events         IssueEvent[]
   issueLabels    IssueLabel[]
+  reactions      IssueReaction[]
   notifications  Notification[]
 
   @@unique([teamId, number])
@@ -223,6 +226,22 @@ model CommentReaction {
   @@unique([commentId, userId, emoji])
   @@index([organizationId, commentId])
   @@map("comment_reactions")
+}
+
+model IssueReaction {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  issueId        String       @map("issue_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  emoji          String
+  createdAt      DateTime     @default(now()) @map("created_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  issue          Issue        @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([issueId, userId, emoji])
+  @@index([organizationId, issueId])
+  @@map("issue_reactions")
 }
 
 model IssueEvent {

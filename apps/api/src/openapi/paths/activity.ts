@@ -96,6 +96,47 @@ registry.registerPath({
 });
 
 registry.registerPath({
+  method: 'get',
+  path: '/orgs/{orgId}/issues/{issueId}/reactions',
+  tags: [OpenApiTag.ISSUES],
+  summary: 'List issue reactions',
+  security: cookieAuth,
+  request: { params: issueIdParams },
+  responses: {
+    [String(HttpStatus.OK)]: jsonResponse(
+      'OK',
+      successEnvelopeSchema(z.object({ reactions: z.array(reactionAggregateSchema) })),
+    ),
+    ...errorResponses(HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_FOUND),
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/orgs/{orgId}/issues/{issueId}/reactions',
+  tags: [OpenApiTag.ISSUES],
+  summary: 'Toggle issue reaction',
+  security: cookieAuth,
+  request: { params: issueIdParams, body: jsonBody(toggleReactionBodySchema) },
+  responses: {
+    [String(HttpStatus.OK)]: jsonResponse(
+      'Toggled',
+      successEnvelopeSchema(z.object({ reactions: z.array(reactionAggregateSchema) })),
+    ),
+    [String(HttpStatus.CREATED)]: jsonResponse(
+      'Added',
+      successEnvelopeSchema(z.object({ reactions: z.array(reactionAggregateSchema) })),
+    ),
+    ...errorResponses(
+      HttpStatus.BAD_REQUEST,
+      HttpStatus.UNAUTHORIZED,
+      HttpStatus.FORBIDDEN,
+      HttpStatus.NOT_FOUND,
+    ),
+  },
+});
+
+registry.registerPath({
   method: 'post',
   path: '/orgs/{orgId}/issues/{issueId}/comments/{commentId}/reactions',
   tags: [OpenApiTag.ISSUES],

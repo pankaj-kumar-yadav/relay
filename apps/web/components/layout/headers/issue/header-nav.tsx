@@ -1,10 +1,18 @@
 'use client';
 
+import { CyclePlayIcon } from '@/components/common/cycles/cycle-line';
 import { TeamEmojiButton } from '@/components/common/teams/team-icon-picker';
+import { CycleStatus } from '@/constants/cycle.constant';
 import { issuePath } from '@/constants/issue.constant';
-import { teamOverviewPath } from '@/constants/team.constant';
+import {
+   CycleViewPath,
+   teamCycleViewPath,
+   teamCyclesPath,
+   teamOverviewPath,
+} from '@/constants/team.constant';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useCycles } from '@/hooks/use-cycles';
 import { useTeams } from '@/hooks/use-teams';
 import { useIssuesStore } from '@/store/issues-store';
 import { ChevronDown, ChevronRight, ChevronUp, MoreHorizontal, Star } from 'lucide-react';
@@ -12,7 +20,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 /**
- * Issue page header: breadcrumb (team › identifier + title) and
+ * Issue page header: breadcrumb (team › cycle › identifier + title) and
  * previous / next navigation across the issue list.
  */
 export default function HeaderNav() {
@@ -21,9 +29,15 @@ export default function HeaderNav() {
    const { data: teams = [] } = useTeams(orgId);
    const teamKey = issueId.split('-')[0] ?? '';
    const team = teams.find((candidate) => candidate.key === teamKey);
+   const resolvedTeamKey = team?.key ?? teamKey;
+   const { data: cycles = [] } = useCycles(orgId, resolvedTeamKey);
 
    const index = issues.findIndex((candidate) => candidate.identifier === issueId);
    const issue = index >= 0 ? issues[index] : undefined;
+   const cycle = issue?.cycleId
+      ? cycles.find((item) => item.id === issue.cycleId)
+      : undefined;
+   const cycleName = cycle?.name ?? issue?.cycleName;
 
    const previousIssue = index > 0 ? issues[index - 1] : undefined;
    const nextIssue = index >= 0 && index < issues.length - 1 ? issues[index + 1] : undefined;
@@ -42,7 +56,7 @@ export default function HeaderNav() {
                   />
                ) : null}
                <Link
-                  href={teamOverviewPath(orgId, team?.key ?? teamKey)}
+                  href={teamOverviewPath(orgId, resolvedTeamKey)}
                   className="hover:opacity-80"
                >
                   <span className="text-sm font-medium hidden md:inline">
@@ -50,6 +64,18 @@ export default function HeaderNav() {
                   </span>
                </Link>
             </div>
+            {cycleName ? (
+               <>
+                  <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
+                  <Link
+                     href={issueCycleHref(orgId, resolvedTeamKey, cycle?.status)}
+                     className="flex items-center gap-1.5 shrink-0 hover:opacity-80"
+                  >
+                     <CyclePlayIcon className="size-3.5" />
+                     <span className="text-sm font-medium">{cycleName}</span>
+                  </Link>
+               </>
+            ) : null}
             <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
             {issue && (
                <span className="text-sm min-w-0 truncate">
@@ -105,4 +131,14 @@ export default function HeaderNav() {
          </div>
       </div>
    );
+}
+
+function issueCycleHref(orgId: string, teamKey: string, status?: string): string {
+   if (status === CycleStatus.ACTIVE) {
+      return teamCycleViewPath(orgId, teamKey, CycleViewPath.ACTIVE);
+   }
+   if (status === CycleStatus.UPCOMING) {
+      return teamCycleViewPath(orgId, teamKey, CycleViewPath.UPCOMING);
+   }
+   return teamCyclesPath(orgId, teamKey);
 }

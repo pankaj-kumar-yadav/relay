@@ -8,7 +8,7 @@ import { formatRelativeTime } from '@/constants/date.constant';
 import { useCreateComment, useIssueActivity } from '@/hooks/use-activity';
 import { dicebearAvatarUrl } from '@/constants/user.constant';
 import type { ApiActivityComment, ApiActivityEvent } from '@/services/activity.service';
-import { CircleDot, PenLine, Repeat, Tag, UserRound } from 'lucide-react';
+import { CircleDot, PenLine, Plus, Repeat, Tag, UserRound } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
 const EVENT_ICONS: Record<string, ReactNode> = {
@@ -131,8 +131,13 @@ export function ActivityFeed({
   const comments = items.filter((item) => item.kind === 'comment');
 
   return (
-    <div className="mt-10">
-      <h2 className="text-base font-semibold mb-2">Activity</h2>
+    <div className="mt-8 border-t border-border/60 pt-6">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-base font-semibold">Activity</h2>
+        <button className="text-xs text-muted-foreground hover:text-foreground">
+          Subscribe
+        </button>
+      </div>
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading activity…</p>
@@ -166,7 +171,8 @@ export function ActivityFeed({
           rows={2}
           className="w-full resize-none bg-transparent outline-none text-sm placeholder:text-muted-foreground"
         />
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between">
+          <Plus className="size-4 text-muted-foreground" />
           <Button
             size="xs"
             onClick={submitComment}

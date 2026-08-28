@@ -49,6 +49,19 @@ function publicActor(user: { id: string; name: string }) {
   return { id: user.id, name: user.name };
 }
 
+async function loadIssueReactions(
+  organizationId: string,
+  issueId: string,
+  userId: string,
+) {
+  const rows = await prisma.issueReaction.findMany({
+    where: { organizationId, issueId },
+    select: reactionSelect,
+    orderBy: { createdAt: 'asc' },
+  });
+  return aggregateCommentReactions(rows, userId);
+}
+
 async function findCommentInIssue(
   organizationId: string,
   issueId: string,
@@ -278,3 +291,74 @@ activityRouter.post(
     }
   },
 );
+
+activityRouter.get('/:issueId/reactions', async (req, res) => {
+  try {
+    const organizationId = req.org!.id;
+    const issue = await findIssueInOrg(organizationId, req.params.issueId);
+    if (!issue) {
+      throw new NotFoundError('Issue not found');
+    }
+
+    sendSuccess(res, {
+      data: {
+        reactions: await loadIssueReactions(organizationId, issue.id, req.user!.id),
+      },
+    });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+activityRouter.post('/:issueId/reactions', async (req, res) => {
+  try {
+    const parsed = toggleReactionBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new ValidationError(
+        parsed.error.issues[0]?.message ?? 'Invalid input',
+      );
+    }
+
+    const organizationId = req.org!.id;
+    const userId = req.user!.id;
+    const issue = await findIssueInOrg(organizationId, req.params.issueId);
+    if (!issue) {
+      throw new NotFoundError('Issue not found');
+    }
+
+    const { emoji } = parsed.data;
+    const existing = await prisma.issueReaction.findUnique({
+      where: {
+        issueId_userId_emoji: {
+          issueId: issue.id,
+          userId,
+          emoji,
+        },
+      },
+      select: { id: true },
+    });
+
+    if (existing) {
+      await prisma.issueReaction.delete({ where: { id: existing.id } });
+    } else {
+      await prisma.issueReaction.create({
+        data: {
+          organizationId,
+          issueId: issue.id,
+          userId,
+          emoji,
+        },
+      });
+    }
+
+    sendSuccess(res, {
+      status: existing ? HttpStatus.OK : HttpStatus.CREATED,
+      message: existing ? 'Reaction removed' : 'Reaction added',
+      data: {
+        reactions: await loadIssueReactions(organizationId, issue.id, userId),
+      },
+    });
+  } catch (err) {
+    sendError(res, err);
+  }
+});

@@ -2,25 +2,30 @@
 
 import { mapApiIssue } from '@/lib/mappers';
 import { queryKeys } from '@/lib/query-keys';
+import { ApiError } from '@/lib/api';
 import type { Issue } from '@/mock-data/issues';
+import type { LabelInterface } from '@/mock-data/labels';
 import type { Priority } from '@/mock-data/priorities';
 import type { Status } from '@/mock-data/status';
 import type { User } from '@/mock-data/users';
 import {
   createIssueApi,
   getIssueApi,
+  listIssueReactionsApi,
   listIssuesApi,
   patchIssueApi,
+  toggleIssueReactionApi,
+  type ApiIssueReaction,
   type CreateIssueInput,
   type IssueListQuery,
   type PatchIssueInput,
 } from '@/services/issues.service';
 import { setIssueLabelsApi } from '@/services/labels.service';
-import type { LabelInterface } from '@/mock-data/labels';
 import { useIssuesStore } from '@/store/issues-store';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 export function useIssuesList(
   orgSlug: string | undefined,
@@ -160,4 +165,75 @@ export function useIssueMutations() {
       setLabels.mutate({ issueId, labelIds: labels.map((label) => label.id) });
     },
   };
+}
+
+function toggleReactionList(
+  current: ApiIssueReaction[],
+  emoji: string,
+): ApiIssueReaction[] {
+  const existing = current.find((reaction) => reaction.emoji === emoji);
+  if (existing?.reacted) {
+    return existing.count <= 1
+      ? current.filter((reaction) => reaction.emoji !== emoji)
+      : current.map((reaction) =>
+          reaction.emoji === emoji
+            ? { ...reaction, count: reaction.count - 1, reacted: false }
+            : reaction,
+        );
+  }
+  if (existing) {
+    return current.map((reaction) =>
+      reaction.emoji === emoji
+        ? { ...reaction, count: reaction.count + 1, reacted: true }
+        : reaction,
+    );
+  }
+  return [...current, { emoji, count: 1, reacted: true }];
+}
+
+export function useIssueReactions(
+  orgSlug: string | undefined,
+  issueId: string | undefined,
+) {
+  return useQuery({
+    queryKey: queryKeys.issues.reactions(orgSlug ?? '', issueId ?? ''),
+    queryFn: async () => {
+      const { reactions } = await listIssueReactionsApi(orgSlug!, issueId!);
+      return reactions;
+    },
+    enabled: Boolean(orgSlug && issueId),
+  });
+}
+
+export function useToggleIssueReaction(
+  orgSlug: string | undefined,
+  issueId: string | undefined,
+) {
+  const queryClient = useQueryClient();
+  const queryKey = queryKeys.issues.reactions(orgSlug ?? '', issueId ?? '');
+
+  return useMutation({
+    mutationFn: (emoji: string) => {
+      if (!orgSlug || !issueId) throw new Error('No issue selected');
+      return toggleIssueReactionApi(orgSlug, issueId, emoji);
+    },
+    onMutate: async (emoji) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<ApiIssueReaction[]>(queryKey);
+      if (previous) {
+        queryClient.setQueryData(queryKey, toggleReactionList(previous, emoji));
+      }
+      return { previous };
+    },
+    onError: (err, _emoji, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+      toast.error(err instanceof ApiError ? err.message : 'Could not update reaction');
+    },
+    onSettled: () => {
+      if (!orgSlug || !issueId) return;
+      void queryClient.invalidateQueries({ queryKey });
+    },
+  });
 }

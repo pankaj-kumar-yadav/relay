@@ -108,3 +108,29 @@ export async function deleteIssueApi(orgSlug: string, issueId: string) {
     method: 'DELETE',
   });
 }
+
+export type ApiIssueReaction = {
+  emoji: string;
+  count: number;
+  reacted: boolean;
+};
+
+export async function listIssueReactionsApi(orgSlug: string, issueId: string) {
+  return api<{ reactions: ApiIssueReaction[] }>(
+    `/orgs/${orgSlug}/issues/${issueId}/reactions`,
+  );
+}
+
+export async function toggleIssueReactionApi(
+  orgSlug: string,
+  issueId: string,
+  emoji: string,
+) {
+  return api<{ reactions: ApiIssueReaction[] }>(
+    `/orgs/${orgSlug}/issues/${issueId}/reactions`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ emoji }),
+    },
+  );
+}
