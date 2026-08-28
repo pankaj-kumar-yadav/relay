@@ -5,7 +5,7 @@ import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 
 import { createApp } from '@/app.js';
-import { ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
 import { DEFAULT_LABEL_COLOR } from '@/constants/label.constant.js';
 import { OrgRole } from '@/constants/org.js';
 import { prisma } from '@/db.js';
@@ -57,7 +57,7 @@ async function register(
   origin: string,
   input: { name: string; email: string; password: string },
 ) {
-  const res = await fetch(`${origin}/auth/register`, {
+  const res = await fetch(`${origin}${API_PREFIX}/auth/register`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(input),
@@ -97,7 +97,7 @@ test(
         password,
       });
 
-      const orgARes = await fetch(`${origin}/orgs`, {
+      const orgARes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'Org A', slug: slugA }),
@@ -108,7 +108,7 @@ test(
       assert.equal(orgARes.status, HttpStatus.CREATED, JSON.stringify(orgABody));
       const orgAId = orgABody.data!.organization.id;
 
-      const orgBRes = await fetch(`${origin}/orgs`, {
+      const orgBRes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userB.cookies },
         body: JSON.stringify({ name: 'Org B', slug: slugB }),
@@ -123,7 +123,7 @@ test(
         },
       });
 
-      const crossOrg = await fetch(`${origin}/orgs/${slugA}/labels`, {
+      const crossOrg = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels`, {
         headers: { cookie: userB.cookies },
       });
       const crossOrgBody = (await crossOrg.json()) as Envelope<unknown>;
@@ -131,7 +131,7 @@ test(
       assert.equal(crossOrgBody.success, false);
       assert.equal(crossOrgBody.error?.code, ErrorCode.FORBIDDEN);
 
-      const createRes = await fetch(`${origin}/orgs/${slugA}/labels`, {
+      const createRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: ' Bug ', color: '#EB5757' }),
@@ -142,7 +142,7 @@ test(
       assert.equal(created.data!.label.color, '#EB5757');
       const labelId = created.data!.label.id;
 
-      const defaultColorRes = await fetch(`${origin}/orgs/${slugA}/labels`, {
+      const defaultColorRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'Feature' }),
@@ -153,21 +153,21 @@ test(
       assert.equal(defaultColorRes.status, HttpStatus.CREATED, JSON.stringify(defaultColor));
       assert.equal(defaultColor.data!.label.color, DEFAULT_LABEL_COLOR);
 
-      const dupRes = await fetch(`${origin}/orgs/${slugA}/labels`, {
+      const dupRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'bug' }),
       });
       assert.equal(dupRes.status, HttpStatus.BAD_REQUEST);
 
-      const employeeCreate = await fetch(`${origin}/orgs/${slugA}/labels`, {
+      const employeeCreate = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userC.cookies },
         body: JSON.stringify({ name: 'Secret' }),
       });
       assert.equal(employeeCreate.status, HttpStatus.FORBIDDEN);
 
-      const employeePatch = await fetch(`${origin}/orgs/${slugA}/labels/${labelId}`, {
+      const employeePatch = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels/${labelId}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json', cookie: userC.cookies },
         body: JSON.stringify({ name: 'Nope' }),
@@ -175,12 +175,12 @@ test(
       assert.equal(employeePatch.status, HttpStatus.FORBIDDEN);
 
       const employeeDelete = await fetch(
-        `${origin}/orgs/${slugA}/labels/${labelId}`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/labels/${labelId}`,
         { method: 'DELETE', headers: { cookie: userC.cookies } },
       );
       assert.equal(employeeDelete.status, HttpStatus.FORBIDDEN);
 
-      const listAsMember = await fetch(`${origin}/orgs/${slugA}/labels`, {
+      const listAsMember = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels`, {
         headers: { cookie: userC.cookies },
       });
       const listed = (await listAsMember.json()) as Envelope<{
@@ -193,7 +193,7 @@ test(
         ['Bug', 'Feature'],
       );
 
-      const patchRes = await fetch(`${origin}/orgs/${slugA}/labels/${labelId}`, {
+      const patchRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels/${labelId}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'Defect', color: '#4F4F4F' }),
@@ -203,7 +203,7 @@ test(
       assert.equal(patched.data!.label.name, 'Defect');
       assert.equal(patched.data!.label.color, '#4F4F4F');
 
-      const deleteRes = await fetch(`${origin}/orgs/${slugA}/labels/${labelId}`, {
+      const deleteRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels/${labelId}`, {
         method: 'DELETE',
         headers: { cookie: userA.cookies },
       });
@@ -211,7 +211,7 @@ test(
       assert.equal(deleteRes.status, HttpStatus.OK, JSON.stringify(deleted));
       assert.equal(deleted.data!.id, labelId);
 
-      const missing = await fetch(`${origin}/orgs/${slugA}/labels/${labelId}`, {
+      const missing = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels/${labelId}`, {
         method: 'DELETE',
         headers: { cookie: userA.cookies },
       });

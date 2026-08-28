@@ -13,6 +13,7 @@ Self-hosted Linear-lite on top of shipped MVP ([STEPS-MVP.md](./STEPS-MVP.md)).
 10. Comments/activity  ✅  (done)
 11. Labels                 ✅  (done)
 12. Inbox                  ✅  (done)
+12a. API docs              ✅  (done)
 13. Cycles                 (current)
 14. Saved views
 15. Settings chrome
@@ -25,13 +26,14 @@ Self-hosted Linear-lite on top of shipped MVP ([STEPS-MVP.md](./STEPS-MVP.md)).
 - [x] Step 10 — Comments + activity
 - [x] Step 11 — Labels
 - [x] Step 12 — Inbox
+- [x] Step 12a — API version + docs
 - [ ] Step 13 — Cycles
 - [ ] Step 14 — Saved views
 - [ ] Step 15 — Settings chrome
 - [ ] Step 16 — Email + auth polish
 - [ ] Step 17 — Self-host pack
 
-Step files: [10](./steps/10-comments-activity.md) … [17](./steps/17-self-host.md).
+Step files: [10](./steps/10-comments-activity.md) … [12](./steps/12-inbox.md), [12a](./steps/12a-api-docs.md), [13](./steps/13-cycles.md) … [17](./steps/17-self-host.md).
 
 ## Rules (v1)
 

@@ -1,0 +1,10 @@
+import '@/openapi/paths/activity.js';
+import '@/openapi/paths/auth.js';
+import '@/openapi/paths/health.js';
+import '@/openapi/paths/inbox.js';
+import '@/openapi/paths/invites.js';
+import '@/openapi/paths/issues.js';
+import '@/openapi/paths/labels.js';
+import '@/openapi/paths/orgs.js';
+import '@/openapi/paths/projects.js';
+import '@/openapi/paths/teams.js';

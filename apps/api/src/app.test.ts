@@ -4,7 +4,7 @@ import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 
 import { createApp } from '@/app.js';
-import { ErrorCode, HttpStatus, JSON_BODY_LIMIT } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus, JSON_BODY_LIMIT } from '@/constants/http.js';
 
 async function listen(): Promise<{ server: Server; origin: string }> {
   const app = createApp();
@@ -20,6 +20,31 @@ async function close(server: Server): Promise<void> {
     server.close((err) => (err ? reject(err) : resolve()));
   });
 }
+
+test('GET /api/v1/health is versioned; unprefixed /health is not found', async () => {
+  const { server, origin } = await listen();
+  try {
+    const versioned = await fetch(`${origin}${API_PREFIX}/health`);
+    const versionedBody = (await versioned.json()) as {
+      success: boolean;
+      data: { service: string } | null;
+    };
+    assert.equal(versioned.status, HttpStatus.OK);
+    assert.equal(versionedBody.success, true);
+    assert.equal(versionedBody.data?.service, 'relay-api');
+
+    const legacy = await fetch(`${origin}/health`);
+    const legacyBody = (await legacy.json()) as {
+      success: boolean;
+      error: { code: string } | null;
+    };
+    assert.equal(legacy.status, HttpStatus.NOT_FOUND);
+    assert.equal(legacyBody.success, false);
+    assert.equal(legacyBody.error?.code, ErrorCode.NOT_FOUND);
+  } finally {
+    await close(server);
+  }
+});
 
 test('unknown routes return the error envelope', async () => {
   const { server, origin } = await listen();
@@ -44,7 +69,7 @@ test('unknown routes return the error envelope', async () => {
 test(`JSON bodies over ${JSON_BODY_LIMIT} are rejected as validation errors`, async () => {
   const { server, origin } = await listen();
   try {
-    const res = await fetch(`${origin}/auth/login`, {
+    const res = await fetch(`${origin}${API_PREFIX}/auth/login`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ email: `${'a'.repeat(300_000)}@x.com`, password: 'password1' }),

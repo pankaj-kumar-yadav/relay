@@ -1,12 +1,12 @@
 import { Prisma } from '@prisma/client';
 import { Router } from 'express';
-import { z } from 'zod';
 
 import { HttpStatus } from '@/constants/http.js';
 import { OrgRole } from '@/constants/org.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
+import { z } from '@/openapi/zod.js';
 import { issuesRouter } from '@/routes/issues/issues.js';
 import { notificationsRouter } from '@/routes/inbox/notifications.js';
 import { labelsRouter } from '@/routes/labels.js';
@@ -24,13 +24,13 @@ import { sendSuccess } from '@/utils/response.js';
 
 export const orgsRouter: Router = Router();
 
-const slugSchema = z
+export const slugSchema = z
   .string()
   .trim()
   .toLowerCase()
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid slug');
 
-const createOrgSchema = z.object({
+export const createOrgBodySchema = z.object({
   name: z.string().trim().min(1),
   slug: slugSchema,
 });
@@ -43,7 +43,7 @@ orgsRouter.use(requireAuth);
 
 orgsRouter.post('/', async (req, res) => {
   try {
-    const parsed = createOrgSchema.safeParse(req.body);
+    const parsed = createOrgBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }

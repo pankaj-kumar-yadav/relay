@@ -1,5 +1,5 @@
 import { AuthApiPath } from '@/constants/auth.constant';
-import { ErrorCode, HttpStatus } from '@/constants/http.constant';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.constant';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -45,7 +45,7 @@ async function parseEnvelope<T>(res: Response): Promise<{
 }
 
 async function rawFetch(path: string, init?: RequestInit) {
-  return fetch(`${API_URL}${path}`, {
+  return fetch(`${API_URL}${API_PREFIX}${path}`, {
     ...init,
     credentials: 'include',
     headers: {

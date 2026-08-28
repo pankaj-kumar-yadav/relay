@@ -28,3 +28,6 @@ export const ErrorCode = {
 } as const;
 
 export type ErrorCodeValue = (typeof ErrorCode)[keyof typeof ErrorCode];
+
+/** Versioned HTTP prefix for all API routes. */
+export const API_PREFIX = '/api/v1';

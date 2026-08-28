@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { z } from 'zod';
 
-import { HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, HttpStatus } from '@/constants/http.js';
 import { OrgRole } from '@/constants/org.js';
 import { config } from '@/config.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { requireOrgRole } from '@/middleware/org/requireOrgRole.js';
+import { z } from '@/openapi/zod.js';
 import {
   AlreadyMemberError,
   ForbiddenError,
@@ -25,7 +25,7 @@ import { sendSuccess } from '@/utils/response.js';
 export const orgsInvitesRouter: Router = Router({ mergeParams: true });
 export const invitesRouter: Router = Router();
 
-const createInviteSchema = z.object({
+export const createInviteBodySchema = z.object({
   email: z.string().trim().email().transform((v) => v.toLowerCase()),
   role: z
     .enum([OrgRole.ADMIN, OrgRole.EMPLOYEE])
@@ -54,7 +54,7 @@ orgsInvitesRouter.post(
   requireOrgRole(OrgRole.ADMIN),
   async (req, res) => {
     try {
-      const parsed = createInviteSchema.safeParse(req.body);
+      const parsed = createInviteBodySchema.safeParse(req.body);
       if (!parsed.success) {
         throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
       }
@@ -95,7 +95,7 @@ orgsInvitesRouter.post(
       const invitePath = `/invite/${token}`;
       if (!config.isProduction) {
         console.log(
-          `[invite] ${email} → ${config.webOrigin}${invitePath} (POST /invites/${token}/accept)`,
+          `[invite] ${email} → ${config.webOrigin}${invitePath} (POST ${API_PREFIX}/invites/${token}/accept)`,
         );
       }
 

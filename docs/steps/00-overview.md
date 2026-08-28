@@ -29,7 +29,7 @@ relay/
 | App | URL |
 |-----|-----|
 | Web | http://localhost:3000 |
-| API | http://localhost:4000 |
+| API | http://localhost:4000/api/v1 |
 
 ## Environment files
 

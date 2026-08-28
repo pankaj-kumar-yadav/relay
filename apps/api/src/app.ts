@@ -3,14 +3,19 @@ import cors from 'cors';
 import express, { type ErrorRequestHandler, type Express } from 'express';
 
 import { config } from '@/config.js';
-import { JSON_BODY_LIMIT } from '@/constants/http.js';
+import { API_PREFIX, JSON_BODY_LIMIT } from '@/constants/http.js';
+import { mountOpenApiDocs } from '@/openapi/mount.js';
 import { authRouter } from '@/routes/auth/auth.js';
 import { invitesRouter } from '@/routes/invites.js';
 import { orgsRouter } from '@/routes/orgs.js';
 import { NotFoundError, sendError, ValidationError } from '@/utils/errors.js';
 import { sendSuccess } from '@/utils/response.js';
 
-export function createApp(): Express {
+export type CreateAppOptions = {
+  docs?: boolean;
+};
+
+export function createApp(options: CreateAppOptions = {}): Express {
   const app = express();
 
   if (config.trustProxy) {
@@ -26,16 +31,25 @@ export function createApp(): Express {
   app.use(express.json({ limit: JSON_BODY_LIMIT }));
   app.use(cookieParser());
 
-  app.get('/health', (_req, res) => {
+  const v1 = express.Router();
+
+  v1.get('/health', (_req, res) => {
     sendSuccess(res, {
       message: 'OK',
       data: { service: 'relay-api' },
     });
   });
 
-  app.use('/auth', authRouter);
-  app.use('/orgs', orgsRouter);
-  app.use('/invites', invitesRouter);
+  v1.use('/auth', authRouter);
+  v1.use('/orgs', orgsRouter);
+  v1.use('/invites', invitesRouter);
+
+  app.use(API_PREFIX, v1);
+
+  const enableDocs = options.docs ?? true;
+  if (enableDocs) {
+    mountOpenApiDocs(app, v1);
+  }
 
   app.use((_req, res) => {
     sendError(res, new NotFoundError('Not found'));

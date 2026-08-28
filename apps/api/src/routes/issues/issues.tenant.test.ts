@@ -5,7 +5,7 @@ import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 
 import { createApp } from '@/app.js';
-import { ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
 
 const canRun = Boolean(
@@ -41,7 +41,7 @@ async function register(
   origin: string,
   input: { name: string; email: string; password: string },
 ) {
-  const res = await fetch(`${origin}/auth/register`, {
+  const res = await fetch(`${origin}${API_PREFIX}/auth/register`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(input),
@@ -74,21 +74,21 @@ test(
         password,
       });
 
-      const orgARes = await fetch(`${origin}/orgs`, {
+      const orgARes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: cookiesA },
         body: JSON.stringify({ name: 'Org A', slug: slugA }),
       });
       assert.equal(orgARes.status, HttpStatus.CREATED, await orgARes.text());
 
-      const orgBRes = await fetch(`${origin}/orgs`, {
+      const orgBRes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: cookiesB },
         body: JSON.stringify({ name: 'Org B', slug: slugB }),
       });
       assert.equal(orgBRes.status, HttpStatus.CREATED, await orgBRes.text());
 
-      const issueRes = await fetch(`${origin}/orgs/${slugA}/issues`, {
+      const issueRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: cookiesA },
         body: JSON.stringify({ title: 'Org A only' }),
@@ -100,7 +100,7 @@ test(
       const issueId = created.data?.issue.id;
       assert.ok(issueId);
 
-      const crossOrg = await fetch(`${origin}/orgs/${slugA}/issues/${issueId}`, {
+      const crossOrg = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}`, {
         headers: { cookie: cookiesB },
       });
       const crossOrgBody = (await crossOrg.json()) as {
@@ -113,7 +113,7 @@ test(
       assert.equal(crossOrgBody.data, null);
       assert.equal(crossOrgBody.error?.code, ErrorCode.FORBIDDEN);
 
-      const crossId = await fetch(`${origin}/orgs/${slugB}/issues/${issueId}`, {
+      const crossId = await fetch(`${origin}${API_PREFIX}/orgs/${slugB}/issues/${issueId}`, {
         headers: { cookie: cookiesB },
       });
       const crossIdBody = (await crossId.json()) as {

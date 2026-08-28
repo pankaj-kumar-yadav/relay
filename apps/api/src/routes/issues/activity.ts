@@ -1,39 +1,25 @@
 import { Router } from 'express';
-import { z } from 'zod';
 
-import {
-  ACTIVITY_LIST_LIMIT,
-  COMMENT_BODY_MAX,
-  COMMENT_REACTION_EMOJI_MAX,
-} from '@/constants/activity.constant.js';
+import { ACTIVITY_LIST_LIMIT } from '@/constants/activity.constant.js';
 import { HttpStatus } from '@/constants/http.js';
 import { NotificationType } from '@/constants/inbox.constant.js';
 import { prisma } from '@/db.js';
+import {
+  createCommentBodySchema,
+  toggleReactionBodySchema,
+} from '@/routes/issues/activity.schema.js';
 import {
   ForbiddenError,
   NotFoundError,
   sendError,
   ValidationError,
 } from '@/utils/errors.js';
-import { aggregateCommentReactions, isCommentReactionEmoji } from '@/utils/issue/commentReaction.js';
 import { notifyIfRecipient } from '@/utils/inbox/notify.js';
+import { aggregateCommentReactions } from '@/utils/issue/commentReaction.js';
 import { parseIssueRef } from '@/utils/issue/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
 
 export const activityRouter: Router = Router({ mergeParams: true });
-
-const createCommentSchema = z.object({
-  body: z.string().trim().min(1).max(COMMENT_BODY_MAX),
-});
-
-const toggleReactionSchema = z.object({
-  emoji: z
-    .string()
-    .trim()
-    .min(1)
-    .max(COMMENT_REACTION_EMOJI_MAX)
-    .refine(isCommentReactionEmoji, 'Invalid emoji'),
-});
 
 const actorSelect = { id: true, name: true } as const;
 const reactionSelect = { emoji: true, userId: true } as const;
@@ -140,7 +126,7 @@ activityRouter.get('/:issueId/activity', async (req, res) => {
 
 activityRouter.post('/:issueId/comments', async (req, res) => {
   try {
-    const parsed = createCommentSchema.safeParse(req.body);
+    const parsed = createCommentBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }
@@ -228,7 +214,7 @@ activityRouter.post(
   '/:issueId/comments/:commentId/reactions',
   async (req, res) => {
     try {
-      const parsed = toggleReactionSchema.safeParse(req.body);
+      const parsed = toggleReactionBodySchema.safeParse(req.body);
       if (!parsed.success) {
         throw new ValidationError(
           parsed.error.issues[0]?.message ?? 'Invalid input',

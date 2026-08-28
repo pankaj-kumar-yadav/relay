@@ -5,7 +5,7 @@ import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 
 import { createApp } from '@/app.js';
-import { ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
 
 const canRun = Boolean(
@@ -46,7 +46,7 @@ test(
     const password = 'password1';
     const { server, origin } = await listen();
     try {
-      const registerRes = await fetch(`${origin}/auth/register`, {
+      const registerRes = await fetch(`${origin}${API_PREFIX}/auth/register`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ name: 'Harden Auth', email, password }),
@@ -62,7 +62,7 @@ test(
       assert.equal(registered.error, null);
       assert.equal(registered.data?.user.email, email);
 
-      const loginRes = await fetch(`${origin}/auth/login`, {
+      const loginRes = await fetch(`${origin}${API_PREFIX}/auth/login`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -90,7 +90,7 @@ test(
   async () => {
     const { server, origin } = await listen();
     try {
-      const res = await fetch(`${origin}/auth/login`, {
+      const res = await fetch(`${origin}${API_PREFIX}/auth/login`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email: 'missing@relay.test', password: 'nope' }),

@@ -5,7 +5,7 @@ import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 
 import { createApp } from '@/app.js';
-import { ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
 import { NotificationType } from '@/constants/inbox.constant.js';
 import { IssueStatus } from '@/constants/issue.js';
 import { OrgRole } from '@/constants/org.js';
@@ -58,7 +58,7 @@ async function register(
   origin: string,
   input: { name: string; email: string; password: string },
 ) {
-  const res = await fetch(`${origin}/auth/register`, {
+  const res = await fetch(`${origin}${API_PREFIX}/auth/register`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(input),
@@ -69,7 +69,7 @@ async function register(
 }
 
 async function listInbox(origin: string, slug: string, cookies: string) {
-  const res = await fetch(`${origin}/orgs/${slug}/notifications`, {
+  const res = await fetch(`${origin}${API_PREFIX}/orgs/${slug}/notifications`, {
     headers: { cookie: cookies },
   });
   const body = (await res.json()) as Envelope<{
@@ -109,7 +109,7 @@ test(
         password,
       });
 
-      const orgARes = await fetch(`${origin}/orgs`, {
+      const orgARes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'Org A', slug: slugA }),
@@ -120,7 +120,7 @@ test(
       assert.equal(orgARes.status, HttpStatus.CREATED, JSON.stringify(orgABody));
       const orgAId = orgABody.data!.organization.id;
 
-      const orgBRes = await fetch(`${origin}/orgs`, {
+      const orgBRes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userB.cookies },
         body: JSON.stringify({ name: 'Org B', slug: slugB }),
@@ -135,17 +135,17 @@ test(
         },
       });
 
-      const unauth = await fetch(`${origin}/orgs/${slugA}/notifications`);
+      const unauth = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/notifications`);
       assert.equal(unauth.status, HttpStatus.UNAUTHORIZED);
 
-      const crossOrg = await fetch(`${origin}/orgs/${slugA}/notifications`, {
+      const crossOrg = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/notifications`, {
         headers: { cookie: userB.cookies },
       });
       const crossOrgBody = (await crossOrg.json()) as Envelope<unknown>;
       assert.equal(crossOrg.status, HttpStatus.FORBIDDEN);
       assert.equal(crossOrgBody.error?.code, ErrorCode.FORBIDDEN);
 
-      const issueRes = await fetch(`${origin}/orgs/${slugA}/issues`, {
+      const issueRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({
@@ -160,7 +160,7 @@ test(
       const issueId = created.data!.issue.id;
 
       const commentRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/comments`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/comments`,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json', cookie: userA.cookies },
@@ -183,7 +183,7 @@ test(
       const commentNotificationId = inboxC.body.data!.notifications[0]!.id;
 
       const selfComment = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/comments`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/comments`,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json', cookie: userC.cookies },
@@ -194,7 +194,7 @@ test(
       const afterSelf = await listInbox(origin, slugA, userC.cookies);
       assert.equal(afterSelf.body.data!.notifications.length, 1);
 
-      const statusRes = await fetch(`${origin}/orgs/${slugA}/issues/${issueId}`, {
+      const statusRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ status: IssueStatus.DONE }),
@@ -209,7 +209,7 @@ test(
         ),
       );
 
-      const unassignRes = await fetch(`${origin}/orgs/${slugA}/issues/${issueId}`, {
+      const unassignRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ assigneeId: null }),
@@ -219,7 +219,7 @@ test(
       assert.equal(afterUnassign.body.data!.notifications.length, 2);
 
       const statusUnassigned = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}`,
         {
           method: 'PATCH',
           headers: { 'content-type': 'application/json', cookie: userA.cookies },
@@ -230,7 +230,7 @@ test(
       const afterUnassignedStatus = await listInbox(origin, slugA, userC.cookies);
       assert.equal(afterUnassignedStatus.body.data!.notifications.length, 2);
 
-      const assignSelf = await fetch(`${origin}/orgs/${slugA}/issues/${issueId}`, {
+      const assignSelf = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ assigneeId: userA.userId }),
@@ -239,7 +239,7 @@ test(
       const inboxAAfterSelf = await listInbox(origin, slugA, userA.cookies);
       assert.equal(inboxAAfterSelf.body.data!.notifications.length, 0);
 
-      const assignC = await fetch(`${origin}/orgs/${slugA}/issues/${issueId}`, {
+      const assignC = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ assigneeId: userC.userId }),
@@ -254,7 +254,7 @@ test(
       );
 
       const markOther = await fetch(
-        `${origin}/orgs/${slugA}/notifications/${commentNotificationId}/read`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/notifications/${commentNotificationId}/read`,
         {
           method: 'POST',
           headers: { cookie: userA.cookies },
@@ -263,7 +263,7 @@ test(
       assert.equal(markOther.status, HttpStatus.NOT_FOUND);
 
       const markOne = await fetch(
-        `${origin}/orgs/${slugA}/notifications/${commentNotificationId}/read`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/notifications/${commentNotificationId}/read`,
         {
           method: 'POST',
           headers: { cookie: userC.cookies },
@@ -278,7 +278,7 @@ test(
       const afterMarkOne = await listInbox(origin, slugA, userC.cookies);
       assert.equal(afterMarkOne.body.data!.unreadCount, 2);
 
-      const markAll = await fetch(`${origin}/orgs/${slugA}/notifications/read-all`, {
+      const markAll = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/notifications/read-all`, {
         method: 'POST',
         headers: { cookie: userC.cookies },
       });

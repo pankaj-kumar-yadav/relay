@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { z } from 'zod';
 
 import {
   DEFAULT_PROJECT_HEALTH,
@@ -11,6 +10,7 @@ import { HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
+import { z } from '@/openapi/zod.js';
 import { NotFoundError, sendError, ValidationError } from '@/utils/errors.js';
 import { findProject, projectSelect, publicProject } from '@/utils/projects.js';
 import { sendSuccess } from '@/utils/response.js';
@@ -20,24 +20,28 @@ export const projectsRouter: Router = Router({ mergeParams: true });
 
 projectsRouter.use(requireAuth, requireOrgMember);
 
-const optionalDate = z.string().trim().min(1).optional().nullable();
+export const optionalDateSchema = z.string().trim().min(1).optional().nullable();
 
-const createProjectSchema = z.object({
+export const createProjectBodySchema = z.object({
   name: z.string().trim().min(1),
   teamId: z.string().trim().min(1),
   status: z.string().optional(),
   health: z.string().optional(),
-  startDate: optionalDate,
-  targetDate: optionalDate,
+  startDate: optionalDateSchema,
+  targetDate: optionalDateSchema,
 });
 
-const patchProjectSchema = z.object({
+export const patchProjectBodySchema = z.object({
   name: z.string().trim().min(1).optional(),
   teamId: z.string().trim().min(1).optional(),
   status: z.string().optional(),
   health: z.string().optional(),
-  startDate: optionalDate,
-  targetDate: optionalDate,
+  startDate: optionalDateSchema,
+  targetDate: optionalDateSchema,
+});
+
+export const listProjectsQuerySchema = z.object({
+  teamId: z.string().optional(),
 });
 
 function parseOptionalDate(raw: string | null | undefined): Date | null | undefined {
@@ -88,7 +92,7 @@ projectsRouter.get('/', async (req, res) => {
 
 projectsRouter.post('/', async (req, res) => {
   try {
-    const parsed = createProjectSchema.safeParse(req.body);
+    const parsed = createProjectBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }
@@ -139,7 +143,7 @@ projectsRouter.get('/:projectId', async (req, res) => {
 
 projectsRouter.patch('/:projectId', async (req, res) => {
   try {
-    const parsed = patchProjectSchema.safeParse(req.body);
+    const parsed = patchProjectBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }

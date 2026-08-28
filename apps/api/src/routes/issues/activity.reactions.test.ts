@@ -5,7 +5,7 @@ import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 
 import { createApp } from '@/app.js';
-import { ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
 import { OrgRole } from '@/constants/org.js';
 import { prisma } from '@/db.js';
 
@@ -54,7 +54,7 @@ async function register(
   origin: string,
   input: { name: string; email: string; password: string },
 ) {
-  const res = await fetch(`${origin}/auth/register`, {
+  const res = await fetch(`${origin}${API_PREFIX}/auth/register`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(input),
@@ -94,7 +94,7 @@ test(
         password,
       });
 
-      const orgARes = await fetch(`${origin}/orgs`, {
+      const orgARes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'Org A', slug: slugA }),
@@ -105,7 +105,7 @@ test(
       assert.equal(orgARes.status, HttpStatus.CREATED, JSON.stringify(orgABody));
       const orgAId = orgABody.data!.organization.id;
 
-      const orgBRes = await fetch(`${origin}/orgs`, {
+      const orgBRes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userB.cookies },
         body: JSON.stringify({ name: 'Org B', slug: slugB }),
@@ -120,7 +120,7 @@ test(
         },
       });
 
-      const issueRes = await fetch(`${origin}/orgs/${slugA}/issues`, {
+      const issueRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ title: 'Reaction issue' }),
@@ -132,7 +132,7 @@ test(
       const issueId = created.data!.issue.id;
 
       const commentRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/comments`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/comments`,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json', cookie: userA.cookies },
@@ -144,7 +144,7 @@ test(
       }>;
       assert.equal(commentRes.status, HttpStatus.CREATED, JSON.stringify(commentBody));
       const commentId = commentBody.data!.comment.id;
-      const reactionUrl = `${origin}/orgs/${slugA}/issues/${issueId}/comments/${commentId}/reactions`;
+      const reactionUrl = `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/comments/${commentId}/reactions`;
 
       const invalid = await fetch(reactionUrl, {
         method: 'POST',
@@ -200,7 +200,7 @@ test(
       ]);
 
       const activityRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/activity`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/activity`,
         { headers: { cookie: userA.cookies } },
       );
       const activity = (await activityRes.json()) as Envelope<{
@@ -214,7 +214,7 @@ test(
         { emoji: '👍', count: 2, reacted: true },
       ]);
 
-      const asC = await fetch(`${origin}/orgs/${slugA}/issues/${issueId}/activity`, {
+      const asC = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/activity`, {
         headers: { cookie: userC.cookies },
       });
       const asCBody = (await asC.json()) as Envelope<{ items: ActivityComment[] }>;
@@ -246,7 +246,7 @@ test(
       assert.equal(crossOrgBody.error?.code, ErrorCode.FORBIDDEN);
 
       const missing = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/comments/00000000-0000-4000-8000-000000000000/reactions`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/comments/00000000-0000-4000-8000-000000000000/reactions`,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json', cookie: userA.cookies },

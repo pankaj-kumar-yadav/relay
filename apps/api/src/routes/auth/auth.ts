@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { z } from 'zod';
 
 import { validateTokenData } from '@/auth/authUtils.js';
 import {
@@ -13,6 +12,7 @@ import { HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
 import { loginRateLimit, registerRateLimit } from '@/middleware/auth/authRateLimit.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
+import { loginBodySchema, registerBodySchema } from '@/routes/auth/auth.schema.js';
 import {
   EmailTakenError,
   InvalidCredentialsError,
@@ -25,17 +25,6 @@ import { hashPassword, verifyPassword } from '@/utils/passwords.js';
 import { sendSuccess } from '@/utils/response.js';
 
 export const authRouter: Router = Router();
-
-const registerSchema = z.object({
-  name: z.string().trim().min(1),
-  email: z.string().trim().email(),
-  password: z.string().min(8),
-});
-
-const loginSchema = z.object({
-  email: z.string().trim().email(),
-  password: z.string().min(1),
-});
 
 function publicUser(user: {
   id: string;
@@ -53,7 +42,7 @@ function publicUser(user: {
 
 authRouter.post('/register', registerRateLimit, async (req, res) => {
   try {
-    const parsed = registerSchema.safeParse(req.body);
+    const parsed = registerBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }
@@ -92,7 +81,7 @@ authRouter.post('/register', registerRateLimit, async (req, res) => {
 
 authRouter.post('/login', loginRateLimit, async (req, res) => {
   try {
-    const parsed = loginSchema.safeParse(req.body);
+    const parsed = loginBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }

@@ -25,7 +25,7 @@ Browser → apps/web (Next.js :3000)
 - Never authorize solely from URL `orgId` / client-supplied tenant IDs
 - Membership via `memberships` join (not `organization_id` on `users`); public route id is org **slug**
 - Org-scoped handlers: `requireAuth` → `requireOrgMember` → query with `req.org.id` (never raw route/body org ids alone)
-- Invites: admin `POST /orgs/:slug/invites`; accept `POST /invites/:token/accept` (email must match)
+- Invites: admin `POST /api/v1/orgs/:slug/invites`; accept `POST /api/v1/invites/:token/accept` (email must match)
 - Detail: [steps/05-multi-tenant.md](./steps/05-multi-tenant.md); design: [superpowers/specs/2026-08-21-organizations-memberships-design.md](./superpowers/specs/2026-08-21-organizations-memberships-design.md)
 
 ## Roles
@@ -38,10 +38,10 @@ Browser → apps/web (Next.js :3000)
 - Dual JWT HttpOnly cookies (brand-prefixed via `BRAND_SLUG`): `relay_accessToken` (15m) + `relay_refreshToken` (1d)
 - Payload: `{ iss, aud, sub, prm, iat, exp }` (HS256); `prm` binds to Prisma `KeyStore` (`primaryKey` on access, `secondaryKey` on refresh)
 - Login/register: create `KeyStore` row → set both cookies; logout: delete current keystore → clear cookies
-- `POST /auth/refresh`: decode (possibly expired) access + validate refresh → match keystore → delete → re-issue pair
+- `POST /api/v1/auth/refresh`: decode (possibly expired) access + validate refresh → match keystore → delete → re-issue pair
 - `requireAuth`: validate access JWT → load user → require active keystore for `prm`
-- Endpoints: `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/session`, `POST /auth/refresh`
-- Web (`apps/web/lib/api.ts`): `credentials: 'include'`; one-shot `/auth/refresh` then retry on `401` / `TOKEN_EXPIRED`
+- Endpoints (all under `/api/v1`): `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/session`, `POST /auth/refresh`
+- Web (`apps/web/lib/api.ts`): `credentials: 'include'`; prepends `API_PREFIX` (`/api/v1`); one-shot `/auth/refresh` then retry on `401` / `TOKEN_EXPIRED`
 - Cookie flags: local `secure: false`, `sameSite: 'lax'`; prod `secure: true`, `sameSite: 'none'`
 - CORS allows `WEB_ORIGIN` with credentials
 - Passwords hashed with `bcryptjs`
@@ -63,12 +63,16 @@ Every JSON body from `apps/api`:
 
 On failure, `success` is `false`, `data` is `null`, and `error` is `{ "code", "message" }`. Helpers: `sendSuccess` / `sendError`. Web client unwraps `data`.
 
+## API docs
+
+Development and production: Scalar at `GET /docs` and the generated spec at `GET /api/v1/openapi.json` (not the business envelope). OpenAPI `servers` is `/api/v1`; path items stay `/health`, `/auth/login`, …. Cookie session for `apps/web`. See [project-rules/api-rules.md](./project-rules/api-rules.md).
+
 ## Local ports
 
 | Service | Default |
 |---------|---------|
 | Web     | 3000    |
-| API     | 4000    |
+| API     | 4000 (`/api/v1`; docs at `/docs`) |
 | Postgres| 5432 (`docker compose up -d`) |
 
 ## CORS and cookies

@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 import { Router } from 'express';
-import { z } from 'zod';
 
 import {
   DEFAULT_ISSUE_PRIORITY,
@@ -14,12 +13,16 @@ import {
 import { IssueEventType } from '@/constants/activity.constant.js';
 import { HttpStatus } from '@/constants/http.js';
 import { NotificationType } from '@/constants/inbox.constant.js';
-import { LABEL_IDS_MAX } from '@/constants/label.constant.js';
 import { ListLimit } from '@/constants/list.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { activityRouter } from '@/routes/issues/activity.js';
+import {
+  createIssueBodySchema,
+  patchIssueBodySchema,
+  setIssueLabelsBodySchema,
+} from '@/routes/issues/issues.schema.js';
 import {
   NotFoundError,
   sendError,
@@ -103,34 +106,6 @@ async function loadIssue(organizationId: string, rawId: string) {
     select: issueSelect,
   });
 }
-
-const createIssueSchema = z.object({
-  title: z.string().trim().min(1),
-  description: z.string().optional().nullable(),
-  status: z.string().optional(),
-  priority: z.string().optional(),
-  assigneeId: z.string().uuid().optional().nullable(),
-  teamId: z.string().optional(),
-  projectId: z.string().uuid().optional().nullable(),
-  labelIds: z.array(z.string().uuid()).max(LABEL_IDS_MAX).optional(),
-});
-
-const patchIssueSchema = z.object({
-  title: z.string().trim().min(1).optional(),
-  description: z.string().optional().nullable(),
-  status: z.string().optional(),
-  priority: z.string().optional(),
-  assigneeId: z.string().uuid().optional().nullable(),
-  teamId: z.string().optional(),
-  projectId: z.string().uuid().optional().nullable(),
-  rank: z.string().min(1).optional(),
-  beforeIssueId: z.string().optional(),
-  afterIssueId: z.string().optional(),
-});
-
-const setIssueLabelsSchema = z.object({
-  labelIds: z.array(z.string().uuid()).max(LABEL_IDS_MAX),
-});
 
 function parseLimit(raw: unknown): number {
   if (raw == null || raw === '') return ListLimit.DEFAULT;
@@ -257,7 +232,7 @@ issuesRouter.get('/', async (req, res) => {
 
 issuesRouter.post('/', async (req, res) => {
   try {
-    const parsed = createIssueSchema.safeParse(req.body);
+    const parsed = createIssueBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }
@@ -376,7 +351,7 @@ issuesRouter.get('/:issueId', async (req, res) => {
 
 issuesRouter.put('/:issueId/labels', async (req, res) => {
   try {
-    const parsed = setIssueLabelsSchema.safeParse(req.body);
+    const parsed = setIssueLabelsBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }
@@ -420,7 +395,7 @@ issuesRouter.put('/:issueId/labels', async (req, res) => {
 
 issuesRouter.patch('/:issueId', async (req, res) => {
   try {
-    const parsed = patchIssueSchema.safeParse(req.body);
+    const parsed = patchIssueBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }

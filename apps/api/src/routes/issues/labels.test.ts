@@ -6,7 +6,7 @@ import type { Server } from 'node:http';
 
 import { createApp } from '@/app.js';
 import { IssueEventType } from '@/constants/activity.constant.js';
-import { ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
 import { OrgRole } from '@/constants/org.js';
 import { prisma } from '@/db.js';
 
@@ -51,7 +51,7 @@ async function register(
   origin: string,
   input: { name: string; email: string; password: string },
 ) {
-  const res = await fetch(`${origin}/auth/register`, {
+  const res = await fetch(`${origin}${API_PREFIX}/auth/register`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(input),
@@ -91,7 +91,7 @@ test(
         password,
       });
 
-      const orgARes = await fetch(`${origin}/orgs`, {
+      const orgARes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'Org A', slug: slugA }),
@@ -102,7 +102,7 @@ test(
       assert.equal(orgARes.status, HttpStatus.CREATED, JSON.stringify(orgABody));
       const orgAId = orgABody.data!.organization.id;
 
-      const orgBRes = await fetch(`${origin}/orgs`, {
+      const orgBRes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userB.cookies },
         body: JSON.stringify({ name: 'Org B', slug: slugB }),
@@ -117,7 +117,7 @@ test(
         },
       });
 
-      const bugRes = await fetch(`${origin}/orgs/${slugA}/labels`, {
+      const bugRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'Bug', color: '#EB5757' }),
@@ -125,7 +125,7 @@ test(
       const bug = (await bugRes.json()) as Envelope<{ label: IssueLabel }>;
       assert.equal(bugRes.status, HttpStatus.CREATED, JSON.stringify(bug));
 
-      const featureRes = await fetch(`${origin}/orgs/${slugA}/labels`, {
+      const featureRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/labels`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'Feature', color: '#27AE60' }),
@@ -133,7 +133,7 @@ test(
       const feature = (await featureRes.json()) as Envelope<{ label: IssueLabel }>;
       assert.equal(featureRes.status, HttpStatus.CREATED, JSON.stringify(feature));
 
-      const foreignRes = await fetch(`${origin}/orgs/${slugB}/labels`, {
+      const foreignRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugB}/labels`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userB.cookies },
         body: JSON.stringify({ name: 'Bug', color: '#EB5757' }),
@@ -141,7 +141,7 @@ test(
       const foreign = (await foreignRes.json()) as Envelope<{ label: IssueLabel }>;
       assert.equal(foreignRes.status, HttpStatus.CREATED, JSON.stringify(foreign));
 
-      const issueRes = await fetch(`${origin}/orgs/${slugA}/issues`, {
+      const issueRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({
@@ -160,7 +160,7 @@ test(
       const issueId = created.data!.issue.id;
 
       const crossOrg = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/labels`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/labels`,
         {
           method: 'PUT',
           headers: { 'content-type': 'application/json', cookie: userB.cookies },
@@ -170,7 +170,7 @@ test(
       assert.equal(crossOrg.status, HttpStatus.FORBIDDEN);
 
       const foreignIds = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/labels`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/labels`,
         {
           method: 'PUT',
           headers: { 'content-type': 'application/json', cookie: userA.cookies },
@@ -182,7 +182,7 @@ test(
       assert.equal(foreignIdsBody.error?.code, ErrorCode.VALIDATION_ERROR);
 
       const setRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/labels`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/labels`,
         {
           method: 'PUT',
           headers: { 'content-type': 'application/json', cookie: userC.cookies },
@@ -199,7 +199,7 @@ test(
       );
 
       const sameRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/labels`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/labels`,
         {
           method: 'PUT',
           headers: { 'content-type': 'application/json', cookie: userC.cookies },
@@ -209,7 +209,7 @@ test(
       assert.equal(sameRes.status, HttpStatus.OK);
 
       const activityRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/activity`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/activity`,
         { headers: { cookie: userA.cookies } },
       );
       const activity = (await activityRes.json()) as Envelope<{

@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 import { Router } from 'express';
-import { z } from 'zod';
 
 import { HttpStatus } from '@/constants/http.js';
 import {
@@ -13,6 +12,7 @@ import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { requireOrgRole } from '@/middleware/org/requireOrgRole.js';
+import { z } from '@/openapi/zod.js';
 import { NotFoundError, sendError, ValidationError } from '@/utils/errors.js';
 import { sendSuccess } from '@/utils/response.js';
 
@@ -40,12 +40,12 @@ function publicLabel(label: LabelRow) {
   };
 }
 
-const createLabelSchema = z.object({
+export const createLabelBodySchema = z.object({
   name: z.string().trim().min(1).max(LABEL_NAME_MAX),
   color: z.string().trim().optional(),
 });
 
-const patchLabelSchema = z.object({
+export const patchLabelBodySchema = z.object({
   name: z.string().trim().min(1).max(LABEL_NAME_MAX).optional(),
   color: z.string().trim().optional(),
 });
@@ -102,7 +102,7 @@ labelsRouter.get('/', async (req, res) => {
 
 labelsRouter.post('/', requireOrgRole(OrgRole.ADMIN), async (req, res) => {
   try {
-    const parsed = createLabelSchema.safeParse(req.body);
+    const parsed = createLabelBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }
@@ -134,7 +134,7 @@ labelsRouter.post('/', requireOrgRole(OrgRole.ADMIN), async (req, res) => {
 
 labelsRouter.patch('/:labelId', requireOrgRole(OrgRole.ADMIN), async (req, res) => {
   try {
-    const parsed = patchLabelSchema.safeParse(req.body);
+    const parsed = patchLabelBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }

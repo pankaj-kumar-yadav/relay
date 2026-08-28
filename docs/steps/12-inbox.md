@@ -32,4 +32,4 @@ In-app notifications for comment, assignee, and status changes. Polling only.
 
 ## Next
 
-[13-cycles.md](./13-cycles.md)
+[12a-api-docs.md](./12a-api-docs.md)

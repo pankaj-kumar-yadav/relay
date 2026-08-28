@@ -8,7 +8,7 @@ Per-team timeboxed cycles; issues may belong to a cycle. One active cycle per te
 
 ## Prerequisites
 
-- Step 8 done (teams + issues). Prefer after step 12 so the roadmap stays in order.
+- Step 8 done (teams + issues). Prefer after step 12 so the roadmap stays in order. API is `/api/v1` ([12a](./12a-api-docs.md)).
 
 ## Design
 

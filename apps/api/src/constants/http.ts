@@ -29,5 +29,8 @@ export const ErrorCode = {
 
 export type ErrorCodeValue = (typeof ErrorCode)[keyof typeof ErrorCode];
 
+/** Versioned HTTP prefix for all API routes. */
+export const API_PREFIX = '/api/v1';
+
 /** Express JSON body parser limit (issue descriptions, etc.). */
 export const JSON_BODY_LIMIT = '256kb';

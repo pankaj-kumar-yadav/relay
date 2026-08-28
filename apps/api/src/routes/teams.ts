@@ -1,12 +1,12 @@
 import { Prisma } from '@prisma/client';
 import { Router } from 'express';
-import { z } from 'zod';
 
 import { HttpStatus } from '@/constants/http.js';
 import { isTeamKey, normalizeTeamKey } from '@/constants/team.constant.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
+import { z } from '@/openapi/zod.js';
 import {
   NotFoundError,
   sendError,
@@ -20,12 +20,12 @@ export const teamsRouter: Router = Router({ mergeParams: true });
 
 teamsRouter.use(requireAuth, requireOrgMember);
 
-const createTeamSchema = z.object({
+export const createTeamBodySchema = z.object({
   name: z.string().trim().min(1),
   key: z.string().trim().min(1),
 });
 
-const patchTeamSchema = z.object({
+export const patchTeamBodySchema = z.object({
   name: z.string().trim().min(1).optional(),
   key: z.string().trim().min(1).optional(),
 });
@@ -61,7 +61,7 @@ teamsRouter.get('/', async (req, res) => {
 
 teamsRouter.post('/', async (req, res) => {
   try {
-    const parsed = createTeamSchema.safeParse(req.body);
+    const parsed = createTeamBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }
@@ -105,7 +105,7 @@ teamsRouter.get('/:teamId', async (req, res) => {
 
 teamsRouter.patch('/:teamId', async (req, res) => {
   try {
-    const parsed = patchTeamSchema.safeParse(req.body);
+    const parsed = patchTeamBodySchema.safeParse(req.body);
     if (!parsed.success) {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }

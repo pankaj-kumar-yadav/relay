@@ -6,7 +6,7 @@ import type { Server } from 'node:http';
 
 import { createApp } from '@/app.js';
 import { IssueEventType } from '@/constants/activity.constant.js';
-import { ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
 import { IssueStatus } from '@/constants/issue.js';
 import { OrgRole } from '@/constants/org.js';
 import { prisma } from '@/db.js';
@@ -50,7 +50,7 @@ async function register(
   origin: string,
   input: { name: string; email: string; password: string },
 ) {
-  const res = await fetch(`${origin}/auth/register`, {
+  const res = await fetch(`${origin}${API_PREFIX}/auth/register`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(input),
@@ -90,7 +90,7 @@ test(
         password,
       });
 
-      const orgARes = await fetch(`${origin}/orgs`, {
+      const orgARes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ name: 'Org A', slug: slugA }),
@@ -101,7 +101,7 @@ test(
       assert.equal(orgARes.status, HttpStatus.CREATED, JSON.stringify(orgABody));
       const orgAId = orgABody.data!.organization.id;
 
-      const orgBRes = await fetch(`${origin}/orgs`, {
+      const orgBRes = await fetch(`${origin}${API_PREFIX}/orgs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userB.cookies },
         body: JSON.stringify({ name: 'Org B', slug: slugB }),
@@ -116,7 +116,7 @@ test(
         },
       });
 
-      const issueRes = await fetch(`${origin}/orgs/${slugA}/issues`, {
+      const issueRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ title: 'Activity issue' }),
@@ -128,7 +128,7 @@ test(
       const issueId = created.data!.issue.id;
 
       const crossOrg = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/activity`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/activity`,
         { headers: { cookie: userB.cookies } },
       );
       const crossOrgBody = (await crossOrg.json()) as Envelope<unknown>;
@@ -137,7 +137,7 @@ test(
       assert.equal(crossOrgBody.error?.code, ErrorCode.FORBIDDEN);
 
       const crossId = await fetch(
-        `${origin}/orgs/${slugB}/issues/${issueId}/activity`,
+        `${origin}${API_PREFIX}/orgs/${slugB}/issues/${issueId}/activity`,
         { headers: { cookie: userB.cookies } },
       );
       const crossIdBody = (await crossId.json()) as Envelope<unknown>;
@@ -146,7 +146,7 @@ test(
       assert.equal(crossIdBody.error?.code, ErrorCode.NOT_FOUND);
 
       const emptyRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/comments`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/comments`,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json', cookie: userA.cookies },
@@ -156,7 +156,7 @@ test(
       assert.equal(emptyRes.status, HttpStatus.BAD_REQUEST);
 
       const commentRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/comments`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/comments`,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json', cookie: userA.cookies },
@@ -170,14 +170,14 @@ test(
       const commentId = commentBody.data!.comment.id;
 
       const forbiddenDelete = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/comments/${commentId}`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/comments/${commentId}`,
         { method: 'DELETE', headers: { cookie: userC.cookies } },
       );
       const forbiddenDeleteBody = (await forbiddenDelete.json()) as Envelope<unknown>;
       assert.equal(forbiddenDelete.status, HttpStatus.FORBIDDEN);
       assert.equal(forbiddenDeleteBody.error?.code, ErrorCode.FORBIDDEN);
 
-      const patchRes = await fetch(`${origin}/orgs/${slugA}/issues/${issueId}`, {
+      const patchRes = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json', cookie: userA.cookies },
         body: JSON.stringify({ status: IssueStatus.DONE }),
@@ -185,7 +185,7 @@ test(
       assert.equal(patchRes.status, HttpStatus.OK, await patchRes.text());
 
       const activityRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/activity`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/activity`,
         { headers: { cookie: userA.cookies } },
       );
       const activity = (await activityRes.json()) as Envelope<{
@@ -207,7 +207,7 @@ test(
       assert.equal(statusEvent?.payload?.to, IssueStatus.DONE);
 
       const deleteRes = await fetch(
-        `${origin}/orgs/${slugA}/issues/${issueId}/comments/${commentId}`,
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}/comments/${commentId}`,
         { method: 'DELETE', headers: { cookie: userA.cookies } },
       );
       assert.equal(deleteRes.status, HttpStatus.OK, await deleteRes.text());

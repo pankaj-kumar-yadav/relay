@@ -33,7 +33,8 @@ pnpm dev
 ```
 
 - Web: http://localhost:3000
-- API: http://localhost:4000/health
+- API: http://localhost:4000/api/v1/health
+- API docs: http://localhost:4000/docs
 
 Run one app:
 

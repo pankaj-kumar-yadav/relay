@@ -7,7 +7,7 @@
 | Kind | Home |
 |------|------|
 | HTTP wrappers | `apps/web/services/<domain>.service.ts` |
-| Transport (envelope unwrap, cookies, refresh) | `apps/web/lib/api.ts` only |
+| Transport (envelope unwrap, cookies, `API_PREFIX`, refresh) | `apps/web/lib/api.ts` only |
 | Server state | TanStack Query (`useQuery` / `useMutation`) |
 
 One domain per file: `issues.service.ts`, `orgs.service.ts`, `members.service.ts`.
