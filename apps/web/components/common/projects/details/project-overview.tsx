@@ -2,6 +2,7 @@
 
 import { formatIsoDayOrdinal } from '@/constants/date.constant';
 import { projectActivityPath, projectsPath } from '@/constants/project.constant';
+import { ProjectEmojiButton } from '../project-icon-picker';
 import { ContentBlocks } from '@/components/common/issues/details/content-blocks';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getProjectDetail } from '@/mock-data/project-details';
@@ -59,9 +60,13 @@ export default function ProjectOverview({ projectId }: ProjectOverviewProps) {
             <DocumentOutline items={outlineItems} scrollRef={scrollRef} />
             <div ref={scrollRef} className="h-full overflow-y-auto">
             <div className="max-w-3xl mx-auto px-6 lg:px-10 py-10">
-               <div className="inline-flex size-10 bg-muted/50 items-center justify-center rounded-md mb-4">
-                  <project.icon className="size-6" />
-               </div>
+               <ProjectEmojiButton
+                  projectId={project.id}
+                  icon={project.icon}
+                  name={project.name}
+                  className="size-10 text-lg rounded-md mb-4"
+                  size={22}
+               />
                <h1 className="text-3xl font-semibold tracking-tight">{project.name}</h1>
                <p className="mt-3 text-muted-foreground leading-relaxed">{detail.summary}</p>
 

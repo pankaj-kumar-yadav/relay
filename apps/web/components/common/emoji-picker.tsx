@@ -32,14 +32,14 @@ const pickerStyle = {
 export function EmojiPicker({
   onSelect,
 }: {
-  onSelect: (emoji: string) => void;
+  onSelect: (emoji: string, unified: string) => void;
 }) {
   const { resolvedTheme } = useTheme();
 
   return (
     <div className="overflow-hidden rounded-md">
       <Picker
-        onEmojiClick={(data: EmojiClickData) => onSelect(data.emoji)}
+        onEmojiClick={(data: EmojiClickData) => onSelect(data.emoji, data.unified)}
         theme={(resolvedTheme === 'dark' ? 'dark' : 'light') as Theme}
         emojiStyle={'native' as EmojiStyle}
         lazyLoadEmojis

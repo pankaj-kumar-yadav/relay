@@ -1,5 +1,6 @@
 'use client';
 
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { Button } from '@/components/ui/button';
 import {
    Command,
@@ -65,7 +66,7 @@ export function ProjectSelector({ project, onChange, teamKey }: ProjectSelectorP
                   aria-expanded={open}
                >
                   {selected ? (
-                     <selected.icon className="size-4" />
+                     <ProjectIcon icon={selected.icon} name={selected.name} className="size-4 text-xs" />
                   ) : (
                      <Box className="size-4" />
                   )}
@@ -100,7 +101,7 @@ export function ProjectSelector({ project, onChange, teamKey }: ProjectSelectorP
                               className="flex items-center justify-between"
                            >
                               <div className="flex items-center gap-2">
-                                 <item.icon className="size-4" />
+                                 <ProjectIcon icon={item.icon} name={item.name} className="size-4 text-xs" />
                                  {item.name}
                               </div>
                               {value === item.id && <CheckIcon size={16} className="ml-auto" />}

@@ -179,6 +179,7 @@ async function upsertProject(input: {
   organizationId: string;
   teamId: string;
   name: string;
+  icon?: string;
   previousName?: string;
   status?: string;
   health?: string;
@@ -191,7 +192,14 @@ async function upsertProject(input: {
     },
     select: { id: true },
   });
-  if (existing) return existing;
+  if (existing) {
+    if (input.icon === undefined) return existing;
+    return prisma.project.update({
+      where: { id: existing.id },
+      data: { icon: input.icon },
+      select: { id: true },
+    });
+  }
 
   if (input.previousName) {
     const previous = await prisma.project.findFirst({
@@ -205,7 +213,7 @@ async function upsertProject(input: {
     if (previous) {
       return prisma.project.update({
         where: { id: previous.id },
-        data: { name: input.name },
+        data: { name: input.name, ...(input.icon !== undefined ? { icon: input.icon } : {}) },
         select: { id: true },
       });
     }
@@ -216,6 +224,7 @@ async function upsertProject(input: {
       organizationId: input.organizationId,
       teamId: input.teamId,
       name: input.name,
+      icon: input.icon ?? '',
       status: input.status ?? DEFAULT_PROJECT_STATUS,
       health: input.health ?? DEFAULT_PROJECT_HEALTH,
     },
@@ -534,6 +543,7 @@ async function ensureTeamProjects(input: {
     organizationId: input.organizationId,
     teamId: input.teamId,
     name: first ?? input.teamName,
+    icon: '',
     previousName: input.teamName !== first ? input.teamName : undefined,
   });
   for (const name of rest) {
@@ -541,6 +551,7 @@ async function ensureTeamProjects(input: {
       organizationId: input.organizationId,
       teamId: input.teamId,
       name,
+      icon: '',
     });
   }
   return prisma.project.findMany({
@@ -968,6 +979,7 @@ async function main() {
     organizationId: acme.id,
     teamId: acmeTeams[0].id,
     name: SEED_PROJECT_NAME,
+    icon: '',
     previousName: 'Acme Launch',
   });
   await syncTeamIssues({

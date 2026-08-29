@@ -1,5 +1,6 @@
 'use client';
 
+import { ProjectIconPicker } from './project-icon-picker';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -53,6 +54,7 @@ export function CreateProjectButton({ defaultTeamKey }: { defaultTeamKey?: strin
   const createProject = useCreateProject();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
+  const [icon, setIcon] = useState('');
   const [teamKey, setTeamKey] = useState(defaultTeamKey ?? teamId ?? '');
   const [status, setStatus] = useState<string>(DEFAULT_PROJECT_STATUS);
   const [health, setHealth] = useState<string>(DEFAULT_PROJECT_HEALTH);
@@ -63,6 +65,7 @@ export function CreateProjectButton({ defaultTeamKey }: { defaultTeamKey?: strin
     setStatus(DEFAULT_PROJECT_STATUS);
     setHealth(DEFAULT_PROJECT_HEALTH);
     setName('');
+    setIcon('');
   }, [open, defaultTeamKey, teamId, teams]);
 
   const submit = async () => {
@@ -78,6 +81,7 @@ export function CreateProjectButton({ defaultTeamKey }: { defaultTeamKey?: strin
       const { project } = await createProject.mutateAsync({
         name: name.trim(),
         teamId: teamKey,
+        icon: icon || undefined,
         status,
         health,
       });
@@ -103,12 +107,16 @@ export function CreateProjectButton({ defaultTeamKey }: { defaultTeamKey?: strin
           <div className="flex flex-col gap-3 py-2">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="project-name">Name</Label>
-              <Input
-                id="project-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Project name"
-              />
+              <div className="flex items-center gap-2">
+                <ProjectIconPicker icon={icon} name={name || 'P'} onChange={setIcon} />
+                <Input
+                  id="project-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Project name"
+                  className="flex-1"
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label>Team</Label>

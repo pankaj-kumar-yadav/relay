@@ -1,5 +1,6 @@
 'use client';
 
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { IssueStatusCategory } from '@/constants/issue.constant';
 import { projectOverviewPath } from '@/constants/project.constant';
 import ProjectsTimeline from '@/components/common/projects/projects-timeline';
@@ -112,7 +113,11 @@ function ProjectsSection({ initiative }: { initiative: Initiative }) {
                      href={projectOverviewPath(orgId, project.id)}
                      className="flex items-center gap-2 py-2 text-sm hover:bg-sidebar/50 rounded-md px-1 -mx-1 transition-colors"
                   >
-                     <project.icon className="size-4 text-muted-foreground shrink-0" />
+                     <ProjectIcon
+                        icon={project.icon}
+                        name={project.name}
+                        className="size-4 text-xs"
+                     />
                      <span className="flex-1 truncate font-medium">{project.name}</span>
                      <span className="hidden sm:block w-16 shrink-0">
                         <span

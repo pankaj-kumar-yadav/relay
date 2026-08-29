@@ -1,5 +1,6 @@
 'use client';
 
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import {
    Command,
@@ -481,7 +482,11 @@ export function CommandPalette() {
                            close();
                         }}
                      >
-                        <project.icon className="text-muted-foreground" />
+                        <ProjectIcon
+                           icon={project.icon}
+                           name={project.name}
+                           className="size-4 text-xs text-muted-foreground"
+                        />
                         {project.name}
                         {issue.project?.id === project.id && <Check className="ml-auto size-4" />}
                      </CommandItem>

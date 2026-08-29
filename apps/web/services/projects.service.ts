@@ -4,6 +4,7 @@ import type { TeamSummary } from '@/services/teams.service';
 export type ApiProject = {
   id: string;
   name: string;
+  icon: string;
   status: string;
   health: string;
   startDate: string | null;
@@ -20,6 +21,7 @@ export type ProjectListQuery = {
 export type CreateProjectInput = {
   name: string;
   teamId: string;
+  icon?: string;
   status?: string;
   health?: string;
   startDate?: string | null;
@@ -29,6 +31,7 @@ export type CreateProjectInput = {
 export type PatchProjectInput = {
   name?: string;
   teamId?: string;
+  icon?: string;
   status?: string;
   health?: string;
   startDate?: string | null;

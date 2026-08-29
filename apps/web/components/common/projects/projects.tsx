@@ -4,6 +4,7 @@ import {
    IssueStatusCategory,
    type IssueStatusCategoryValue,
 } from '@/constants/issue.constant';
+import { TeamIcon } from '@/components/common/teams/team-icon';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Project } from '@/mock-data/projects';
@@ -15,7 +16,7 @@ import { useRightPanelStore } from '@/store/right-panel-store';
 import { BarChart3 } from 'lucide-react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { Filter } from '@/components/layout/headers/projects/filter';
 import ProjectsBoard from './projects-board';
 import { ProjectsDisplayOptions } from './projects-display-options';
@@ -26,7 +27,7 @@ import ProjectsTimeline from './projects-timeline';
 export interface ProjectGroup {
    id: string;
    name: string;
-   icon?: string;
+   icon?: ReactNode;
    projects: Project[];
 }
 
@@ -105,7 +106,7 @@ export default function Projects({ teamId }: { teamId?: string }) {
          .map((team) => ({
             id: team.key,
             name: team.name,
-            icon: team.key.slice(0, 1),
+            icon: <TeamIcon icon={team.icon} teamKey={team.key} className="size-5 text-xs" />,
             projects: displayed.filter((project) => project.teamId === team.key),
          }))
          .filter((group) => showEmptyGroups || group.projects.length > 0);

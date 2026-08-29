@@ -3,6 +3,7 @@
 import { formatIsoDayOrdinal } from '@/constants/date.constant';
 import { IssueStatusCategory } from '@/constants/issue.constant';
 import { projectOverviewPath } from '@/constants/project.constant';
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getProjectDetail } from '@/mock-data/project-details';
 import { getProjectById } from '@/mock-data/projects';
@@ -97,9 +98,7 @@ export function ProjectPeekPanel({ projectId, onClose }: ProjectPeekPanelProps) 
       <aside className="absolute top-10 right-2 bottom-2 w-[400px] max-w-[calc(100%-1rem)] z-40 flex flex-col gap-2 overflow-y-auto">
          {/* Header */}
          <Card className="flex items-center gap-2 py-3">
-            <span className="inline-flex size-6 bg-muted/50 items-center justify-center rounded shrink-0">
-               <project.icon className="size-3.5" />
-            </span>
+            <ProjectIcon icon={project.icon} name={project.name} />
             <Link
                href={projectOverviewPath(orgId, project.id)}
                className="flex-1 min-w-0 flex items-center gap-1.5 group"

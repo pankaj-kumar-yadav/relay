@@ -1,6 +1,7 @@
 'use client';
 
 import { ProjectTab, projectPath, projectsPath } from '@/constants/project.constant';
+import { ProjectEmojiButton } from '@/components/common/projects/project-icon-picker';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
@@ -88,9 +89,12 @@ export default function Header({ projectId }: { projectId: string }) {
                   </Link>
                   <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
                   {project && (
-                     <span className="inline-flex size-5 bg-muted/50 items-center justify-center rounded shrink-0">
-                        <project.icon className="size-3.5" />
-                     </span>
+                     <ProjectEmojiButton
+                        projectId={project.id}
+                        icon={project.icon}
+                        name={project.name}
+                        className="size-5 text-xs"
+                     />
                   )}
                   <span className="font-medium truncate">{project?.name ?? 'Project'}</span>
                   <Button variant="ghost" size="icon" className="size-6 text-muted-foreground">

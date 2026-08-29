@@ -1,5 +1,6 @@
 'use client';
 
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { applyIssueFilters } from '@/components/common/issues/issue-filter-columns';
 import { GroupedIssuesView } from '@/components/common/issues/grouped-issues-view';
 import { InsightsPanel } from '@/components/common/issues/insights-panel';
@@ -185,7 +186,13 @@ export default function MemberProfile({ member }: { member: User }) {
          .map((project) => ({
             key: project.id,
             label: project.name,
-            leading: <project.icon className="size-3.5 text-muted-foreground shrink-0" />,
+            leading: (
+               <ProjectIcon
+                  icon={project.icon}
+                  name={project.name}
+                  className="size-3.5 text-[10px]"
+               />
+            ),
             count: counts.get(project.id) ?? 0,
          }))
          .sort((a, b) => b.count - a.count);
@@ -291,7 +298,11 @@ export default function MemberProfile({ member }: { member: User }) {
                   <div className="flex flex-col items-end gap-1 min-w-0">
                      {memberProjects.slice(0, 4).map((project) => (
                         <span key={project.id} className="inline-flex items-center gap-1.5 text-xs min-w-0">
-                           <project.icon className="size-3.5 text-muted-foreground shrink-0" />
+                           <ProjectIcon
+                              icon={project.icon}
+                              name={project.name}
+                              className="size-3.5 text-[10px]"
+                           />
                            <span className="truncate max-w-44">{project.name}</span>
                         </span>
                      ))}

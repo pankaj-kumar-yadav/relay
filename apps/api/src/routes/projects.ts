@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
+  PROJECT_ICON_MAX,
   isProjectHealth,
   isProjectStatus,
 } from '@/constants/project.constant.js';
@@ -22,9 +23,12 @@ projectsRouter.use(requireAuth, requireOrgMember);
 
 export const optionalDateSchema = z.string().trim().min(1).optional().nullable();
 
+const projectIconSchema = z.string().trim().max(PROJECT_ICON_MAX);
+
 export const createProjectBodySchema = z.object({
   name: z.string().trim().min(1),
   teamId: z.string().trim().min(1),
+  icon: projectIconSchema.optional(),
   status: z.string().optional(),
   health: z.string().optional(),
   startDate: optionalDateSchema,
@@ -34,6 +38,7 @@ export const createProjectBodySchema = z.object({
 export const patchProjectBodySchema = z.object({
   name: z.string().trim().min(1).optional(),
   teamId: z.string().trim().min(1).optional(),
+  icon: projectIconSchema.optional(),
   status: z.string().optional(),
   health: z.string().optional(),
   startDate: optionalDateSchema,
@@ -98,7 +103,7 @@ projectsRouter.post('/', async (req, res) => {
     }
 
     const organizationId = req.org!.id;
-    const { name, teamId: teamIdRaw, status, health, startDate, targetDate } = parsed.data;
+    const { name, teamId: teamIdRaw, icon, status, health, startDate, targetDate } = parsed.data;
     assertStatusHealth(status, health);
 
     const team = await findTeam(organizationId, teamIdRaw);
@@ -111,6 +116,7 @@ projectsRouter.post('/', async (req, res) => {
         organizationId,
         teamId: team.id,
         name,
+        icon: icon ?? '',
         status: status ?? DEFAULT_PROJECT_STATUS,
         health: health ?? DEFAULT_PROJECT_HEALTH,
         startDate: parseOptionalDate(startDate) ?? null,
@@ -154,7 +160,7 @@ projectsRouter.patch('/:projectId', async (req, res) => {
       throw new NotFoundError('Project not found');
     }
 
-    const { name, teamId: teamIdRaw, status, health, startDate, targetDate } = parsed.data;
+    const { name, teamId: teamIdRaw, icon, status, health, startDate, targetDate } = parsed.data;
     assertStatusHealth(status, health);
 
     let teamId: string | undefined;
@@ -169,6 +175,7 @@ projectsRouter.patch('/:projectId', async (req, res) => {
       data: {
         ...(name !== undefined ? { name } : {}),
         ...(teamId ? { teamId } : {}),
+        ...(icon !== undefined ? { icon } : {}),
         ...(status !== undefined ? { status } : {}),
         ...(health !== undefined ? { health } : {}),
         ...(startDate !== undefined ? { startDate: parseOptionalDate(startDate) } : {}),

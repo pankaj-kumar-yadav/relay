@@ -1,5 +1,6 @@
 'use client';
 
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { IssueStatusCategory } from '@/constants/issue.constant';
 import {
    PanelFilterTarget,
@@ -215,12 +216,15 @@ export function CycleDetailsPanel({ cycle, issues }: CycleDetailsPanelProps) {
             (issue) => issue.project?.id,
             (key) => {
                const project = issues.find((i) => i.project?.id === key)?.project;
-               const Icon = project?.icon;
                return {
                   key: String(key),
                   label: project?.name ?? 'No project',
-                  leading: Icon ? (
-                     <Icon className="size-3.5 text-muted-foreground shrink-0" />
+                  leading: project ? (
+                     <ProjectIcon
+                        icon={project.icon}
+                        name={project.name}
+                        className="size-3.5 text-[10px]"
+                     />
                   ) : null,
                   filter: { columnId: 'project' as const, value: String(key) },
                };

@@ -5,6 +5,7 @@ import { IssueStatus } from './issue.js';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
+  PROJECT_ICON_MAX,
   isProjectHealth,
   isProjectStatus,
   ProjectHealth,
@@ -25,4 +26,8 @@ test('isProjectHealth accepts Circle health ids only', () => {
   assert.equal(isProjectHealth('on-track'), true);
   assert.equal(isProjectHealth('at-risk'), true);
   assert.equal(isProjectHealth('healthy'), false);
+});
+
+test('PROJECT_ICON_MAX is 32', () => {
+  assert.equal(PROJECT_ICON_MAX, 32);
 });

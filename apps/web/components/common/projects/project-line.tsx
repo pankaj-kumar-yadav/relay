@@ -8,6 +8,7 @@ import { useProjectsDisplayStore } from '@/store/projects-display-store';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
+import { ProjectEmojiButton } from './project-icon-picker';
 import { HealthPopover } from './health-popover';
 import { PrioritySelector } from './priority-selector';
 import { LeadSelector } from './lead-selector';
@@ -30,11 +31,7 @@ export default function ProjectLine({ project }: ProjectLineProps) {
    return (
       <div className="w-full flex items-center py-3 px-6 border-b hover:bg-sidebar/50 border-muted-foreground/5 text-sm">
          <div className="flex-1 min-w-0 flex items-center gap-2">
-            <div className="relative">
-               <div className="inline-flex size-6 bg-muted/50 items-center justify-center rounded shrink-0">
-                  <project.icon className="size-4" />
-               </div>
-            </div>
+            <ProjectEmojiButton projectId={project.id} icon={project.icon} name={project.name} />
             <div className="flex flex-col items-start overflow-hidden">
                <Link
                   href={projectOverviewPath(orgId, project.id)}

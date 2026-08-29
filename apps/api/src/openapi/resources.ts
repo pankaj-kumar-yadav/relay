@@ -56,6 +56,7 @@ export const publicCycleSchema = z.object({
 export const publicProjectSchema = z.object({
   id: z.string(),
   name: z.string(),
+  icon: z.string(),
   status: z.string(),
   health: z.string(),
   startDate: z.string().nullable(),
@@ -81,7 +82,7 @@ export const publicIssueSchema = z.object({
   priority: z.string(),
   rank: z.string(),
   projectId: z.string().nullable(),
-  project: z.object({ id: z.string(), name: z.string() }).nullable(),
+  project: z.object({ id: z.string(), name: z.string(), icon: z.string() }).nullable(),
   cycleId: z.string().nullable(),
   cycle: z
     .object({

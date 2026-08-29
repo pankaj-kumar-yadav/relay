@@ -6,6 +6,7 @@ import { CapacityRing } from '@/components/common/cycles/capacity-ring';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Project } from '@/mock-data/projects';
 import { useProjectsDisplayStore } from '@/store/projects-display-store';
+import { ProjectIcon } from './project-icon';
 import { Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -18,9 +19,7 @@ function ProjectCard({ project }: { project: Project }) {
    return (
       <div className="rounded-md border bg-container p-3 hover:bg-accent/30 transition-colors">
          <div className="flex items-start gap-2">
-            <span className="inline-flex size-6 bg-muted/50 items-center justify-center rounded shrink-0">
-               <project.icon className="size-4" />
-            </span>
+            <ProjectIcon icon={project.icon} name={project.name} />
             <Link
                href={projectOverviewPath(orgId, project.id)}
                className="text-sm font-medium leading-snug hover:underline underline-offset-2 min-w-0"

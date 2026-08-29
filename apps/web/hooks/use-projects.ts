@@ -75,6 +75,7 @@ export function usePatchProject() {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(orgSlug, vars.projectId),
       });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.issues.all(orgSlug) });
     },
   });
 }

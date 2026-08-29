@@ -1,6 +1,7 @@
 'use client';
 
 import { IssueStatusCategory } from '@/constants/issue.constant';
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createColumnConfigHelper } from '@/components/data-table-filter/core/filters';
 import type { ColumnOption, FiltersState } from '@/components/data-table-filter/core/types';
@@ -80,7 +81,7 @@ const labelOptions: ColumnOption[] = labels.map((label) => ({
 const projectOptions: ColumnOption[] = projects.map((project) => ({
    value: project.id,
    label: project.name,
-   icon: <project.icon className="size-4 text-muted-foreground" />,
+   icon: <ProjectIcon icon={project.icon} name={project.name} className="size-4 text-xs" />,
 }));
 
 const cycleOptions: ColumnOption[] = [

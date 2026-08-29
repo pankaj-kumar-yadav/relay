@@ -5,6 +5,7 @@ import { publicTeam } from '@/utils/teams.js';
 const projectSelect = {
   id: true,
   name: true,
+  icon: true,
   status: true,
   health: true,
   startDate: true,
@@ -17,6 +18,7 @@ const projectSelect = {
 export type ProjectRow = {
   id: string;
   name: string;
+  icon: string;
   status: string;
   health: string;
   startDate: Date | null;
@@ -30,6 +32,7 @@ export function publicProject(project: ProjectRow) {
   return {
     id: project.id,
     name: project.name,
+    icon: project.icon,
     status: project.status,
     health: project.health,
     startDate: project.startDate?.toISOString() ?? null,

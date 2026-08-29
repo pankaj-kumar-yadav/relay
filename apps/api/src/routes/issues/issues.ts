@@ -56,7 +56,7 @@ const issueSelect = {
   createdAt: true,
   updatedAt: true,
   team: { select: { id: true, key: true, name: true, icon: true } },
-  project: { select: { id: true, name: true, teamId: true } },
+  project: { select: { id: true, name: true, icon: true, teamId: true } },
   cycle: { select: { id: true, name: true, status: true, teamId: true } },
   assignee: { select: { id: true, name: true, email: true } },
   issueLabels: {
@@ -79,7 +79,7 @@ function publicIssue(issue: IssueRow) {
     rank: issue.rank,
     projectId: issue.projectId,
     project: issue.project
-      ? { id: issue.project.id, name: issue.project.name }
+      ? { id: issue.project.id, name: issue.project.name, icon: issue.project.icon }
       : null,
     cycleId: issue.cycleId,
     cycle: issue.cycle

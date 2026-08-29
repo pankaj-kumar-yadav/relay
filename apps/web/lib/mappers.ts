@@ -13,7 +13,6 @@ import { User, users } from '@/mock-data/users';
 import type { ApiAssignee, ApiIssue } from '@/services/issues.service';
 import type { OrgMember } from '@/services/members.service';
 import type { ApiProject } from '@/services/projects.service';
-import { Folder } from 'lucide-react';
 
 export function mapMemberToUser(member: OrgMember): User {
   return {
@@ -51,7 +50,7 @@ export function mapApiProject(project: ApiProject): Project {
     status:
       status.find((item) => item.id === project.status) ??
       status.find((item) => item.id === DEFAULT_PROJECT_STATUS)!,
-    icon: Folder,
+    icon: project.icon,
     percentComplete: 0,
     startDate: project.startDate ?? project.createdAt,
     targetDate: project.targetDate ?? undefined,
@@ -85,6 +84,7 @@ export function mapApiIssue(issue: ApiIssue): Issue {
       ? mapApiProject({
           id: issue.project.id,
           name: issue.project.name,
+          icon: issue.project.icon,
           status: DEFAULT_PROJECT_STATUS,
           health: DEFAULT_PROJECT_HEALTH,
           startDate: null,

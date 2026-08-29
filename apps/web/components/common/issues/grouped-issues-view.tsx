@@ -1,6 +1,7 @@
 'use client';
 
 import { IssueStatusCategory } from '@/constants/issue.constant';
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Issue, sortIssuesByPriority } from '@/mock-data/issues';
@@ -196,13 +197,20 @@ export const GroupedIssuesView: FC<GroupedIssuesViewProps> = ({
                   .sort((a, b) => b[1].length - a[1].length)
                   .map(([key, totalGroup]) => {
                      const project = totalGroup[0].project;
-                     const Icon = project?.icon ?? Box;
                      return {
                         group: {
                            id: key,
                            name: project?.name ?? 'No project',
                            color: '#8f9299',
-                           icon: <Icon className="size-4 text-muted-foreground" />,
+                           icon: project ? (
+                              <ProjectIcon
+                                 icon={project.icon}
+                                 name={project.name}
+                                 className="size-4 text-xs"
+                              />
+                           ) : (
+                              <Box className="size-4 text-muted-foreground" />
+                           ),
                         },
                         issues: visible.get(key) ?? [],
                         total: totalGroup.length,

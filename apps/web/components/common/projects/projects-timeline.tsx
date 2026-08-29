@@ -7,6 +7,7 @@ import {
    toIsoDate,
    toIsoMonth,
 } from '@/constants/date.constant';
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { CapacityRing } from '@/components/common/cycles/capacity-ring';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -473,9 +474,11 @@ export default function ProjectsTimeline({ groups }: ProjectsTimelineProps) {
                                  />
                                  {showProjectList && (
                                     <div className="sticky left-0 z-10 flex items-center gap-1.5 w-56 shrink-0 px-4 h-9 bg-container/95 backdrop-blur-sm text-xs border-r border-border/40">
-                                       <span className="inline-flex size-5 bg-muted/50 items-center justify-center rounded shrink-0">
-                                          <project.icon className="size-3" />
-                                       </span>
+                                       <ProjectIcon
+                                          icon={project.icon}
+                                          name={project.name}
+                                          className="size-5 text-xs"
+                                       />
                                        <span className="truncate flex-1">{project.name}</span>
                                        {displayProperties.health && (
                                           <span

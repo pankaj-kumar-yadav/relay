@@ -15,6 +15,7 @@ export type ProjectHealthValue = (typeof ProjectHealth)[keyof typeof ProjectHeal
 
 export const DEFAULT_PROJECT_STATUS = IssueStatus.TO_DO;
 export const DEFAULT_PROJECT_HEALTH = ProjectHealth.NO_UPDATE;
+export const PROJECT_ICON_MAX = 32;
 
 const PROJECT_HEALTH_VALUES = new Set<string>(Object.values(ProjectHealth));
 

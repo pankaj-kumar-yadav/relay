@@ -1,6 +1,7 @@
 'use client';
 
 import { projectsPath } from '@/constants/project.constant';
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { Badge } from '@/components/ui/badge';
 import { Project } from '@/mock-data/projects';
 import Link from 'next/link';
@@ -13,7 +14,7 @@ export function ProjectBadge({ project }: { project: Project }) {
          variant="outline"
          className="gap-1.5 rounded-full text-muted-foreground bg-background"
       >
-         <project.icon size={16} />
+         <ProjectIcon icon={project.icon} name={project.name} className="size-4 text-xs" />
          {project.name}
       </Badge>
    );

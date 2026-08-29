@@ -127,6 +127,7 @@ model Project {
   organizationId String       @map("organization_id") @db.Uuid
   teamId         String       @map("team_id") @db.Uuid
   name           String
+  icon           String       @default("")
   status         String
   health         String
   startDate      DateTime?    @map("start_date")

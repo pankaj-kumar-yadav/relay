@@ -20,7 +20,7 @@ export type ApiIssue = {
   priority: IssuePriorityValue;
   rank: string;
   projectId: string | null;
-  project: { id: string; name: string } | null;
+  project: { id: string; name: string; icon: string } | null;
   team: { id: string; key: string; name: string; icon: string };
   assignee: ApiAssignee;
   labels: { id: string; name: string; color: string }[];

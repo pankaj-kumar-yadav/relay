@@ -4,6 +4,7 @@ import { DateFormat, formatDate } from '@/constants/date.constant';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CircleCheck, CircleX, AlertCircle, HelpCircle, Bell } from 'lucide-react';
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { Project } from '@/mock-data/projects';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -50,9 +51,11 @@ export function HealthPopover({ project }: HealthPopoverProps) {
          >
             <div className="flex items-center justify-between border-b p-3">
                <div className="flex items-center gap-2">
-                  {project.icon && (
-                     <project.icon className="size-4 shrink-0 text-muted-foreground" />
-                  )}
+                  <ProjectIcon
+                     icon={project.icon}
+                     name={project.name}
+                     className="size-4 text-xs"
+                  />
                   <h4 className="font-medium text-sm">{project.name}</h4>
                </div>
                <div className="flex items-center gap-2">

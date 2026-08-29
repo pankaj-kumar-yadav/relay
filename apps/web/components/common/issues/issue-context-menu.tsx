@@ -1,5 +1,6 @@
 'use client';
 
+import { ProjectIcon } from '@/components/common/projects/project-icon';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
    ContextMenuContent,
@@ -249,7 +250,8 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
                         key={project.id}
                         onClick={() => handleProjectChange(project.id)}
                      >
-                        <project.icon className="size-4" /> {project.name}
+                        <ProjectIcon icon={project.icon} name={project.name} className="size-4 text-xs" />{' '}
+                        {project.name}
                      </ContextMenuItem>
                   ))}
                </ContextMenuSubContent>
