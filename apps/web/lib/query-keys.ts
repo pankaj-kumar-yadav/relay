@@ -9,6 +9,12 @@ export const queryKeys = {
   labels: (orgSlug: string) => ['labels', orgSlug] as const,
   inbox: (orgSlug: string) => ['inbox', orgSlug] as const,
   cycles: (orgSlug: string, teamId: string) => ['cycles', orgSlug, teamId] as const,
+  views: {
+    all: (orgSlug: string) => ['views', orgSlug] as const,
+    list: (orgSlug: string) => ['views', orgSlug, 'list'] as const,
+    detail: (orgSlug: string, viewSlug: string) =>
+      ['views', orgSlug, 'detail', viewSlug] as const,
+  },
   projects: {
     all: (orgSlug: string) => ['projects', orgSlug] as const,
     list: (orgSlug: string, teamId?: string) =>

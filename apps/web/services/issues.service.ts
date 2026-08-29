@@ -39,6 +39,7 @@ export type IssueListQuery = {
   q?: string;
   statusCategory?: string;
   cycleId?: string;
+  labelId?: string;
   cursor?: string;
   limit?: number;
 };

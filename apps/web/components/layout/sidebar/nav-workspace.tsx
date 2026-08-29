@@ -3,9 +3,11 @@
 import { OrgPath, orgPath } from '@/constants/org.constant';
 import { ProjectPath } from '@/constants/project.constant';
 import { TeamPath } from '@/constants/team.constant';
+import { ViewPath } from '@/constants/view.constant';
 import {
+   Box,
    ContactRound,
-   FolderKanban,
+   Layers,
    LayoutList,
    LucideIcon,
    MoreHorizontal,
@@ -47,7 +49,8 @@ interface WorkspaceNavItem {
 
 const WORKSPACE_NAV: WorkspaceNavItem[] = [
    { key: 'teams', name: 'Teams', icon: ContactRound, url: TeamPath.LIST },
-   { key: 'projects', name: 'Projects', icon: FolderKanban, url: ProjectPath.LIST },
+   { key: 'projects', name: 'Projects', icon: Box, url: ProjectPath.LIST },
+   { key: 'views', name: 'Views', icon: Layers, url: ViewPath.LIST },
    { key: 'members', name: 'Members', icon: UserRound, url: OrgPath.MEMBERS },
 ];
 

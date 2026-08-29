@@ -1,9 +1,16 @@
 'use client';
 
-import { teamCyclesPath, teamHomePath, teamOverviewPath } from '@/constants/team.constant';
+import {
+   CycleViewPath,
+   teamCycleViewPath,
+   teamCyclesPath,
+   teamHomePath,
+   teamOverviewPath,
+   teamViewsPath,
+} from '@/constants/team.constant';
 import { CyclePlayIcon } from '@/components/common/cycles/cycle-line';
 import { TeamEmojiButton } from '@/components/common/teams/team-icon-picker';
-import { ChevronRight, CopyMinus, Home, MoreHorizontal } from 'lucide-react';
+import { ChevronRight, CopyMinus, Home, Layers, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -100,6 +107,42 @@ export function NavTeams() {
                                  <Link href={teamCyclesPath(orgId, item.key)}>
                                     <CyclePlayIcon className="size-3.5" />
                                     <span>Cycles</span>
+                                 </Link>
+                              </SidebarMenuSubButton>
+                              <SidebarMenuSub className="mr-0 pr-0">
+                                 <SidebarMenuSubItem>
+                                    <SidebarMenuSubButton asChild>
+                                       <Link
+                                          href={teamCycleViewPath(
+                                             orgId,
+                                             item.key,
+                                             CycleViewPath.ACTIVE,
+                                          )}
+                                       >
+                                          <span>Current</span>
+                                       </Link>
+                                    </SidebarMenuSubButton>
+                                 </SidebarMenuSubItem>
+                                 <SidebarMenuSubItem>
+                                    <SidebarMenuSubButton asChild>
+                                       <Link
+                                          href={teamCycleViewPath(
+                                             orgId,
+                                             item.key,
+                                             CycleViewPath.UPCOMING,
+                                          )}
+                                       >
+                                          <span>Upcoming</span>
+                                       </Link>
+                                    </SidebarMenuSubButton>
+                                 </SidebarMenuSubItem>
+                              </SidebarMenuSub>
+                           </SidebarMenuSubItem>
+                           <SidebarMenuSubItem>
+                              <SidebarMenuSubButton asChild>
+                                 <Link href={teamViewsPath(orgId, item.key)}>
+                                    <Layers size={14} />
+                                    <span>Views</span>
                                  </Link>
                               </SidebarMenuSubButton>
                            </SidebarMenuSubItem>

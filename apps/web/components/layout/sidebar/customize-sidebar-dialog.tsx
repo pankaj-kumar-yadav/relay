@@ -18,12 +18,14 @@ import {
 } from '@/store/sidebar-prefs-store';
 import {
    Bot,
+   Box,
    Check,
    ChevronDown,
    ContactRound,
    FolderKanban,
    GripVertical,
    Inbox,
+   Layers,
    LucideIcon,
    UserRound,
 } from 'lucide-react';
@@ -54,7 +56,8 @@ export const deprecatedAgentSidebarItem: ItemConfig = {
 
 export const WORKSPACE_ITEMS: ItemConfig[] = [
    { key: 'teams', label: 'Teams', icon: ContactRound },
-   { key: 'projects', label: 'Projects', icon: FolderKanban },
+   { key: 'projects', label: 'Projects', icon: Box },
+   { key: 'views', label: 'Views', icon: Layers },
    { key: 'members', label: 'Members', icon: UserRound },
 ];
 

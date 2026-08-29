@@ -212,6 +212,26 @@ issuesRouter.get('/', async (req, res) => {
       }
       where.cycleId = cycle.id;
     }
+    const labelIdRaw = typeof req.query.labelId === 'string' ? req.query.labelId : undefined;
+    if (labelIdRaw) {
+      if (!UUID_RE.test(labelIdRaw)) {
+        sendSuccess(res, {
+          data: { issues: [], nextCursor: null },
+        });
+        return;
+      }
+      const label = await prisma.label.findFirst({
+        where: { id: labelIdRaw, organizationId },
+        select: { id: true },
+      });
+      if (!label) {
+        sendSuccess(res, {
+          data: { issues: [], nextCursor: null },
+        });
+        return;
+      }
+      where.issueLabels = { some: { labelId: label.id } };
+    }
     if (q) {
       where.OR = [
         { title: { contains: q, mode: 'insensitive' } },

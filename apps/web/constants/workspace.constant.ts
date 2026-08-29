@@ -27,7 +27,3 @@ export function initiativePath(orgSlug: string, initiativeId: string): string {
 export function initiativesPath(orgSlug: string): string {
   return orgPath(orgSlug, WorkspacePath.INITIATIVES);
 }
-
-export function viewPath(orgSlug: string, viewId: string): string {
-  return orgPath(orgSlug, `/view/${viewId}`);
-}

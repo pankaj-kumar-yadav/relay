@@ -130,3 +130,26 @@ export const publicNotificationSchema = z.object({
     status: z.string(),
   }),
 });
+
+export const publicViewFiltersSchema = z.object({
+  teamId: z.string().optional(),
+  status: z.string().optional(),
+  priority: z.string().optional(),
+  assigneeId: z.string().optional(),
+  projectId: z.string().optional(),
+  q: z.string().optional(),
+  statusCategory: z.string().optional(),
+  cycleId: z.string().optional(),
+  labelId: z.string().optional(),
+});
+
+export const publicViewSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  name: z.string(),
+  filters: publicViewFiltersSchema,
+  ownerId: z.string(),
+  owner: publicActorSchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});

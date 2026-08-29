@@ -42,4 +42,5 @@ export const listIssuesQuerySchema = z.object({
   assigneeId: z.string().optional(),
   statusCategory: z.string().optional(),
   cycleId: z.string().optional(),
+  labelId: z.string().optional(),
 });

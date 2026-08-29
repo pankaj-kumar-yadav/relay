@@ -1,6 +1,6 @@
 # Step 15 — Settings chrome
 
-**Status:** Planned
+**Status:** Current
 
 ## Goal
 

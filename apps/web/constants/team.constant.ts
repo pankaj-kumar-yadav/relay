@@ -18,6 +18,7 @@ export const TeamTab = {
   BACKLOG: 'backlog',
   MEMBERS: 'members',
   CYCLES: 'cycles',
+  VIEWS: 'views',
 } as const;
 
 export type TeamTabValue = (typeof TeamTab)[keyof typeof TeamTab];
@@ -55,6 +56,10 @@ export function teamMembersPath(orgSlug: string, teamKey: string): string {
 
 export function teamCyclesPath(orgSlug: string, teamKey: string): string {
   return teamPath(orgSlug, teamKey, TeamTab.CYCLES);
+}
+
+export function teamViewsPath(orgSlug: string, teamKey: string): string {
+  return teamPath(orgSlug, teamKey, TeamTab.VIEWS);
 }
 
 export function teamCycleViewPath(

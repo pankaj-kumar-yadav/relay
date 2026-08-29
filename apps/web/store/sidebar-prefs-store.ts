@@ -36,7 +36,7 @@ const DEFAULT_VISIBILITY: Record<SidebarItemKey, SidebarVisibility> = {
    'agent': 'never',
    'initiatives': 'never',
    'projects': 'always',
-   'views': 'never',
+   'views': 'always',
    'teams': 'always',
    'members': 'always',
 };
@@ -48,7 +48,7 @@ const DEFAULT_VISIBILITY: Record<SidebarItemKey, SidebarVisibility> = {
  */
 const DEFAULT_ORDER: Record<SidebarSection, SidebarItemKey[]> = {
    personal: ['inbox', 'my-issues'],
-   workspace: ['teams', 'projects', 'members'],
+   workspace: ['teams', 'projects', 'views', 'members'],
 };
 
 export const useSidebarPrefsStore = create<SidebarPrefsState>()(
@@ -71,7 +71,7 @@ export const useSidebarPrefsStore = create<SidebarPrefsState>()(
       }),
       {
          name: 'sidebar-prefs',
-         version: 2,
+         version: 3,
          migrate: (persisted, version) => {
             const state = persisted as SidebarPrefsState;
             let next = state;
@@ -88,6 +88,21 @@ export const useSidebarPrefsStore = create<SidebarPrefsState>()(
                   order: {
                      ...next.order,
                      personal: resolveOrder(next.order?.personal, ['inbox', 'my-issues']),
+                  },
+               };
+            }
+            if (version < 3) {
+               next = {
+                  ...next,
+                  visibility: { ...next.visibility, views: 'always' },
+                  order: {
+                     ...next.order,
+                     workspace: resolveOrder(next.order?.workspace, [
+                        'teams',
+                        'projects',
+                        'views',
+                        'members',
+                     ]),
                   },
                };
             }

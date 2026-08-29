@@ -30,6 +30,8 @@ const DOCUMENTED_PATHS = [
   '/orgs/{orgId}/members',
   '/orgs/{orgId}/labels',
   '/orgs/{orgId}/labels/{labelId}',
+  '/orgs/{orgId}/views',
+  '/orgs/{orgId}/views/{viewId}',
   '/orgs/{orgId}/notifications',
   '/orgs/{orgId}/notifications/read-all',
   '/orgs/{orgId}/notifications/{notificationId}/read',

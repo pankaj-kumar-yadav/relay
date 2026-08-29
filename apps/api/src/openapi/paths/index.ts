@@ -9,3 +9,4 @@ import '@/openapi/paths/labels.js';
 import '@/openapi/paths/orgs.js';
 import '@/openapi/paths/projects.js';
 import '@/openapi/paths/teams.js';
+import '@/openapi/paths/views.js';

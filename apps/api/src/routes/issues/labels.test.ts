@@ -189,6 +189,27 @@ test(
         labelEvents[1]?.payload?.removed?.map((item) => item.name),
         ['Bug'],
       );
+
+      const labeledList = await fetch(
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues?labelId=${feature.data!.label.id}`,
+        { headers: { cookie: userA.cookies } },
+      );
+      const labeled = (await labeledList.json()) as Envelope<{
+        issues: Array<{ id: string }>;
+      }>;
+      assert.equal(labeledList.status, HttpStatus.OK, JSON.stringify(labeled));
+      assert.equal(labeled.data!.issues.length, 1);
+      assert.equal(labeled.data!.issues[0]?.id, issueId);
+
+      const unknownLabel = await fetch(
+        `${origin}${API_PREFIX}/orgs/${slugA}/issues?labelId=${crypto.randomUUID()}`,
+        { headers: { cookie: userA.cookies } },
+      );
+      const unknownBody = (await unknownLabel.json()) as Envelope<{
+        issues: Array<{ id: string }>;
+      }>;
+      assert.equal(unknownLabel.status, HttpStatus.OK);
+      assert.equal(unknownBody.data!.issues.length, 0);
     } finally {
       await prisma.organization.deleteMany({ where: { slug: { in: [slugA, slugB] } } });
       await prisma.user.deleteMany({

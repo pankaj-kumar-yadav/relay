@@ -10,6 +10,7 @@ import {
   IssuePriority,
   IssueStatus,
   IssueStatusCategory,
+  type IssueStatusValue,
 } from '../src/constants/issue.js';
 import { IssueEventType } from '../src/constants/activity.constant.js';
 import { CycleStatus } from '../src/constants/cycle.constant.js';
@@ -29,6 +30,7 @@ import {
 } from '../src/constants/seed.constant.js';
 import { rankBetween } from '../src/utils/issue/issueRank.js';
 import { hashPassword } from '../src/utils/passwords.js';
+import { allocateViewSlug, slugifyViewName } from '../src/utils/view/viewSlug.js';
 
 const prisma = new PrismaClient();
 
@@ -797,6 +799,148 @@ async function ensureAcmeActivity(input: {
   });
 }
 
+async function ensureSeedViewLabels(organizationId: string) {
+  const labels = await prisma.label.findMany({
+    where: {
+      organizationId,
+      name: { in: ['Bug', 'Feature', 'Security', 'UI Enhancement'] },
+    },
+    select: { id: true, name: true },
+  });
+  const labelId = Object.fromEntries(labels.map((label) => [label.name, label.id]));
+  const issues = await prisma.issue.findMany({
+    where: { organizationId },
+    orderBy: { number: 'asc' },
+    select: { id: true, status: true },
+  });
+  const existing = await prisma.issueLabel.findMany({
+    where: { organizationId },
+    select: { issueId: true, labelId: true },
+  });
+  const tagged = new Set(existing.map((row) => `${row.issueId}:${row.labelId}`));
+
+  const pick = (name: string, match: (status: string) => boolean, limit: number) => {
+    const id = labelId[name];
+    if (!id) return [];
+    return issues
+      .filter((issue) => match(issue.status))
+      .slice(0, limit)
+      .filter((issue) => !tagged.has(`${issue.id}:${id}`))
+      .map((issue) => ({
+        organizationId,
+        issueId: issue.id,
+        labelId: id,
+      }));
+  };
+
+  const rows = [
+    ...pick(
+      'Bug',
+      (status) =>
+        ISSUE_STATUS_CATEGORY[status as IssueStatusValue] === IssueStatusCategory.STARTED,
+      3,
+    ),
+    ...pick('Feature', (status) => status === IssueStatus.TO_DO, 3),
+    ...pick('Security', (status) => status === IssueStatus.TRIAGE, 2),
+    ...pick(
+      'UI Enhancement',
+      (status) =>
+        ISSUE_STATUS_CATEGORY[status as IssueStatusValue] === IssueStatusCategory.BACKLOG,
+      2,
+    ),
+  ];
+  if (rows.length === 0) return;
+  await prisma.issueLabel.createMany({ data: rows });
+}
+
+async function ensureOrgViews(input: {
+  organizationId: string;
+  ownerId: string;
+  teams: Array<{ id: string; key: string }>;
+}) {
+  const existing = await prisma.view.findMany({
+    where: { organizationId: input.organizationId },
+    select: { name: true, slug: true },
+  });
+  const names = new Set(existing.map((view) => view.name));
+  const takenSlugs = new Set(existing.map((view) => view.slug));
+  const labels = await prisma.label.findMany({
+    where: {
+      organizationId: input.organizationId,
+      name: { in: ['Bug', 'Feature', 'Security'] },
+    },
+    select: { id: true, name: true },
+  });
+  const labelId = Object.fromEntries(labels.map((label) => [label.name, label.id]));
+  const firstTeam = input.teams[0];
+  const project = firstTeam
+    ? await prisma.project.findFirst({
+        where: { organizationId: input.organizationId, teamId: firstTeam.id },
+        orderBy: { createdAt: 'asc' },
+        select: { id: true, name: true },
+      })
+    : null;
+  const activeCycle = firstTeam
+    ? await prisma.cycle.findFirst({
+        where: { teamId: firstTeam.id, status: CycleStatus.ACTIVE },
+        select: { id: true },
+      })
+    : null;
+
+  const wanted: Array<{ name: string; filters: Record<string, string> }> = [
+    { name: 'All issues', filters: {} },
+    {
+      name: 'Completed issues',
+      filters: { statusCategory: IssueStatusCategory.COMPLETED },
+    },
+    { name: 'In progress', filters: { status: IssueStatus.IN_PROGRESS } },
+    { name: 'Technical review', filters: { status: IssueStatus.TECHNICAL_REVIEW } },
+    { name: 'Ready for next sprint', filters: { status: IssueStatus.TO_DO } },
+    { name: 'Triage', filters: { statusCategory: IssueStatusCategory.TRIAGE } },
+    { name: 'Backlog', filters: { statusCategory: IssueStatusCategory.BACKLOG } },
+    { name: 'Urgent', filters: { priority: IssuePriority.URGENT } },
+    { name: 'High priority', filters: { priority: IssuePriority.HIGH } },
+    ...input.teams.map((team) => ({
+      name: `${team.key} issues`,
+      filters: { teamId: team.id },
+    })),
+  ];
+  if (labelId.Bug) {
+    wanted.push({
+      name: 'Active bugs',
+      filters: { labelId: labelId.Bug, statusCategory: IssueStatusCategory.STARTED },
+    });
+  }
+  if (labelId.Feature) {
+    wanted.push({ name: 'Feature requests', filters: { labelId: labelId.Feature } });
+  }
+  if (labelId.Security) {
+    wanted.push({ name: 'Security review queue', filters: { labelId: labelId.Security } });
+  }
+  if (activeCycle) {
+    wanted.push({ name: 'Active cycle', filters: { cycleId: activeCycle.id } });
+  }
+  if (project) {
+    wanted.push({ name: project.name, filters: { projectId: project.id } });
+  }
+
+  const missing = wanted.filter((view) => !names.has(view.name));
+  if (missing.length === 0) return;
+  await prisma.view.createMany({
+    data: missing.map((view) => {
+      const slug = allocateViewSlug(slugifyViewName(view.name), takenSlugs);
+      takenSlugs.add(slug);
+      return {
+        organizationId: input.organizationId,
+        ownerId: input.ownerId,
+        name: view.name,
+        slug,
+        filters: view.filters,
+      };
+    }),
+  });
+}
+
 async function main() {
   const passwordHash = await hashPassword(SEED_PASSWORD);
 
@@ -844,6 +988,12 @@ async function main() {
     teams: acmeTeams,
     assigneeId: owner.id,
   });
+  await ensureSeedViewLabels(acme.id);
+  await ensureOrgViews({
+    organizationId: acme.id,
+    ownerId: owner.id,
+    teams: acmeTeams,
+  });
 
   const techap = await upsertOrg({
     name: 'Techap Solutions',
@@ -889,6 +1039,14 @@ async function main() {
     teams: techapTeams,
     assigneeId: (techapAdmin ?? techapEmployees[0])!.id,
   });
+  await ensureSeedViewLabels(techap.id);
+  if (techapAdmin) {
+    await ensureOrgViews({
+      organizationId: techap.id,
+      ownerId: techapAdmin.id,
+      teams: techapTeams,
+    });
+  }
 
   const stratxg = await upsertOrg({ name: 'StratXG', slug: SeedOrgSlug.STRATXG });
   const stratxgMembers = await seedMembers(stratxg.id, STRATXG_MEMBERS, passwordHash);
@@ -926,6 +1084,14 @@ async function main() {
     teams: stratxgTeams,
     assigneeId: (stratxgAdmin ?? stratxgEmployees[0])!.id,
   });
+  await ensureSeedViewLabels(stratxg.id);
+  if (stratxgAdmin) {
+    await ensureOrgViews({
+      organizationId: stratxg.id,
+      ownerId: stratxgAdmin.id,
+      teams: stratxgTeams,
+    });
+  }
 
   console.log(`Password for all seed users: ${SEED_PASSWORD}`);
   console.log(
