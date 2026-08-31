@@ -1,15 +1,39 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { users } from '@/mock-data/users';
-import { Pencil } from 'lucide-react';
+import { dicebearAvatarUrl } from '@/constants/user.constant';
+import { usePatchMe, useSession } from '@/hooks/use-session';
+import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
 import { SettingsCard, SettingsRow, SettingsSection, SettingsShell } from './shared';
 
 /** Personal "Profile" settings. */
 export default function Profile() {
-   const me = users[0];
+   const { data: me } = useSession();
+   const patchMe = usePatchMe();
+   const [name, setName] = useState('');
+
+   useEffect(() => {
+      if (me?.name) setName(me.name);
+   }, [me?.name]);
+
+   async function persistName() {
+      if (!me) return;
+      const next = name.trim();
+      if (!next) {
+         setName(me.name);
+         return;
+      }
+      if (next === me.name) return;
+      try {
+         await patchMe.mutateAsync({ name: next });
+         toast.success('Name updated');
+      } catch {
+         setName(me.name);
+         toast.error('Could not update name');
+      }
+   }
 
    return (
       <SettingsShell title="Profile">
@@ -19,51 +43,43 @@ export default function Profile() {
                   title="Profile picture"
                   trailing={
                      <Avatar className="size-9">
-                        <AvatarImage src={me.avatarUrl} alt={me.name} />
-                        <AvatarFallback>{me.name[0]}</AvatarFallback>
+                        <AvatarImage
+                           src={me ? dicebearAvatarUrl(me.id) : undefined}
+                           alt={me?.name ?? 'Profile'}
+                        />
+                        <AvatarFallback>{me?.name?.[0] ?? '?'}</AvatarFallback>
                      </Avatar>
                   }
                />
                <SettingsRow
                   title="Email"
                   trailing={
-                     <span className="inline-flex items-center gap-2 text-foreground">
-                        {me.email}
-                        <Button size="icon" variant="ghost" className="size-6">
-                           <Pencil className="size-3" />
-                        </Button>
-                     </span>
+                     <span className="text-foreground">{me?.email ?? ''}</span>
                   }
                />
+               {/* Email pencil — out of v1; restore later */}
                <SettingsRow
                   title="Full name"
-                  trailing={<Input defaultValue="LN" className="h-8 w-44" />}
+                  trailing={
+                     <Input
+                        value={name}
+                        onChange={(event) => setName(event.target.value)}
+                        onBlur={() => {
+                           void persistName();
+                        }}
+                        onKeyDown={(event) => {
+                           if (event.key === 'Enter') event.currentTarget.blur();
+                        }}
+                        className="h-8 w-44"
+                        disabled={!me || patchMe.isPending}
+                     />
+                  }
                />
-               <SettingsRow
-                  title="Title"
-                  description="Your job title or role"
-                  trailing={<Input placeholder="Software engineer" className="h-8 w-44" />}
-               />
-               <SettingsRow
-                  title="Username"
-                  description="One word, like a nickname or first name"
-                  trailing={<Input defaultValue="ln" className="h-8 w-44" />}
-               />
+               {/* Title / username — out of v1; restore later */}
             </SettingsCard>
          </SettingsSection>
 
-         <SettingsSection title="Workspace access">
-            <SettingsCard>
-               <SettingsRow
-                  title="Remove yourself from workspace"
-                  trailing={
-                     <Button size="xs" variant="ghost" className="text-red-500 hover:text-red-500">
-                        Leave workspace
-                     </Button>
-                  }
-               />
-            </SettingsCard>
-         </SettingsSection>
+         {/* Leave workspace — out of v1; restore later */}
       </SettingsShell>
    );
 }

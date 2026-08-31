@@ -11,21 +11,21 @@ import {
    SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { settingsNewTeamPath, settingsTeamPath } from '@/constants/org.constant';
-import { teams } from '@/mock-data/teams';
 import { Button } from '@/components/ui/button';
+import { useTeams } from '@/hooks/use-teams';
 import { useParams } from 'next/navigation';
 
 export function NavTeamsSettings() {
    const { orgId } = useParams<{ orgId: string }>();
-   const joinedTeams = teams.filter((t) => t.joined);
+   const { data: teams = [] } = useTeams(orgId);
    return (
       <SidebarGroup>
          <SidebarGroupLabel>Your teams</SidebarGroupLabel>
          <SidebarMenu>
-            {joinedTeams.map((team) => (
+            {teams.map((team) => (
                <SidebarMenuItem key={team.id}>
                   <SidebarMenuButton asChild>
-                     <Link href={settingsTeamPath(orgId, team.id)}>
+                     <Link href={settingsTeamPath(orgId, team.key)}>
                         <div className="inline-flex size-6 bg-muted/50 items-center justify-center rounded shrink-0">
                            <div className="text-sm">{team.icon}</div>
                         </div>

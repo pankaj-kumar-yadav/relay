@@ -1,36 +1,50 @@
 'use client';
 
-import { useMembers } from '@/hooks/use-members';
+import { OrgRole } from '@/constants/org.constant';
+import { useDeleteMember, useMembers, usePatchMember } from '@/hooks/use-members';
+import { useOrgs } from '@/hooks/use-orgs';
 import MemberLine from './member-line';
 import { mapMemberToUser } from '@/lib/mappers';
 import { useMembersFilterStore } from '@/store/members-filter-store';
 import { ArrowDown } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
+import { toast } from 'sonner';
 
 export default function Members() {
    const { orgId } = useParams<{ orgId: string }>();
    const { data: members = [] } = useMembers(orgId);
+   const { data: orgs } = useOrgs();
+   const patchMember = usePatchMember();
+   const deleteMember = useDeleteMember();
    const { filters, sort } = useMembersFilterStore();
 
+   const isAdmin = orgs?.some(
+      (org) => org.slug === orgId && org.role === OrgRole.ADMIN,
+   ) ?? false;
+   const adminCount = members.filter((member) => member.role === OrgRole.ADMIN).length;
+
    const displayed = useMemo(() => {
-      let list = members.map(mapMemberToUser);
+      let list = members.map((member) => ({
+         member,
+         user: mapMemberToUser(member),
+      }));
 
       if (filters.role.length > 0) {
          const roles = new Set(filters.role);
-         list = list.filter((u) => roles.has(u.role));
+         list = list.filter((row) => roles.has(row.user.role));
       }
 
       const compare = (a: (typeof list)[number], b: (typeof list)[number]) => {
          switch (sort) {
             case 'name-asc':
-               return a.name.localeCompare(b.name);
+               return a.user.name.localeCompare(b.user.name);
             case 'name-desc':
-               return b.name.localeCompare(a.name);
+               return b.user.name.localeCompare(a.user.name);
             case 'joined-asc':
-               return new Date(a.joinedDate).getTime() - new Date(b.joinedDate).getTime();
+               return new Date(a.user.joinedDate).getTime() - new Date(b.user.joinedDate).getTime();
             case 'joined-desc':
-               return new Date(b.joinedDate).getTime() - new Date(a.joinedDate).getTime();
+               return new Date(b.user.joinedDate).getTime() - new Date(a.user.joinedDate).getTime();
             default:
                return 0;
          }
@@ -50,11 +64,31 @@ export default function Members() {
             <div className="hidden lg:block w-[100px] shrink-0">Joined</div>
             <div className="hidden md:block w-[170px] shrink-0">Teams</div>
             <div className="hidden sm:block w-[90px] shrink-0">Last seen</div>
+            {isAdmin && <div className="w-8 shrink-0" />}
          </div>
 
          <div className="w-full">
-            {displayed.map((user) => (
-               <MemberLine key={user.id} user={user} />
+            {displayed.map(({ member, user }) => (
+               <MemberLine
+                  key={user.id}
+                  user={user}
+                  role={member.role}
+                  canManage={isAdmin}
+                  isLastAdmin={member.role === OrgRole.ADMIN && adminCount <= 1}
+                  onRoleChange={(role) => {
+                     patchMember.mutate(
+                        { userId: member.id, role },
+                        {
+                           onError: () => toast.error('Could not update role'),
+                        },
+                     );
+                  }}
+                  onRemove={() => {
+                     deleteMember.mutate(member.id, {
+                        onError: () => toast.error('Could not remove member'),
+                     });
+                  }}
+               />
             ))}
          </div>
       </div>

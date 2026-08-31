@@ -1,6 +1,6 @@
 # Step 16 — Email and auth polish
 
-**Status:** Planned
+**Status:** Current
 
 ## Goal
 

@@ -46,3 +46,11 @@ export async function getSessionApi(): Promise<AuthUser | null> {
     throw err;
   }
 }
+
+export async function patchMeApi(input: { name: string }): Promise<AuthUser> {
+  const data = await api<UserResponse>(AuthApiPath.ME, {
+    method: 'PATCH',
+    body: JSON.stringify(input),
+  });
+  return data.user;
+}

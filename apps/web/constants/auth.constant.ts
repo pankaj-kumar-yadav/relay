@@ -32,6 +32,7 @@ export const AuthApiPath = {
   REFRESH: '/auth/refresh',
   LOGOUT: '/auth/logout',
   SESSION: '/auth/session',
+  ME: '/auth/me',
 } as const;
 
 export type AuthApiPathValue = (typeof AuthApiPath)[keyof typeof AuthApiPath];

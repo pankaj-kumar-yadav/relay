@@ -10,6 +10,7 @@ import { registry } from '@/openapi/registry.js';
 import { z } from '@/openapi/zod.js';
 import {
   loginBodySchema,
+  patchMeBodySchema,
   publicUserSchema,
   registerBodySchema,
 } from '@/routes/auth/auth.schema.js';
@@ -69,6 +70,23 @@ registry.registerPath({
   security: cookieAuth,
   responses: {
     [String(HttpStatus.OK)]: jsonResponse('Session', successEnvelopeSchema(userDataSchema)),
+    [String(HttpStatus.UNAUTHORIZED)]: jsonResponse('Unauthorized', errorEnvelopeSchema),
+  },
+});
+
+registry.registerPath({
+  method: 'patch',
+  path: '/auth/me',
+  tags: [OpenApiTag.AUTH],
+  summary: 'Update current user',
+  security: cookieAuth,
+  request: { body: jsonBody(patchMeBodySchema) },
+  responses: {
+    [String(HttpStatus.OK)]: jsonResponse(
+      'Profile updated',
+      successEnvelopeSchema(userDataSchema),
+    ),
+    [String(HttpStatus.BAD_REQUEST)]: jsonResponse('Invalid input', errorEnvelopeSchema),
     [String(HttpStatus.UNAUTHORIZED)]: jsonResponse('Unauthorized', errorEnvelopeSchema),
   },
 });

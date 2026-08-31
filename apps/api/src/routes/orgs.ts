@@ -10,7 +10,7 @@ import { z } from '@/openapi/zod.js';
 import { issuesRouter } from '@/routes/issues/issues.js';
 import { notificationsRouter } from '@/routes/inbox/notifications.js';
 import { labelsRouter } from '@/routes/labels.js';
-import { membersRouter } from '@/routes/members.js';
+import { membersRouter } from '@/routes/members/members.js';
 import { viewsRouter } from '@/routes/views/views.js';
 import { orgsInvitesRouter } from '@/routes/invites.js';
 import { projectsRouter } from '@/routes/projects.js';

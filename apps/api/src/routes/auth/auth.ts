@@ -12,7 +12,11 @@ import { HttpStatus } from '@/constants/http.js';
 import { prisma } from '@/db.js';
 import { loginRateLimit, registerRateLimit } from '@/middleware/auth/authRateLimit.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
-import { loginBodySchema, registerBodySchema } from '@/routes/auth/auth.schema.js';
+import {
+  loginBodySchema,
+  patchMeBodySchema,
+  registerBodySchema,
+} from '@/routes/auth/auth.schema.js';
 import {
   EmailTakenError,
   InvalidCredentialsError,
@@ -124,6 +128,33 @@ authRouter.post('/logout', requireAuth, async (req, res) => {
 
 authRouter.get('/session', requireAuth, (req, res) => {
   sendSuccess(res, { data: { user: req.user } });
+});
+
+authRouter.patch('/me', requireAuth, async (req, res) => {
+  try {
+    const parsed = patchMeBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.user!.id },
+      data: { name: parsed.data.name },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isSuperAdmin: true,
+      },
+    });
+
+    sendSuccess(res, {
+      message: 'Profile updated',
+      data: { user: publicUser(user) },
+    });
+  } catch (err) {
+    sendError(res, err);
+  }
 });
 
 authRouter.post('/refresh', async (req, res) => {

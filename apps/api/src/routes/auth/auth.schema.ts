@@ -1,9 +1,15 @@
 import { z } from '@/openapi/zod.js';
 
+export const userNameSchema = z.string().trim().min(1);
+
 export const registerBodySchema = z.object({
-  name: z.string().trim().min(1),
+  name: userNameSchema,
   email: z.string().trim().email(),
   password: z.string().min(8),
+});
+
+export const patchMeBodySchema = z.object({
+  name: userNameSchema,
 });
 
 export const loginBodySchema = z.object({

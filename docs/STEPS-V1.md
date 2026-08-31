@@ -1,6 +1,6 @@
 # Implementation steps — v1
 
-**Status:** In progress — **current: step 15 (settings chrome)**  
+**Status:** In progress — **current: step 16 (email + auth polish)**  
 **Scope:** [SCOPE-V1.md](./SCOPE-V1.md)  
 **Design:** [2026-08-27-v1-product-design.md](./superpowers/specs/2026-08-27-v1-product-design.md)  
 **Index:** [STEPS.md](./STEPS.md)
@@ -16,8 +16,8 @@ Self-hosted Linear-lite on top of shipped MVP ([STEPS-MVP.md](./STEPS-MVP.md)).
 12a. API docs              ✅  (done)
 13. Cycles                 ✅  (done)
 14. Saved views            ✅  (done)
-15. Settings chrome        (current)
-16. Email + auth polish
+15. Settings chrome        ✅  (done)
+16. Email + auth polish    (current)
 17. Self-host pack
 ```
 
@@ -29,7 +29,7 @@ Self-hosted Linear-lite on top of shipped MVP ([STEPS-MVP.md](./STEPS-MVP.md)).
 - [x] Step 12a — API version + docs
 - [x] Step 13 — Cycles
 - [x] Step 14 — Saved views
-- [ ] Step 15 — Settings chrome
+- [x] Step 15 — Settings chrome
 - [ ] Step 16 — Email + auth polish
 - [ ] Step 17 — Self-host pack
 

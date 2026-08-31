@@ -1,7 +1,13 @@
 'use client';
 
 import { queryKeys } from '@/lib/query-keys';
-import { getSessionApi, loginApi, logoutApi, registerApi } from '@/services/auth.service';
+import {
+  getSessionApi,
+  loginApi,
+  logoutApi,
+  patchMeApi,
+  registerApi,
+} from '@/services/auth.service';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export function useSession() {
@@ -38,6 +44,18 @@ export function useLogout() {
     mutationFn: logoutApi,
     onSettled: () => {
       queryClient.clear();
+    },
+  });
+}
+
+export function usePatchMe() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: patchMeApi,
+    onSuccess: (user) => {
+      queryClient.setQueryData(queryKeys.session, user);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.orgs });
+      void queryClient.invalidateQueries({ queryKey: ['members'] });
     },
   });
 }
