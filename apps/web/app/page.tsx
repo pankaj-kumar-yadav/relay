@@ -12,8 +12,8 @@ export default function Home() {
   const { mutateAsync: resolveHomePath } = useResolveHomePath();
 
   useEffect(() => {
-    if (!isFetched) return;
-    if (!user || isError) {
+    if (!isFetched || isError) return;
+    if (!user) {
       router.replace(AppRoute.LOGIN);
       return;
     }

@@ -50,6 +50,7 @@ export function listIssuesAPI() {}   // ❌ shouty acronym — use Api
 
 - **Do not delete** Circle `.tsx` / screens / nav / mock widgets — even when unused this step
 - **Do not rewrite** a Circle layout from scratch (e.g. replacing issue details with a custom form)
+- **Do not change Circle mock data** (`apps/web/mock-data/**`). Leave types, seed arrays, and icon components as Circle shipped them. Wire API data in mappers / hooks / services — do not reshape mock files to match the API
 - Comment out or hide leftover chrome; leave the component **file** in place
 - Write new frontend **only** where Circle has no component for that surface
 - Only delete a UI file if the user **explicitly** asks to remove that file
@@ -59,9 +60,15 @@ export function listIssuesAPI() {}   // ❌ shouty acronym — use Api
 <h1 className="text-3xl font-semibold leading-tight text-balance">{issue.title}</h1>
 {/* <SubscribeButton /> — out of v1; restore later */}
 
+// ✅ GOOD — map API → Circle types in the mapper, leave mock-data alone
+icon: project.icon, // ApiProject.icon (emoji unified id)
+
 // ❌ BAD — custom rewrite of a screen Circle already has
 <div className="flex flex-col gap-4">
   <Input className="text-3xl" value={issue.title} />
   <Textarea className="min-h-40" value={issue.description} />
 </div>
+
+// ❌ BAD — editing mock-data to match the API (empty strings, renamed fields, dropped Lucide icons)
+icon: '',
 ```

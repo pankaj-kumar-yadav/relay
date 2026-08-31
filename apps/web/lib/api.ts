@@ -55,10 +55,19 @@ async function rawFetch(path: string, init?: RequestInit) {
   });
 }
 
+let refreshInFlight: Promise<boolean> | null = null;
+
 async function refreshSession(): Promise<boolean> {
-  const res = await rawFetch(AuthApiPath.REFRESH, { method: 'POST', body: '{}' });
-  const { body } = await parseEnvelope(res);
-  return res.ok && body.success !== false;
+  if (!refreshInFlight) {
+    refreshInFlight = (async () => {
+      const res = await rawFetch(AuthApiPath.REFRESH, { method: 'POST', body: '{}' });
+      const { body } = await parseEnvelope(res);
+      return res.ok && body.success !== false;
+    })().finally(() => {
+      refreshInFlight = null;
+    });
+  }
+  return refreshInFlight;
 }
 
 export async function api<T extends object>(path: string, init?: RequestInit): Promise<T> {

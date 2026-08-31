@@ -22,16 +22,17 @@ export async function createAndSetTokens(res: Response, userId: string) {
   await createKeyStore(userId, primaryKey, secondaryKey);
   const tokens = await createTokens(userId, primaryKey, secondaryKey);
 
-  const accessMs = config.tokenInfo.accessTokenValidity * 1000;
-  const refreshMs = config.tokenInfo.refreshTokenValidity * 1000;
+  // Cookie lifetime is independent of JWT exp (HRMS). requireAuth still
+  // rejects expired access; /auth/refresh decodes the leftover cookie.
+  const cookieMs = config.tokenInfo.refreshTokenValidity * 1000;
 
   res.cookie(COOKIE_ACCESS, tokens.accessToken, {
     ...cookieBase(),
-    maxAge: accessMs,
+    maxAge: cookieMs,
   });
   res.cookie(COOKIE_REFRESH, tokens.refreshToken, {
     ...cookieBase(),
-    maxAge: refreshMs,
+    maxAge: cookieMs,
   });
 
   return tokens;

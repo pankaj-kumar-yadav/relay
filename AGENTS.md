@@ -31,6 +31,7 @@ Frontend is [Circle](https://github.com/ln-dev7/circle) dropped into `apps/web`.
 
 - **Do not delete** Circle components, screens, nav, or chrome — even if unused this step
 - **Do not rewrite** a Circle screen from scratch. Wire API data into the existing layout
+- **Do not change Circle mock data** (`apps/web/mock-data/**`)
 - Hide or comment out leftover chrome; leave the files in place
 - Write new frontend **only** where Circle has no component for that surface
 - Details: [docs/project-rules/web-rules.md](docs/project-rules/web-rules.md)
