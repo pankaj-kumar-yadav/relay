@@ -1,13 +1,15 @@
 import { Router } from 'express';
 
-import { API_PREFIX, HttpStatus } from '@/constants/http.js';
+import { HttpStatus } from '@/constants/http.js';
 import { OrgRole } from '@/constants/org.js';
+import { inviteMailPath } from '@/constants/mail.constant.js';
 import { config } from '@/config.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { requireOrgRole } from '@/middleware/org/requireOrgRole.js';
 import { z } from '@/openapi/zod.js';
+import { renderInviteEmail } from '@/utils/email-templates/invite.js';
 import {
   AlreadyMemberError,
   ForbiddenError,
@@ -20,6 +22,7 @@ import {
   hashInviteToken,
   inviteExpiresAt,
 } from '@/utils/invite/inviteToken.js';
+import { sendMail } from '@/utils/mailer.js';
 import { sendSuccess } from '@/utils/response.js';
 
 export const orgsInvitesRouter: Router = Router({ mergeParams: true });
@@ -92,11 +95,13 @@ orgsInvitesRouter.post(
         },
       });
 
-      const invitePath = `/invite/${token}`;
-      if (!config.isProduction) {
-        console.log(
-          `[invite] ${email} → ${config.webOrigin}${invitePath} (POST ${API_PREFIX}/invites/${token}/accept)`,
-        );
+      const invitePath = inviteMailPath(token);
+      const url = `${config.webOrigin}${invitePath}`;
+      try {
+        const mail = renderInviteEmail({ orgName: org.name, url });
+        await sendMail({ to: email, ...mail });
+      } catch (err) {
+        console.error('[mail] invite failed', err);
       }
 
       sendSuccess(res, {

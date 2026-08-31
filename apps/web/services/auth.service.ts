@@ -54,3 +54,30 @@ export async function patchMeApi(input: { name: string }): Promise<AuthUser> {
   });
   return data.user;
 }
+
+export async function forgotPasswordApi(email: string): Promise<void> {
+  await api(AuthApiPath.FORGOT_PASSWORD, {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function resetPasswordApi(input: {
+  token: string;
+  password: string;
+}): Promise<void> {
+  await api(AuthApiPath.RESET_PASSWORD, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function changePasswordApi(input: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<void> {
+  await api(AuthApiPath.CHANGE_PASSWORD, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}

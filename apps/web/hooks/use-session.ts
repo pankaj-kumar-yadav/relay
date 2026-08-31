@@ -2,11 +2,14 @@
 
 import { queryKeys } from '@/lib/query-keys';
 import {
+  changePasswordApi,
+  forgotPasswordApi,
   getSessionApi,
   loginApi,
   logoutApi,
   patchMeApi,
   registerApi,
+  resetPasswordApi,
 } from '@/services/auth.service';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -57,5 +60,23 @@ export function usePatchMe() {
       void queryClient.invalidateQueries({ queryKey: queryKeys.orgs });
       void queryClient.invalidateQueries({ queryKey: ['members'] });
     },
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: forgotPasswordApi,
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: resetPasswordApi,
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: changePasswordApi,
   });
 }

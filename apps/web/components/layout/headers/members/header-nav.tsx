@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { NodeEnv } from '@/constants/env.constant';
 import { useCreateInvite } from '@/hooks/use-invites';
 import { useMembers } from '@/hooks/use-members';
 import { Plus } from 'lucide-react';
@@ -26,7 +27,7 @@ export default function HeaderNav() {
          const url = `${window.location.origin}/invite/${data.token}`;
          setInviteUrl(url);
          setEmail('');
-         toast.success('Invite created');
+         toast.success('Invite email sent');
       } catch {
          toast.error('Could not create invite');
       }
@@ -65,7 +66,7 @@ export default function HeaderNav() {
                   Invite
                </Button>
             )}
-            {inviteUrl ? (
+            {process.env.NODE_ENV === NodeEnv.DEVELOPMENT && inviteUrl ? (
                <button
                   type="button"
                   className="text-xs text-muted-foreground underline max-w-[220px] truncate"

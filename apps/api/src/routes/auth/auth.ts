@@ -3,19 +3,33 @@ import { Router } from 'express';
 import { validateTokenData } from '@/auth/authUtils.js';
 import {
   deleteKeyStoreById,
+  deleteKeyStoresForUser,
   findKeyStoreByKeys,
 } from '@/auth/keyStore.js';
+import {
+  generatePasswordResetToken,
+  hashPasswordResetToken,
+  passwordResetExpiresAt,
+} from '@/auth/passwordResetToken.js';
 import { clearAuthCookies, createAndSetTokens } from '@/auth/tokenHelpers.js';
 import { config } from '@/config.js';
 import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.js';
 import { HttpStatus } from '@/constants/http.js';
+import { resetPasswordMailPath } from '@/constants/mail.constant.js';
 import { prisma } from '@/db.js';
-import { loginRateLimit, registerRateLimit } from '@/middleware/auth/authRateLimit.js';
+import {
+  forgotPasswordRateLimit,
+  loginRateLimit,
+  registerRateLimit,
+} from '@/middleware/auth/authRateLimit.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import {
+  changePasswordBodySchema,
+  forgotPasswordBodySchema,
   loginBodySchema,
   patchMeBodySchema,
   registerBodySchema,
+  resetPasswordBodySchema,
 } from '@/routes/auth/auth.schema.js';
 import {
   EmailTakenError,
@@ -25,6 +39,8 @@ import {
   ValidationError,
 } from '@/utils/errors.js';
 import JWT from '@/utils/jwt.js';
+import { renderResetPasswordEmail } from '@/utils/email-templates/reset-password.js';
+import { sendMail } from '@/utils/mailer.js';
 import { hashPassword, verifyPassword } from '@/utils/passwords.js';
 import { sendSuccess } from '@/utils/response.js';
 
@@ -152,6 +168,108 @@ authRouter.patch('/me', requireAuth, async (req, res) => {
       message: 'Profile updated',
       data: { user: publicUser(user) },
     });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+authRouter.post('/forgot-password', forgotPasswordRateLimit, async (req, res) => {
+  try {
+    const parsed = forgotPasswordBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+
+    const email = parsed.data.email.toLowerCase();
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (user) {
+      const token = generatePasswordResetToken();
+      await prisma.passwordReset.create({
+        data: {
+          userId: user.id,
+          tokenHash: hashPasswordResetToken(token),
+          expiresAt: passwordResetExpiresAt(),
+        },
+      });
+      const url = `${config.webOrigin}${resetPasswordMailPath(token)}`;
+      try {
+        const mail = renderResetPasswordEmail({ url });
+        await sendMail({ to: email, ...mail });
+      } catch (err) {
+        console.error('[mail] reset failed', err);
+      }
+    }
+
+    sendSuccess(res, {
+      message: 'If that email exists, we sent a reset link',
+      data: {},
+    });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+authRouter.post('/reset-password', async (req, res) => {
+  try {
+    const parsed = resetPasswordBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+
+    const row = await prisma.passwordReset.findUnique({
+      where: { tokenHash: hashPasswordResetToken(parsed.data.token) },
+    });
+    if (!row || row.usedAt || row.expiresAt.getTime() <= Date.now()) {
+      throw new ValidationError('Invalid or expired reset token');
+    }
+
+    const passwordHash = await hashPassword(parsed.data.password);
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: row.userId },
+        data: { passwordHash },
+      });
+      await tx.passwordReset.update({
+        where: { id: row.id },
+        data: { usedAt: new Date() },
+      });
+      await tx.keyStore.deleteMany({ where: { userId: row.userId } });
+    });
+
+    sendSuccess(res, { message: 'Password reset', data: {} });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+authRouter.post('/change-password', requireAuth, async (req, res) => {
+  try {
+    const parsed = changePasswordBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: { id: true, passwordHash: true },
+    });
+    if (!user || !(await verifyPassword(parsed.data.currentPassword, user.passwordHash))) {
+      throw new InvalidCredentialsError();
+    }
+
+    const passwordHash = await hashPassword(parsed.data.newPassword);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash },
+    });
+    await deleteKeyStoresForUser(user.id);
+    await createAndSetTokens(res, user.id);
+
+    sendSuccess(res, { message: 'Password updated', data: {} });
   } catch (err) {
     sendError(res, err);
   }

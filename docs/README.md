@@ -41,10 +41,10 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | 11 | [11-labels.md](./steps/11-labels.md) | Done |
 | 12 | [12-inbox.md](./steps/12-inbox.md) | Done |
 | 12a | [12a-api-docs.md](./steps/12a-api-docs.md) | Done |
-| 13 | [13-cycles.md](./steps/13-cycles.md) | Current |
-| 14 | [14-saved-views.md](./steps/14-saved-views.md) | Planned |
-| 15 | [15-settings-chrome.md](./steps/15-settings-chrome.md) | Planned |
-| 16 | [16-email-auth.md](./steps/16-email-auth.md) | Planned |
+| 13 | [13-cycles.md](./steps/13-cycles.md) | Done |
+| 14 | [14-saved-views.md](./steps/14-saved-views.md) | Done |
+| 15 | [15-settings-chrome.md](./steps/15-settings-chrome.md) | Done |
+| 16 | [16-email-auth.md](./steps/16-email-auth.md) | Done |
 | 17 | [17-self-host.md](./steps/17-self-host.md) | Planned |
 
 ## v1 design
@@ -52,3 +52,4 @@ Canonical documentation for humans and agents. Read in this order when starting 
 - [v1 product](./superpowers/specs/2026-08-27-v1-product-design.md)
 - [Comments + activity (step 10)](./superpowers/specs/2026-08-27-issue-comments-activity-design.md)
 - [Issue labels (step 11)](./superpowers/specs/2026-08-27-issue-labels-design.md)
+- [Email + auth polish (step 16)](./superpowers/specs/2026-08-31-email-auth-design.md)

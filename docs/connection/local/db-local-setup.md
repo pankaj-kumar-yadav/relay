@@ -43,6 +43,8 @@ pnpm --filter @relay/api db:migrate
 pnpm --filter @relay/api db:generate
 ```
 
+Client output is `apps/api/src/generated/prisma` (gitignored).
+
 ## 4) Seed data (optional, recommended)
 
 ```bash

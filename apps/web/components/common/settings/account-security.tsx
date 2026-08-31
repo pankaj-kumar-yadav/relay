@@ -1,13 +1,78 @@
 'use client';
 
+import { FormEvent, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { KeyRound, Laptop, Smartphone } from 'lucide-react';
+import { toast } from 'sonner';
+import { ApiError } from '@/lib/api';
+import { useChangePassword } from '@/hooks/use-session';
 import { SettingsCard, SettingsRow, SettingsSection, SettingsShell } from './shared';
 
 /** Personal "Security & access" settings (sessions, passkeys, API keys). */
 export default function AccountSecurity() {
+   const changePassword = useChangePassword();
+   const [currentPassword, setCurrentPassword] = useState('');
+   const [newPassword, setNewPassword] = useState('');
+   const [error, setError] = useState<string | null>(null);
+
+   async function onChangePassword(e: FormEvent<HTMLFormElement>) {
+      e.preventDefault();
+      setError(null);
+      try {
+         await changePassword.mutateAsync({ currentPassword, newPassword });
+         setCurrentPassword('');
+         setNewPassword('');
+         toast.success('Password updated');
+      } catch (err) {
+         const message =
+            err instanceof ApiError ? err.message : 'Could not update password';
+         setError(message);
+         toast.error(message);
+      }
+   }
+
    return (
       <SettingsShell title="Security & access">
+         <SettingsSection title="Password" description="Change the password for this account">
+            <SettingsCard>
+               <form onSubmit={onChangePassword} className="flex flex-col gap-4 p-4">
+                  <div className="flex flex-col gap-2">
+                     <Label htmlFor="current-password">Current password</Label>
+                     <Input
+                        id="current-password"
+                        type="password"
+                        autoComplete="current-password"
+                        required
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        className="h-8 max-w-xs"
+                     />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                     <Label htmlFor="new-password">New password</Label>
+                     <Input
+                        id="new-password"
+                        type="password"
+                        autoComplete="new-password"
+                        minLength={8}
+                        required
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="h-8 max-w-xs"
+                     />
+                  </div>
+                  {error ? <p className="text-sm text-destructive">{error}</p> : null}
+                  <div>
+                     <Button type="submit" size="xs" disabled={changePassword.isPending}>
+                        Update password
+                     </Button>
+                  </div>
+               </form>
+            </SettingsCard>
+         </SettingsSection>
+
          <SettingsSection title="Sessions" description="Devices logged into your account">
             <SettingsCard>
                <SettingsRow

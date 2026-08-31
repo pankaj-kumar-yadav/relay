@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '@/generated/prisma/client.js';
 
 import { LABEL_IDS_MAX } from '@/constants/label.constant.js';
 import { prisma } from '@/db.js';

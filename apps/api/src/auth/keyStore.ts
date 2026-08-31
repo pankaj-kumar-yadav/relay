@@ -29,3 +29,7 @@ export async function findKeyStoreByKeys(
 export async function deleteKeyStoreById(id: string) {
   return prisma.keyStore.delete({ where: { id } });
 }
+
+export async function deleteKeyStoresForUser(userId: string) {
+  return prisma.keyStore.deleteMany({ where: { userId } });
+}

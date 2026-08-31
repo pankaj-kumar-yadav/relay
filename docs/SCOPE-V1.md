@@ -1,6 +1,6 @@
 # Relay — v1 scope
 
-**Status:** In progress (steps 10–17; current: email + auth polish)  
+**Status:** In progress (steps 10–17; current: self-host pack)  
 **Roadmap:** [STEPS-V1.md](./STEPS-V1.md)  
 **Design:** [superpowers/specs/2026-08-27-v1-product-design.md](./superpowers/specs/2026-08-27-v1-product-design.md)  
 **Index:** [SCOPE.md](./SCOPE.md)

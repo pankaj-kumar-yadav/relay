@@ -21,3 +21,10 @@ export const REGISTER_RATE_LIMIT = {
   max: 3,
   skipSuccessfulRequests: false,
 } as const;
+
+/** Forgot password: count every attempt (always 200). */
+export const FORGOT_PASSWORD_RATE_LIMIT = {
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  skipSuccessfulRequests: false,
+} as const;

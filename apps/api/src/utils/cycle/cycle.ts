@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma/client.js';
 
 import { CycleStatus } from '@/constants/cycle.constant.js';
 import { prisma } from '@/db.js';

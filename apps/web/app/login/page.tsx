@@ -94,13 +94,12 @@ export default function LoginPage() {
                   <div className="flex flex-col gap-2">
                      <div className="flex items-center justify-between gap-2">
                         <Label htmlFor="password">Password</Label>
-                        <button
-                           type="button"
+                        <Link
+                           href={AppRoute.FORGOT_PASSWORD}
                            className="text-muted-foreground hover:text-foreground text-xs transition-colors"
-                           onClick={() => onUnavailable('Password reset is not available yet')}
                         >
                            Forgot password?
-                        </button>
+                        </Link>
                      </div>
                      <div className="relative">
                         <Input

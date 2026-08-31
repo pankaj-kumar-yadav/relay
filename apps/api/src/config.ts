@@ -3,6 +3,7 @@ import {
   DEFAULT_REFRESH_TOKEN_VALIDITY_SEC,
 } from '@/constants/auth.js';
 import { NodeEnv } from '@/constants/env.constant.js';
+import { DEFAULT_SMTP_PORT } from '@/constants/mail.constant.js';
 
 export const config = {
   port: Number(process.env.PORT) || 4000,
@@ -10,6 +11,13 @@ export const config = {
   databaseUrl: process.env.DATABASE_URL ?? '',
   isProduction: process.env.NODE_ENV === NodeEnv.PRODUCTION,
   trustProxy: process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true',
+  smtp: {
+    host: process.env.SMTP_HOST ?? '',
+    port: Number(process.env.SMTP_PORT) || DEFAULT_SMTP_PORT,
+    user: process.env.SMTP_USER ?? '',
+    pass: process.env.SMTP_PASS ?? '',
+    from: process.env.SMTP_FROM ?? '',
+  },
   tokenInfo: {
     secret: process.env.TOKEN_SECRET ?? '',
     issuer: process.env.TOKEN_ISSUER ?? '',

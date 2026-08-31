@@ -20,6 +20,7 @@ export const AppRoute = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
+  FORGOT_PASSWORD: '/forgot-password',
   NEW: '/new',
 } as const;
 
@@ -33,6 +34,9 @@ export const AuthApiPath = {
   LOGOUT: '/auth/logout',
   SESSION: '/auth/session',
   ME: '/auth/me',
+  FORGOT_PASSWORD: '/auth/forgot-password',
+  RESET_PASSWORD: '/auth/reset-password',
+  CHANGE_PASSWORD: '/auth/change-password',
 } as const;
 
 export type AuthApiPathValue = (typeof AuthApiPath)[keyof typeof AuthApiPath];
@@ -43,6 +47,10 @@ export const LoginQuery = {
 
 export function invitePath(token: string): string {
   return `/invite/${token}`;
+}
+
+export function resetPasswordPath(token: string): string {
+  return `/reset-password/${token}`;
 }
 
 export function loginWithNextPath(next: string): string {

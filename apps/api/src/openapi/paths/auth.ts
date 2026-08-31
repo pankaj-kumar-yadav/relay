@@ -9,10 +9,13 @@ import {
 import { registry } from '@/openapi/registry.js';
 import { z } from '@/openapi/zod.js';
 import {
+  changePasswordBodySchema,
+  forgotPasswordBodySchema,
   loginBodySchema,
   patchMeBodySchema,
   publicUserSchema,
   registerBodySchema,
+  resetPasswordBodySchema,
 } from '@/routes/auth/auth.schema.js';
 
 const userDataSchema = z.object({ user: publicUserSchema });
@@ -102,6 +105,53 @@ registry.registerPath({
       'Access token refreshed',
       successEnvelopeSchema(emptyDataSchema),
     ),
+    [String(HttpStatus.UNAUTHORIZED)]: jsonResponse('Unauthorized', errorEnvelopeSchema),
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/auth/forgot-password',
+  tags: [OpenApiTag.AUTH],
+  summary: 'Request a password reset email',
+  request: { body: jsonBody(forgotPasswordBodySchema) },
+  responses: {
+    [String(HttpStatus.OK)]: jsonResponse(
+      'If that email exists, we sent a reset link',
+      successEnvelopeSchema(emptyDataSchema),
+    ),
+    [String(HttpStatus.BAD_REQUEST)]: jsonResponse('Invalid input', errorEnvelopeSchema),
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/auth/reset-password',
+  tags: [OpenApiTag.AUTH],
+  summary: 'Reset password with a token',
+  request: { body: jsonBody(resetPasswordBodySchema) },
+  responses: {
+    [String(HttpStatus.OK)]: jsonResponse(
+      'Password reset',
+      successEnvelopeSchema(emptyDataSchema),
+    ),
+    [String(HttpStatus.BAD_REQUEST)]: jsonResponse('Invalid input', errorEnvelopeSchema),
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/auth/change-password',
+  tags: [OpenApiTag.AUTH],
+  summary: 'Change password while logged in',
+  security: cookieAuth,
+  request: { body: jsonBody(changePasswordBodySchema) },
+  responses: {
+    [String(HttpStatus.OK)]: jsonResponse(
+      'Password updated',
+      successEnvelopeSchema(emptyDataSchema),
+    ),
+    [String(HttpStatus.BAD_REQUEST)]: jsonResponse('Invalid input', errorEnvelopeSchema),
     [String(HttpStatus.UNAUTHORIZED)]: jsonResponse('Unauthorized', errorEnvelopeSchema),
   },
 });

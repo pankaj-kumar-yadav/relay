@@ -13,6 +13,9 @@ build
 .env
 .env*.local
 
+# generated Prisma client (pnpm --filter @relay/api db:generate)
+apps/api/src/generated/
+
 # tooling
 .turbo
 .vercel
