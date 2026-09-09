@@ -16,6 +16,7 @@ import {
   createIssueBodySchema,
   listIssuesQuerySchema,
   patchIssueBodySchema,
+  putIssueSubscriptionBodySchema,
   setIssueLabelsBodySchema,
 } from '@/routes/issues/issues.schema.js';
 
@@ -128,6 +129,27 @@ registry.registerPath({
   summary: 'Set issue labels',
   security: cookieAuth,
   request: { params: issueIdParams, body: jsonBody(setIssueLabelsBodySchema) },
+  responses: {
+    [String(HttpStatus.OK)]: jsonResponse(
+      'OK',
+      successEnvelopeSchema(z.object({ issue: publicIssueSchema })),
+    ),
+    ...errorResponses(
+      HttpStatus.BAD_REQUEST,
+      HttpStatus.UNAUTHORIZED,
+      HttpStatus.FORBIDDEN,
+      HttpStatus.NOT_FOUND,
+    ),
+  },
+});
+
+registry.registerPath({
+  method: 'put',
+  path: '/orgs/{orgId}/issues/{issueId}/subscription',
+  tags: [OpenApiTag.ISSUES],
+  summary: 'Subscribe or unsubscribe from an issue',
+  security: cookieAuth,
+  request: { params: issueIdParams, body: jsonBody(putIssueSubscriptionBodySchema) },
   responses: {
     [String(HttpStatus.OK)]: jsonResponse(
       'OK',

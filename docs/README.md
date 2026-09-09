@@ -6,16 +6,18 @@ Canonical documentation for humans and agents. Read in this order when starting 
 |-----|---------|
 | [SCOPE.md](./SCOPE.md) | Scope index + locked stack / conventions |
 | [SCOPE-MVP.md](./SCOPE-MVP.md) | MVP in/out (shipped) |
-| [SCOPE-V1.md](./SCOPE-V1.md) | v1 in/out (current) |
+| [SCOPE-V1.md](./SCOPE-V1.md) | v1 in/out (shipped) |
+| [SCOPE-V2.md](./SCOPE-V2.md) | v2 in/out (current) |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System shape, tenancy, auth, ports |
 | [CIRCLE.md](./CIRCLE.md) | Wired vs leftover Circle UI |
 | [STEPS.md](./STEPS.md) | Steps index + current phase |
 | [STEPS-MVP.md](./STEPS-MVP.md) | MVP roadmap (steps 1–9, done) |
-| [STEPS-V1.md](./STEPS-V1.md) | v1 roadmap (steps 10–17) |
-| [steps/](./steps/) | Per-step instructions ([MVP](./steps/mvp/), [v1](./steps/v1/)) |
+| [STEPS-V1.md](./STEPS-V1.md) | v1 roadmap (steps 10–17, done) |
+| [STEPS-V2.md](./STEPS-V2.md) | v2 roadmap (steps 18–20) |
+| [steps/](./steps/) | Per-step instructions ([MVP](./steps/mvp/), [v1](./steps/v1/), [v2](./steps/v2/)) |
 | [project-rules/](./project-rules/) | Coding conventions (git, shared, web, api) |
 | [../AGENTS.md](../AGENTS.md) | Agent entrypoint and commands |
-| [superpowers/](./superpowers/) | Specs and plans ([MVP](./superpowers/mvp/), [v1](./superpowers/v1/)) |
+| [superpowers/](./superpowers/) | Specs and plans ([MVP](./superpowers/mvp/), [v1](./superpowers/v1/), [v2](./superpowers/v2/)) |
 
 ## Step files
 
@@ -48,9 +50,22 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | 16 | [16-email-auth.md](./steps/v1/16-email-auth.md) | Done |
 | 17 | [17-self-host.md](./steps/v1/17-self-host.md) | Done |
 
+### v2
+
+| Step | File | Status |
+|------|------|--------|
+| 18 | [18-subscribe.md](./steps/v2/18-subscribe.md) | Done |
+| 19 | [19-inbox-email.md](./steps/v2/19-inbox-email.md) | Planned |
+| 20 | [20-uploads.md](./steps/v2/20-uploads.md) | Planned |
+
 ## v1 design
 
 - [v1 product](./superpowers/v1/August-2026/specs/2026-08-27-v1-product-design.md)
 - [Comments + activity (step 10)](./superpowers/v1/August-2026/specs/2026-08-27-issue-comments-activity-design.md)
 - [Issue labels (step 11)](./superpowers/v1/August-2026/specs/2026-08-27-issue-labels-design.md)
 - [Self-host pack (step 17)](./superpowers/v1/September-2026/specs/2026-09-08-self-host-design.md)
+
+## v2 design
+
+- [v2 product](./superpowers/v2/September-2026/specs/2026-09-09-v2-product-design.md)
+- [Issue subscribe (step 18)](./superpowers/v2/September-2026/specs/2026-09-09-issue-subscribe-design.md)

@@ -29,4 +29,4 @@ One-command bring-up of web + API + Postgres. Production env documented. Smoke t
 
 ## After v1
 
-Only then consider [SCOPE-V1.md](../../SCOPE-V1.md) “Out”: billing, SSO, realtime, uploads, AI, reviews, documents, initiatives.
+v2: [SCOPE-V2.md](../../SCOPE-V2.md). Billing, SSO, realtime, AI, reviews, documents, initiatives stay later.

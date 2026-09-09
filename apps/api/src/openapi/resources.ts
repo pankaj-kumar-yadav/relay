@@ -100,6 +100,7 @@ export const publicIssueSchema = z.object({
     })
     .nullable(),
   labels: z.array(issueLabelSchema),
+  subscribed: z.boolean(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

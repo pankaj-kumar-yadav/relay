@@ -1,6 +1,6 @@
 # Implementation steps — v1
 
-**Status:** Done — **current: none (v1 complete)**  
+**Status:** Done — **current: none (v1 complete).** Next: [STEPS-V2.md](./STEPS-V2.md)  
 **Scope:** [SCOPE-V1.md](./SCOPE-V1.md)  
 **Design:** [2026-08-27-v1-product-design.md](./superpowers/v1/August-2026/specs/2026-08-27-v1-product-design.md)  
 **Index:** [STEPS.md](./STEPS.md)

@@ -37,7 +37,8 @@ import {
    Clipboard,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { useIssueMutations } from '@/hooks/use-issues';
+import { useIssueMutations, usePutIssueSubscription } from '@/hooks/use-issues';
+import { isIssueSubscribed } from '@/lib/mappers';
 import { useLabels } from '@/hooks/use-labels';
 import { useProjects } from '@/hooks/use-projects';
 import { useIssuesStore } from '@/store/issues-store';
@@ -52,12 +53,14 @@ interface IssueContextMenuProps {
 }
 
 export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
-   const [isSubscribed, setIsSubscribed] = useState(false);
+   const { getIssueById, updateIssue } = useIssuesStore();
+   const issue = issueId ? getIssueById(issueId) : undefined;
+   const isSubscribed = issue ? isIssueSubscribed(issue) : false;
    const [isFavorite, setIsFavorite] = useState(false);
 
    const { updateIssueStatus, updateIssuePriority, updateIssueAssignee, updateIssueProject, updateIssueLabels } =
       useIssueMutations();
-   const { getIssueById, updateIssue } = useIssuesStore();
+   const putSubscription = usePutIssueSubscription();
    const { orgId } = useParams<{ orgId: string }>();
    const { data: projects = [] } = useProjects(orgId);
    const { data: labels = [] } = useLabels(orgId);
@@ -137,8 +140,15 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
    };
 
    const handleSubscribe = () => {
-      setIsSubscribed(!isSubscribed);
-      toast.success(isSubscribed ? 'Unsubscribed from issue' : 'Subscribed to issue');
+      if (!issueId) return;
+      putSubscription.mutate(
+         { issueId, subscribed: !isSubscribed },
+         {
+            onSuccess: () => {
+               toast.success(isSubscribed ? 'Unsubscribed from issue' : 'Subscribed to issue');
+            },
+         },
+      );
    };
 
    const handleFavorite = () => {

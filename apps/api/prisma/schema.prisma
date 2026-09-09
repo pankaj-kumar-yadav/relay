@@ -28,6 +28,7 @@ model User {
   notificationsActed    Notification[] @relation("NotificationActor")
   viewsOwned     View[]        @relation("ViewOwner")
   passwordResets PasswordReset[]
+  issueSubscriptions IssueSubscription[]
 
   @@map("users")
 }
@@ -81,6 +82,7 @@ model Organization {
   notifications Notification[]
   cycles      Cycle[]
   views       View[]
+  issueSubscriptions IssueSubscription[]
 
   @@map("organizations")
 }
@@ -183,6 +185,7 @@ model Issue {
   issueLabels    IssueLabel[]
   reactions      IssueReaction[]
   notifications  Notification[]
+  subscriptions  IssueSubscription[]
 
   @@unique([teamId, number])
   @@index([organizationId])
@@ -191,6 +194,21 @@ model Issue {
   @@index([organizationId, rank])
   @@index([cycleId])
   @@map("issues")
+}
+
+model IssueSubscription {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  issueId        String       @map("issue_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  createdAt      DateTime     @default(now()) @map("created_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  issue          Issue        @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([issueId, userId])
+  @@index([organizationId, userId])
+  @@map("issue_subscriptions")
 }
 
 model Cycle {

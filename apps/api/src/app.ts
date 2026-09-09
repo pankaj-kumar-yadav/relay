@@ -5,9 +5,7 @@ import express, { type ErrorRequestHandler, type Express } from 'express';
 import { config } from '@/config.js';
 import { API_PREFIX, JSON_BODY_LIMIT } from '@/constants/http.constant.js';
 import { mountOpenApiDocs } from '@/openapi/mount.js';
-import { authRouter } from '@/routes/auth/auth.js';
-import { invitesRouter } from '@/routes/invites.js';
-import { orgsRouter } from '@/routes/orgs.js';
+import { mountV1Routes } from '@/routes/index.js';
 import { NotFoundError, sendError, ValidationError } from '@/utils/errors.js';
 import { sendSuccess } from '@/utils/response.js';
 
@@ -40,9 +38,7 @@ export function createApp(options: CreateAppOptions = {}): Express {
     });
   });
 
-  v1.use('/auth', authRouter);
-  v1.use('/orgs', orgsRouter);
-  v1.use('/invites', invitesRouter);
+  mountV1Routes(v1);
 
   app.use(API_PREFIX, v1);
 

@@ -96,4 +96,4 @@ Transactional mail is SMTP via nodemailer (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`
 
 ## Implementation steps
 
-Follow [STEPS.md](./STEPS.md) ([MVP](./STEPS-MVP.md) done, [v1](./STEPS-V1.md) done). Detail in [steps/mvp/](./steps/mvp/) and [steps/v1/](./steps/v1/). Do not skip auth/tenancy before wiring real issue data into the UI.
+Follow [STEPS.md](./STEPS.md) ([MVP](./STEPS-MVP.md) done, [v1](./STEPS-V1.md) done, [v2](./STEPS-V2.md) current). Detail in [steps/mvp/](./steps/mvp/), [steps/v1/](./steps/v1/), and [steps/v2/](./steps/v2/). Do not skip auth/tenancy before wiring real issue data into the UI.

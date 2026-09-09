@@ -25,7 +25,7 @@ interface IssuesState {
 
    // Actions
    addIssue: (issue: Issue) => void;
-   updateIssue: (id: string, updatedIssue: Partial<Issue>) => void;
+   updateIssue: (id: string, updatedIssue: Partial<Issue> & { subscribed?: boolean }) => void;
    deleteIssue: (id: string) => void;
 
    // Filters
@@ -85,7 +85,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
       });
    },
 
-   updateIssue: (id: string, updatedIssue: Partial<Issue>) => {
+   updateIssue: (id: string, updatedIssue: Partial<Issue> & { subscribed?: boolean }) => {
       set((state) => {
          const newIssues = state.issues.map((issue) =>
             issue.id === id ? { ...issue, ...updatedIssue } : issue

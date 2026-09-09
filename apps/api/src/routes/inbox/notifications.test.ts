@@ -177,7 +177,7 @@ test(
       );
       assert.equal(statusUnassigned.status, HttpStatus.OK);
       const afterUnassignedStatus = await listInbox(origin, slugA, userC.cookies);
-      assert.equal(afterUnassignedStatus.body.data!.notifications.length, 2);
+      assert.equal(afterUnassignedStatus.body.data!.notifications.length, 3);
 
       const assignSelf = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}`, {
         method: 'PATCH',
@@ -186,7 +186,7 @@ test(
       });
       assert.equal(assignSelf.status, HttpStatus.OK);
       const inboxAAfterSelf = await listInbox(origin, slugA, userA.cookies);
-      assert.equal(inboxAAfterSelf.body.data!.notifications.length, 0);
+      assert.equal(inboxAAfterSelf.body.data!.notifications.length, 1);
 
       const assignC = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/issues/${issueId}`, {
         method: 'PATCH',
@@ -195,7 +195,7 @@ test(
       });
       assert.equal(assignC.status, HttpStatus.OK, await assignC.text());
       const afterAssign = await listInbox(origin, slugA, userC.cookies);
-      assert.equal(afterAssign.body.data!.notifications.length, 3);
+      assert.equal(afterAssign.body.data!.notifications.length, 4);
       assert.ok(
         afterAssign.body.data!.notifications.some(
           (row) => row.type === NotificationType.ASSIGNEE,
@@ -225,7 +225,7 @@ test(
       assert.ok(markOneBody.data!.notification.readAt);
 
       const afterMarkOne = await listInbox(origin, slugA, userC.cookies);
-      assert.equal(afterMarkOne.body.data!.unreadCount, 2);
+      assert.equal(afterMarkOne.body.data!.unreadCount, 3);
 
       const markAll = await fetch(`${origin}${API_PREFIX}/orgs/${slugA}/notifications/read-all`, {
         method: 'POST',
@@ -238,7 +238,7 @@ test(
       assert.equal(markAllBody.data!.unreadCount, 0);
       const afterAll = await listInbox(origin, slugA, userC.cookies);
       assert.equal(afterAll.body.data!.unreadCount, 0);
-      assert.equal(afterAll.body.data!.notifications.length, 3);
+      assert.equal(afterAll.body.data!.notifications.length, 4);
       assert.ok(afterAll.body.data!.notifications.every((row) => row.readAt));
     } finally {
       await prisma.organization.deleteMany({

@@ -14,6 +14,7 @@ import {
   listIssueReactionsApi,
   listIssuesApi,
   patchIssueApi,
+  putIssueSubscriptionApi,
   toggleIssueReactionApi,
   type ApiIssueReaction,
   type CreateIssueInput,
@@ -234,6 +235,27 @@ export function useToggleIssueReaction(
     onSettled: () => {
       if (!orgSlug || !issueId) return;
       void queryClient.invalidateQueries({ queryKey });
+    },
+  });
+}
+
+export function usePutIssueSubscription() {
+  const orgSlug = useParams<{ orgId: string }>().orgId;
+  const queryClient = useQueryClient();
+  const updateIssue = useIssuesStore((s) => s.updateIssue);
+
+  return useMutation({
+    mutationFn: ({ issueId, subscribed }: { issueId: string; subscribed: boolean }) => {
+      if (!orgSlug) throw new Error('No organization selected');
+      return putIssueSubscriptionApi(orgSlug, issueId, subscribed);
+    },
+    onSuccess: ({ issue }) => {
+      updateIssue(issue.id, { subscribed: issue.subscribed });
+      if (!orgSlug) return;
+      void queryClient.invalidateQueries({ queryKey: queryKeys.issues.all(orgSlug) });
+    },
+    onError: (err) => {
+      toast.error(err instanceof ApiError ? err.message : 'Could not update subscription');
     },
   });
 }

@@ -1,6 +1,6 @@
 # Relay — v1 scope
 
-**Status:** Done (steps 10–17)  
+**Status:** Done (steps 10–17). Next: [SCOPE-V2.md](./SCOPE-V2.md)  
 **Roadmap:** [STEPS-V1.md](./STEPS-V1.md)  
 **Design:** [superpowers/v1/August-2026/specs/2026-08-27-v1-product-design.md](./superpowers/v1/August-2026/specs/2026-08-27-v1-product-design.md)  
 **Index:** [SCOPE.md](./SCOPE.md)
@@ -27,18 +27,9 @@ MVP (auth, orgs, issues, teams, projects) is already done — [SCOPE-MVP.md](./S
 
 v1 still uses the [Circle](https://github.com/ln-dev7/circle) UI. Wire the API into existing screens. Do not delete Circle components. Do not rewrite a Circle page from scratch. New frontend only where Circle has no component. Wired vs leftover: [CIRCLE.md](./CIRCLE.md).
 
-## Out (v2+)
+## Out (deferred)
 
-- Billing / plans
-- SSO / SAML
-- Real-time collaboration (WebSockets / Redis)
-- File uploads / attachments / avatars
-- AI agent features
-- Code reviews, documents, initiatives
-- SLAs, issue templates, integrations
-- Super-admin console
-- Email for every inbox notification
-- Comment reactions, issue subscribe, burn-up chart APIs
+At v1 time these were out. **v2 takes some of them** (subscribe, inbox email, avatars, issue files) — see [SCOPE-V2.md](./SCOPE-V2.md). Still later: billing, SSO, realtime, AI, reviews, documents, initiatives.
 
 Unused Circle/UI is still in scope to **keep**: do not delete components, screens, or nav items that are out of the current step. Comment them out or hide them.
 

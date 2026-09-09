@@ -31,6 +31,10 @@ export const setIssueLabelsBodySchema = z.object({
   labelIds: z.array(z.string().uuid()).max(LABEL_IDS_MAX),
 });
 
+export const putIssueSubscriptionBodySchema = z.object({
+  subscribed: z.boolean(),
+});
+
 export const listIssuesQuerySchema = z.object({
   limit: z.string().optional(),
   teamId: z.string().optional(),
@@ -43,4 +47,5 @@ export const listIssuesQuerySchema = z.object({
   statusCategory: z.string().optional(),
   cycleId: z.string().optional(),
   labelId: z.string().optional(),
+  subscribed: z.string().optional(),
 });

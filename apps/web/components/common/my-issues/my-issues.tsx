@@ -13,6 +13,7 @@ import { useIssuesStore } from '@/store/issues-store';
 import { useRightPanelStore } from '@/store/right-panel-store';
 import { useSearchStore } from '@/store/search-store';
 import { useViewStore } from '@/store/view-store';
+import { SUBSCRIBED_ME } from '@relay/shared/constants/subscribe.constant';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 import { useMyIssuesTab } from './use-my-issues';
@@ -31,13 +32,16 @@ export default function MyIssues() {
    const { issues } = useIssuesStore();
    const { openPanel } = useRightPanelStore();
 
-   useIssuesList(orgId, { assigneeId: 'me' });
+   useIssuesList(
+      orgId,
+      tab === 'subscribed' ? { subscribed: SUBSCRIBED_ME } : { assigneeId: 'me' },
+   );
 
    const isSearching = isSearchOpen && searchQuery.trim() !== '';
    const isViewTypeGrid = viewType === 'grid';
 
    const scopedIssues = useMemo(
-      () => (tab === 'assigned' ? issues : []),
+      () => (tab === 'assigned' || tab === 'subscribed' ? issues : []),
       [issues, tab],
    );
 

@@ -25,7 +25,7 @@ Circle is the frontend ([ln-dev7/circle](https://github.com/ln-dev7/circle)): do
 
 ## Out (deferred to v1 or later)
 
-At MVP time these were out. **v1 takes some of them** (comments, labels, inbox, cycles, views, SMTP, Docker) — see [SCOPE-V1.md](./SCOPE-V1.md). Still later than v1: billing, SSO, realtime, uploads, AI, reviews, documents.
+At MVP time these were out. **v1 takes some of them** (comments, labels, inbox, cycles, views, SMTP, Docker) — see [SCOPE-V1.md](./SCOPE-V1.md). **v2 takes subscribe, inbox email, uploads** — see [SCOPE-V2.md](./SCOPE-V2.md). Still later: billing, SSO, realtime, AI, reviews, documents.
 
 Unused Circle UI stays in the repo: hide or comment out; do not delete.
 
@@ -37,4 +37,4 @@ Unused Circle UI stays in the repo: hide or comment out; do not delete.
 
 ## Next
 
-v1: [SCOPE-V1.md](./SCOPE-V1.md) / [STEPS-V1.md](./STEPS-V1.md).
+Shipped v1: [SCOPE-V1.md](./SCOPE-V1.md). Current: [SCOPE-V2.md](./SCOPE-V2.md) / [STEPS-V2.md](./STEPS-V2.md).

@@ -64,7 +64,7 @@ export function mapApiProject(project: ApiProject): Project {
   };
 }
 
-export function mapApiIssue(issue: ApiIssue): Issue {
+export function mapApiIssue(issue: ApiIssue): Issue & { subscribed: boolean } {
   return {
     id: issue.id,
     identifier: issue.identifier,
@@ -96,5 +96,10 @@ export function mapApiIssue(issue: ApiIssue): Issue {
       : undefined,
     subissues: [],
     rank: issue.rank,
+    subscribed: issue.subscribed,
   };
+}
+
+export function isIssueSubscribed(issue: Issue): boolean {
+  return 'subscribed' in issue && Boolean((issue as Issue & { subscribed?: boolean }).subscribed);
 }

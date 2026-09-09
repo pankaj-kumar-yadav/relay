@@ -18,7 +18,7 @@ relay/
     web/          # Next.js UI
     api/          # Express API
   packages/       # shared packages (later)
-  docs/           # SCOPE index + SCOPE-MVP / SCOPE-V1, STEPS, architecture
+  docs/           # SCOPE index + SCOPE-MVP / SCOPE-V1 / SCOPE-V2, STEPS, architecture
   AGENTS.md
   turbo.json
   pnpm-workspace.yaml
@@ -45,8 +45,10 @@ Never commit real secrets. Keep `.env.example` files updated when new vars are a
 
 **MVP (steps 1–9)** is done: see [SCOPE-MVP.md](../../SCOPE-MVP.md) — create org → invite member → create/edit issues; org A cannot see org B.
 
-**v1 (steps 10–17):** see [SCOPE-V1.md](../../SCOPE-V1.md) — self-host, invite via email, comments → labels → cycles → inbox → saved views, leftover Circle hidden.
+**v1 (steps 10–17)** is done: see [SCOPE-V1.md](../../SCOPE-V1.md) — self-host, invite via email, comments → labels → cycles → inbox → saved views, leftover Circle hidden.
+
+**v2 (steps 18–20):** see [SCOPE-V2.md](../../SCOPE-V2.md) — subscribe, inbox email, avatars + issue files.
 
 ## Next
 
-v1 (steps 10–17) is done. See [SCOPE-V1.md](../../SCOPE-V1.md) “Out” before adding billing, SSO, realtime, uploads, or AI.
+Current release: [SCOPE-V2.md](../../SCOPE-V2.md) / [STEPS-V2.md](../../STEPS-V2.md). Billing, SSO, realtime, and AI stay out.

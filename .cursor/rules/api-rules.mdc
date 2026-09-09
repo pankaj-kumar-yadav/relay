@@ -23,6 +23,7 @@ middleware/org/requireOrgRole.test.ts
 routes/auth/auth.ts
 routes/auth/auth.schema.ts
 routes/auth/auth.integration.test.ts
+routes/index.ts
 routes/issues/issues.ts
 routes/issues/issues.schema.ts
 openapi/paths/health.ts
@@ -44,6 +45,7 @@ routes/auth.integration.test.ts
 ```
 
 - A **single** standalone file may stay at the layer root (`utils/passwords.ts`, `utils/response.ts`)
+- HTTP mount map: `routes/index.ts` (`mountV1Routes`) for top-level `/auth`, `/orgs`, `/invites`. Nested mounts stay on the parent router (`orgs.ts`, `teams.ts`)
 - Do **not** invert the tree (`auth/middleware/…`)
 - Do **not** invent a folder for one file (`utils/passwords/passwords.ts`). `test/` is a layer (shared harness, excluded from `dist`) — keep helpers there even if it is one file today
 - New files follow this. When you next touch a flat domain that already has 2+ files, nest them. Do not mass-move unrelated folders in the same change.

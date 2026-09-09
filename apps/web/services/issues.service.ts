@@ -26,6 +26,7 @@ export type ApiIssue = {
   labels: { id: string; name: string; color: string }[];
   cycleId: string | null;
   cycle: { id: string; name: string; status: string } | null;
+  subscribed: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -40,6 +41,7 @@ export type IssueListQuery = {
   statusCategory?: string;
   cycleId?: string;
   labelId?: string;
+  subscribed?: string;
   cursor?: string;
   limit?: number;
 };
@@ -107,6 +109,17 @@ export async function patchIssueApi(orgSlug: string, issueId: string, input: Pat
 export async function deleteIssueApi(orgSlug: string, issueId: string) {
   return api<{ id: string }>(`/orgs/${orgSlug}/issues/${issueId}`, {
     method: 'DELETE',
+  });
+}
+
+export async function putIssueSubscriptionApi(
+  orgSlug: string,
+  issueId: string,
+  subscribed: boolean,
+) {
+  return api<{ issue: ApiIssue }>(`/orgs/${orgSlug}/issues/${issueId}/subscription`, {
+    method: 'PUT',
+    body: JSON.stringify({ subscribed }),
   });
 }
 

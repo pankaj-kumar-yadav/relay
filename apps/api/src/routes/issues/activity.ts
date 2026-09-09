@@ -14,7 +14,7 @@ import {
   sendError,
   ValidationError,
 } from '@/utils/errors.js';
-import { notifyIfRecipient } from '@/utils/inbox/notify.js';
+import { ensureSubscribed, notifyWatchers } from '@/utils/issue/issueSubscribe.js';
 import { aggregateCommentReactions } from '@/utils/issue/commentReaction.js';
 import { parseIssueRef } from '@/utils/issue/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
@@ -165,12 +165,17 @@ activityRouter.post('/:issueId/comments', async (req, res) => {
           author: { select: actorSelect },
         },
       });
-      await notifyIfRecipient(tx, {
+      await ensureSubscribed(tx, {
+        organizationId,
+        issueId: issue.id,
+        userId: req.user!.id,
+      });
+      await notifyWatchers(tx, {
         organizationId,
         issueId: issue.id,
         actorId: req.user!.id,
-        recipientId: issue.assigneeId,
         type: NotificationType.COMMENT,
+        extraRecipientId: issue.assigneeId,
       });
       return created;
     });

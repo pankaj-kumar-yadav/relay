@@ -1,8 +1,8 @@
-import type { Prisma } from '@/db.js';
+import type { Prisma, PrismaClient } from '@/db.js';
 
 import type { NotificationTypeValue } from '@relay/shared/constants/inbox.constant';
 
-type Tx = Prisma.TransactionClient;
+type Tx = Prisma.TransactionClient | PrismaClient;
 
 export function shouldNotify(
   recipientId: string | null | undefined,

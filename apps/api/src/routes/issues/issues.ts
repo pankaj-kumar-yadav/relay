@@ -12,6 +12,7 @@ import {
 import { IssueEventType } from '@relay/shared/constants/activity.constant';
 import { HttpStatus } from '@/constants/http.constant.js';
 import { NotificationType } from '@relay/shared/constants/inbox.constant';
+import { SUBSCRIBED_ME } from '@relay/shared/constants/subscribe.constant';
 import { ListLimit } from '@/constants/list.constant.js';
 import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
@@ -20,6 +21,7 @@ import { activityRouter } from '@/routes/issues/activity.js';
 import {
   createIssueBodySchema,
   patchIssueBodySchema,
+  putIssueSubscriptionBodySchema,
   setIssueLabelsBodySchema,
 } from '@/routes/issues/issues.schema.js';
 import {
@@ -28,6 +30,7 @@ import {
   ValidationError,
 } from '@/utils/errors.js';
 import { notifyIfRecipient } from '@/utils/inbox/notify.js';
+import { ensureSubscribed, notifyWatchers } from '@/utils/issue/issueSubscribe.js';
 import { assertCycleOnTeam } from '@/utils/cycle/cycle.js';
 import { eventPayload, labelEventPayload, recordIssueEvent } from '@/utils/issue/issueEvent.js';
 import { loadOrgLabels, syncIssueLabels } from '@/utils/issue/issueLabels.js';
@@ -66,7 +69,7 @@ const issueSelect = {
 
 type IssueRow = Prisma.IssueGetPayload<{ select: typeof issueSelect }>;
 
-function publicIssue(issue: IssueRow) {
+function publicIssue(issue: IssueRow, subscribed: boolean) {
   return {
     id: issue.id,
     identifier: issueIdentifier(issue.team.key, issue.number),
@@ -87,9 +90,28 @@ function publicIssue(issue: IssueRow) {
     team: issue.team,
     assignee: issue.assignee,
     labels: issue.issueLabels.map((row) => row.label),
+    subscribed,
     createdAt: issue.createdAt.toISOString(),
     updatedAt: issue.updatedAt.toISOString(),
   };
+}
+
+async function mapIssuesForUser(
+  organizationId: string,
+  userId: string,
+  issues: IssueRow[],
+) {
+  if (issues.length === 0) return [];
+  const rows = await prisma.issueSubscription.findMany({
+    where: {
+      organizationId,
+      userId,
+      issueId: { in: issues.map((issue) => issue.id) },
+    },
+    select: { issueId: true },
+  });
+  const watched = new Set(rows.map((row) => row.issueId));
+  return issues.map((issue) => publicIssue(issue, watched.has(issue.id)));
 }
 
 async function loadIssue(organizationId: string, rawId: string) {
@@ -164,6 +186,11 @@ issuesRouter.get('/', async (req, res) => {
     let assigneeId =
       typeof req.query.assigneeId === 'string' ? req.query.assigneeId : undefined;
     if (assigneeId === 'me') assigneeId = req.user!.id;
+    const subscribedRaw =
+      typeof req.query.subscribed === 'string' ? req.query.subscribed : undefined;
+    if (subscribedRaw && subscribedRaw !== SUBSCRIBED_ME) {
+      throw new ValidationError('subscribed must be me');
+    }
 
     if (status && !isIssueStatus(status)) {
       throw new ValidationError('Invalid status');
@@ -190,6 +217,9 @@ issuesRouter.get('/', async (req, res) => {
     else if (statusIds) where.status = { in: statusIds };
     if (priority) where.priority = priority;
     if (assigneeId) where.assigneeId = assigneeId;
+    if (subscribedRaw === SUBSCRIBED_ME) {
+      where.subscriptions = { some: { userId: req.user!.id } };
+    }
     if (projectId) where.projectId = projectId;
     const cycleIdRaw = typeof req.query.cycleId === 'string' ? req.query.cycleId : undefined;
     if (cycleIdRaw) {
@@ -267,7 +297,7 @@ issuesRouter.get('/', async (req, res) => {
 
     sendSuccess(res, {
       data: {
-        issues: page.map(publicIssue),
+        issues: await mapIssuesForUser(organizationId, req.user!.id, page),
         nextCursor: hasMore ? page[page.length - 1]!.id : null,
       },
     });
@@ -390,6 +420,18 @@ issuesRouter.post('/', async (req, res) => {
           payload: eventPayload(IssueEventType.CYCLE, null, createdCycleName),
         });
       }
+      await ensureSubscribed(tx, {
+        organizationId,
+        issueId: created.id,
+        userId: req.user!.id,
+      });
+      if (assigneeId) {
+        await ensureSubscribed(tx, {
+          organizationId,
+          issueId: created.id,
+          userId: assigneeId,
+        });
+      }
       return tx.issue.findFirstOrThrow({
         where: { id: created.id },
         select: issueSelect,
@@ -399,7 +441,7 @@ issuesRouter.post('/', async (req, res) => {
     sendSuccess(res, {
       status: HttpStatus.CREATED,
       message: 'Issue created',
-      data: { issue: publicIssue(issue) },
+      data: { issue: publicIssue(issue, true) },
     });
   } catch (err) {
     sendError(res, err);
@@ -412,7 +454,8 @@ issuesRouter.get('/:issueId', async (req, res) => {
     if (!issue) {
       throw new NotFoundError('Issue not found');
     }
-    sendSuccess(res, { data: { issue: publicIssue(issue) } });
+    const [mapped] = await mapIssuesForUser(req.org!.id, req.user!.id, [issue]);
+    sendSuccess(res, { data: { issue: mapped } });
   } catch (err) {
     sendError(res, err);
   }
@@ -455,7 +498,43 @@ issuesRouter.put('/:issueId/labels', async (req, res) => {
 
     sendSuccess(res, {
       message: 'Labels updated',
-      data: { issue: publicIssue(issue) },
+      data: {
+        issue: (await mapIssuesForUser(organizationId, req.user!.id, [issue]))[0],
+      },
+    });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+issuesRouter.put('/:issueId/subscription', async (req, res) => {
+  try {
+    const parsed = putIssueSubscriptionBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+
+    const organizationId = req.org!.id;
+    const existing = await loadIssue(organizationId, req.params.issueId);
+    if (!existing) {
+      throw new NotFoundError('Issue not found');
+    }
+
+    const userId = req.user!.id;
+    if (parsed.data.subscribed) {
+      await ensureSubscribed(prisma, {
+        organizationId,
+        issueId: existing.id,
+        userId,
+      });
+    } else {
+      await prisma.issueSubscription.deleteMany({
+        where: { issueId: existing.id, userId },
+      });
+    }
+
+    sendSuccess(res, {
+      data: { issue: publicIssue(existing, parsed.data.subscribed) },
     });
   } catch (err) {
     sendError(res, err);
@@ -618,16 +697,23 @@ issuesRouter.patch('/:issueId', async (req, res) => {
           recipientId: data.assigneeId,
           type: NotificationType.ASSIGNEE,
         });
+        if (data.assigneeId) {
+          await ensureSubscribed(tx, {
+            organizationId,
+            issueId: existing.id,
+            userId: data.assigneeId,
+          });
+        }
       }
 
       const nextAssigneeId = updated.assignee?.id ?? null;
       if (data.status !== undefined && data.status !== existing.status) {
-        await notifyIfRecipient(tx, {
+        await notifyWatchers(tx, {
           organizationId,
           issueId: existing.id,
           actorId,
-          recipientId: nextAssigneeId,
           type: NotificationType.STATUS,
+          extraRecipientId: nextAssigneeId,
         });
       }
 
@@ -651,7 +737,9 @@ issuesRouter.patch('/:issueId', async (req, res) => {
 
     sendSuccess(res, {
       message: 'Issue updated',
-      data: { issue: publicIssue(issue) },
+      data: {
+        issue: (await mapIssuesForUser(organizationId, req.user!.id, [issue]))[0],
+      },
     });
   } catch (err) {
     sendError(res, err);
