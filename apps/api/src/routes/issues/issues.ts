@@ -8,10 +8,10 @@ import {
   isIssueStatus,
   statusesForCategories,
   type IssueStatusCategoryValue,
-} from '@/constants/issue.constant.js';
-import { IssueEventType } from '@/constants/activity.constant.js';
+} from '@relay/shared/constants/issue.constant';
+import { IssueEventType } from '@relay/shared/constants/activity.constant';
 import { HttpStatus } from '@/constants/http.constant.js';
-import { NotificationType } from '@/constants/inbox.constant.js';
+import { NotificationType } from '@relay/shared/constants/inbox.constant';
 import { ListLimit } from '@/constants/list.constant.js';
 import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';

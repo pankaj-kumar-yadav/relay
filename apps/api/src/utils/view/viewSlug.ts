@@ -1,4 +1,4 @@
-import { VIEW_SLUG_FALLBACK, VIEW_SLUG_MAX } from '@/constants/view.constant.js';
+import { VIEW_SLUG_FALLBACK, VIEW_SLUG_MAX } from '@relay/shared/constants/view.constant';
 
 export function slugifyViewName(name: string): string {
   const slug = name

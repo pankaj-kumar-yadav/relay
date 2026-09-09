@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { NextFunction, Request, Response } from 'express';
 
-import { OrgRole } from '@/constants/org.constant.js';
+import { OrgRole } from '@relay/shared/constants/org.constant';
 import { ForbiddenError } from '@/utils/errors.js';
 
 import { requireOrgRole } from './requireOrgRole.js';

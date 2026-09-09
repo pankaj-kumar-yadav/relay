@@ -1,4 +1,4 @@
-import { LABEL_IDS_MAX } from '@/constants/label.constant.js';
+import { LABEL_IDS_MAX } from '@relay/shared/constants/label.constant';
 import { z } from '@/openapi/zod.js';
 
 export const createIssueBodySchema = z.object({

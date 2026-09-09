@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { HttpStatus } from '@/constants/http.constant.js';
-import { TEAM_ICON_MAX, isTeamKey, normalizeTeamKey } from '@/constants/team.constant.js';
+import { TEAM_ICON_MAX, isTeamKey, normalizeTeamKey } from '@relay/shared/constants/team.constant';
 import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';

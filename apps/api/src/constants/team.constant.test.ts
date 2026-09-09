@@ -6,7 +6,7 @@ import {
   normalizeTeamKey,
   TEAM_ICON_MAX,
   TEAM_KEY_PATTERN,
-} from './team.constant.js';
+} from '@relay/shared/constants/team.constant';
 
 test('normalizeTeamKey uppercases and trims', () => {
   assert.equal(normalizeTeamKey('  core '), 'CORE');

@@ -1,7 +1,7 @@
 import {
   COMMENT_BODY_MAX,
   COMMENT_REACTION_EMOJI_MAX,
-} from '@/constants/activity.constant.js';
+} from '@relay/shared/constants/activity.constant';
 import { z } from '@/openapi/zod.js';
 import { isCommentReactionEmoji } from '@/utils/issue/commentReaction.js';
 

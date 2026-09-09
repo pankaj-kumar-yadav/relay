@@ -32,7 +32,7 @@ import { prisma } from '@/db.js';
 - When touching a file with deep relatives, switch those imports to aliases
 - Do not invent aliases that are missing from `tsconfig` / package config — add the path first
 
-**Exceptions (only):** same-directory (`./tokens.js`), package names (`express`, `zod`, `@prisma/client`), one-level sibling only when tightly colocated — prefer `@/` when unsure.
+**Exceptions (only):** same-directory (`./tokens.js`), package names (`express`, `zod`, `@prisma/client`, `@relay/shared`), one-level sibling only when tightly colocated — prefer `@/` when unsure.
 
 ## Consts by domain
 
@@ -40,6 +40,7 @@ Reusable strings, numbers, roles, statuses, codes, **app paths**, and **date/tim
 
 | App | Folder | File name |
 |-----|--------|-----------|
+| Shared | `packages/shared/src/constants/` | `<domain>.constant.ts` |
 | API | `apps/api/src/constants/` | `<domain>.constant.ts` |
 | Web | `apps/web/constants/` | `<domain>.constant.ts` |
 
@@ -61,7 +62,17 @@ import { teamHomePath, DateFormat, OrgRole } from '@/constants/route.constant';
 
 Do not inline roles, path strings (`router.push` / `replace` / `redirect` / `Link href`), or date-fns patterns. Do not invent a file per screen. `new Date()` for timestamps/sorting is fine. One-off UI copy stays inline.
 
-Until `packages/shared` exists, values used on both sides are mirrored with the **same keys and values**. Files use `*.constant.ts`.
+Values used on both web and API live in `packages/shared/src/constants/` (`@relay/shared/constants/<domain>.constant`). Group shared source by kind (`constants/`, later `types/`, `components/`) — do not drop files in `src/` root. Do not add a kitchen-sink barrel. New shared files use `*.constant.ts`.
+
+App `constants/` files exist **only** for app-only extras (path builders, cookie names, display copy, `JSON_BODY_LIMIT`). Do not add a re-export-only shim. Mixed domain files may re-export the shared names so one import can pull extras + shared values.
+
+```ts
+// ✅ shared value
+import { OrgRole } from '@relay/shared/constants/org.constant';
+
+// ✅ app extra (web team file also re-exports DEFAULT_TEAM_KEY)
+import { teamHomePath } from '@/constants/team.constant';
+```
 
 ## NODE_ENV
 
@@ -69,7 +80,7 @@ Until `packages/shared` exists, values used on both sides are mirrored with the 
 
 - Local/dev and unit/integration tests run as `development`
 - Production runtime and production builds use `production`
-- Branch on `NodeEnv` from `constants/env.constant.ts` (`apps/api` and `apps/web`)
+- Branch on `NodeEnv` from `@relay/shared/constants/env.constant`
 - Detect the Node test runner with `process.env.NODE_TEST_CONTEXT` if tests must skip rate limits — do **not** invent `NODE_ENV=test`
 
 ```ts

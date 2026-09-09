@@ -2,7 +2,7 @@ import {
   DEFAULT_ACCESS_TOKEN_VALIDITY_SEC,
   DEFAULT_REFRESH_TOKEN_VALIDITY_SEC,
 } from '@/constants/auth.constant.js';
-import { NodeEnv } from '@/constants/env.constant.js';
+import { NodeEnv } from '@relay/shared/constants/env.constant';
 import { DEFAULT_SMTP_PORT } from '@/constants/mail.constant.js';
 
 export const config = {

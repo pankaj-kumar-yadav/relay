@@ -4,22 +4,21 @@ import { PrismaClient } from '../src/generated/prisma/client.js';
 import {
   DEFAULT_ISSUE_PRIORITY,
   DEFAULT_ISSUE_STATUS,
-  DEFAULT_TEAM_KEY,
-  DEFAULT_TEAM_NAME,
   ISSUE_STATUS_CATEGORY,
   IssuePriority,
   IssueStatus,
   IssueStatusCategory,
   type IssueStatusValue,
-} from '../src/constants/issue.constant.js';
-import { IssueEventType } from '../src/constants/activity.constant.js';
-import { CycleStatus } from '../src/constants/cycle.constant.js';
-import { NotificationType } from '../src/constants/inbox.constant.js';
+} from '@relay/shared/constants/issue.constant';
+import { DEFAULT_TEAM_KEY, DEFAULT_TEAM_NAME } from '@relay/shared/constants/team.constant';
+import { IssueEventType } from '@relay/shared/constants/activity.constant';
+import { CycleStatus } from '@relay/shared/constants/cycle.constant';
+import { NotificationType } from '@relay/shared/constants/inbox.constant';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
-} from '../src/constants/project.constant.js';
-import { OrgRole, type OrgRoleValue } from '../src/constants/org.constant.js';
+} from '@relay/shared/constants/project.constant';
+import { OrgRole, type OrgRoleValue } from '@relay/shared/constants/org.constant';
 import {
   SEED_LABELS,
   SEED_PASSWORD,
@@ -27,7 +26,7 @@ import {
   SEED_PROJECT_NAME,
   SeedEmail,
   SeedOrgSlug,
-} from '../src/constants/seed.constant.js';
+} from '@relay/shared/constants/seed.constant';
 import { rankBetween } from '../src/utils/issue/issueRank.js';
 import { hashPassword } from '../src/utils/passwords.js';
 import { allocateViewSlug, slugifyViewName } from '../src/utils/view/viewSlug.js';

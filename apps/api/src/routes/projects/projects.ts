@@ -6,7 +6,7 @@ import {
   PROJECT_ICON_MAX,
   isProjectHealth,
   isProjectStatus,
-} from '@/constants/project.constant.js';
+} from '@relay/shared/constants/project.constant';
 import { HttpStatus } from '@/constants/http.constant.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';

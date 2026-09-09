@@ -1,5 +1,5 @@
 import { AuthApiPath } from '@/constants/auth.constant';
-import { HttpStatus } from '@/constants/http.constant';
+import { HttpStatus } from '@relay/shared/constants/http.constant';
 import { api, ApiError } from '@/lib/api';
 
 export type AuthUser = {

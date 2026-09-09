@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { IssueEventType } from '@/constants/activity.constant.js';
+import { IssueEventType } from '@relay/shared/constants/activity.constant';
 import { eventPayload, labelEventPayload } from '@/utils/issue/issueEvent.js';
 
 test('eventPayload omits unchanged fields and records from/to', () => {

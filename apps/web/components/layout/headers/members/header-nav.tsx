@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { NodeEnv } from '@/constants/env.constant';
+import { NodeEnv } from '@relay/shared/constants/env.constant';
 import { useCreateInvite } from '@/hooks/use-invites';
 import { useMembers } from '@/hooks/use-members';
 import { Plus } from 'lucide-react';

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.constant.js';
-import { DEFAULT_TEAM_KEY } from '@/constants/issue.constant.js';
-import { TEAM_ICON_MAX } from '@/constants/team.constant.js';
+import { DEFAULT_TEAM_KEY } from '@relay/shared/constants/team.constant';
+import { TEAM_ICON_MAX } from '@relay/shared/constants/team.constant';
 import { canRun, close, type Envelope, listen, register } from '@/test/http.js';
 
 type PublicTeam = {

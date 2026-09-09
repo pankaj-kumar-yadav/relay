@@ -23,6 +23,9 @@ importers:
       '@prisma/client':
         specifier: ^6.19.3
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
+      '@relay/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@scalar/express-api-reference':
         specifier: ^0.10.16
         version: 0.10.16
@@ -150,6 +153,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.8
         version: 1.2.16(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@relay/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@remixicon/react':
         specifier: ^4.6.0
         version: 4.9.0(react@19.2.8)
@@ -270,6 +276,12 @@ importers:
         version: 4.3.3
       typescript:
         specifier: ^5
+        version: 5.9.3
+
+  packages/shared:
+    devDependencies:
+      typescript:
+        specifier: ^5.8.2
         version: 5.9.3
 
 packages:

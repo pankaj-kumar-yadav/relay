@@ -1,4 +1,4 @@
-import { VIEW_NAME_MAX } from '@/constants/view.constant.js';
+import { VIEW_NAME_MAX } from '@relay/shared/constants/view.constant';
 import { z } from '@/openapi/zod.js';
 
 const optionalTrimmed = z.string().trim().min(1);

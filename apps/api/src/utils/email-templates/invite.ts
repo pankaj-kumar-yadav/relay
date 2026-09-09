@@ -1,4 +1,4 @@
-import { BRAND_NAME } from '@/constants/brand.constant.js';
+import { BRAND_NAME } from '@relay/shared/constants/brand.constant';
 import { INVITE_EXPIRY_MS } from '@/constants/invite.constant.js';
 import { inviteMailSubject } from '@/constants/mail.constant.js';
 import {

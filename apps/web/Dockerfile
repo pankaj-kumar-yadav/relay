@@ -10,9 +10,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
+COPY packages/shared/package.json packages/shared/package.json
 RUN pnpm install --frozen-lockfile --filter @relay/web...
+COPY packages/shared packages/shared
 COPY apps/web apps/web
-RUN pnpm --filter @relay/web build
+RUN pnpm --filter @relay/shared build && pnpm --filter @relay/web build
 
 FROM base AS runner
 ENV NODE_ENV=production

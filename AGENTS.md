@@ -13,7 +13,7 @@ Read these before changing code:
 - Monorepo: pnpm workspaces + Turborepo
 - `apps/web` — Next.js UI (Circle + API wiring)
 - `apps/api` — Express API
-- `packages/*` — shared code (add when needed)
+- `packages/shared` — shared by web and API (`src/constants/`, later `types/` / `components/`)
 - Product docs live at **repo root** / `docs/`, not inside one app
 
 ## Rules
@@ -34,6 +34,7 @@ Frontend is [Circle](https://github.com/ln-dev7/circle) dropped into `apps/web`.
 - **Do not change Circle mock data** (`apps/web/mock-data/**`)
 - Hide or comment out leftover chrome; leave the files in place
 - Write new frontend **only** where Circle has no component for that surface
+- Wired vs leftover: [docs/CIRCLE.md](docs/CIRCLE.md)
 - Details: [docs/project-rules/web-rules.md](docs/project-rules/web-rules.md)
 
 ### Git / commits (non-negotiable)

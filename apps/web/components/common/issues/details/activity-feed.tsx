@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { CommentReactions } from '@/components/common/issues/details/comment-reactions';
-import { IssueEventType } from '@/constants/activity.constant';
+import { IssueEventType } from '@relay/shared/constants/activity.constant';
 import { formatRelativeTime } from '@/constants/date.constant';
 import { useCreateComment, useIssueActivity } from '@/hooks/use-activity';
 import { dicebearAvatarUrl } from '@/constants/user.constant';

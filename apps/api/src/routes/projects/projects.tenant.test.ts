@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.constant.js';
-import { PROJECT_ICON_MAX } from '@/constants/project.constant.js';
+import { PROJECT_ICON_MAX } from '@relay/shared/constants/project.constant';
 import { canRun, close, type Envelope, listen, register } from '@/test/http.js';
 
 type PublicTeam = {

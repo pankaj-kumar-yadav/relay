@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { IssueStatus } from './issue.constant.js';
+import { IssueStatus } from '@relay/shared/constants/issue.constant';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
@@ -9,7 +9,7 @@ import {
   isProjectHealth,
   isProjectStatus,
   ProjectHealth,
-} from './project.constant.js';
+} from '@relay/shared/constants/project.constant';
 
 test('default project status is to-do and health is no-update', () => {
   assert.equal(DEFAULT_PROJECT_STATUS, IssueStatus.TO_DO);

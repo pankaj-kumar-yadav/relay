@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { DateFormat, formatDate } from '@/constants/date.constant';
-import { DEFAULT_LABEL_COLOR, LABEL_COLORS, LABEL_NAME_MAX } from '@/constants/label.constant';
+import { DEFAULT_LABEL_COLOR, LABEL_COLORS, LABEL_NAME_MAX } from '@relay/shared/constants/label.constant';
 import { OrgRole } from '@/constants/org.constant';
 import { useCreateLabel, useDeleteLabel, useLabels, usePatchLabel } from '@/hooks/use-labels';
 import { useOrgs } from '@/hooks/use-orgs';

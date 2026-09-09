@@ -10,7 +10,7 @@ import {
   isIssuePriority,
   isIssueStatus,
   statusesForCategories,
-} from './issue.constant.js';
+} from '@relay/shared/constants/issue.constant';
 
 test('default status is to-do and maps to unstarted', () => {
   assert.equal(DEFAULT_ISSUE_STATUS, IssueStatus.TO_DO);

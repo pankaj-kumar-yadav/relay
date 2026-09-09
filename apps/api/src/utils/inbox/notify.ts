@@ -1,6 +1,6 @@
 import type { Prisma } from '@/db.js';
 
-import type { NotificationTypeValue } from '@/constants/inbox.constant.js';
+import type { NotificationTypeValue } from '@relay/shared/constants/inbox.constant';
 
 type Tx = Prisma.TransactionClient;
 

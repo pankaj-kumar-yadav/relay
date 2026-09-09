@@ -1,6 +1,3 @@
-export const DEFAULT_TEAM_KEY = 'CORE';
-export const DEFAULT_TEAM_NAME = 'Core';
-
 export const IssueStatus = {
   TRIAGE: 'triage',
   BACKLOG: 'backlog',
@@ -71,9 +68,7 @@ export function isIssuePriority(value: string): value is IssuePriorityValue {
   return ISSUE_PRIORITY_VALUES.has(value);
 }
 
-export function statusesForCategories(
-  categories: IssueStatusCategoryValue[],
-): IssueStatusValue[] {
+export function statusesForCategories(categories: IssueStatusCategoryValue[]): IssueStatusValue[] {
   const wanted = new Set(categories);
   return (Object.keys(ISSUE_STATUS_CATEGORY) as IssueStatusValue[]).filter((id) =>
     wanted.has(ISSUE_STATUS_CATEGORY[id]),

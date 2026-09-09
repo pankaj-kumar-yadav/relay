@@ -1,4 +1,4 @@
-import { CYCLE_NAME_MAX } from '@/constants/cycle.constant.js';
+import { CYCLE_NAME_MAX } from '@relay/shared/constants/cycle.constant';
 import { z } from '@/openapi/zod.js';
 
 export const createCycleBodySchema = z.object({

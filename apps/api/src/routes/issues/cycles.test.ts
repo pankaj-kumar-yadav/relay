@@ -2,10 +2,10 @@ import 'dotenv/config';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { IssueEventType } from '@/constants/activity.constant.js';
-import { CycleStatus } from '@/constants/cycle.constant.js';
+import { IssueEventType } from '@relay/shared/constants/activity.constant';
+import { CycleStatus } from '@relay/shared/constants/cycle.constant';
 import { API_PREFIX, HttpStatus } from '@/constants/http.constant.js';
-import { DEFAULT_TEAM_KEY } from '@/constants/issue.constant.js';
+import { DEFAULT_TEAM_KEY } from '@relay/shared/constants/team.constant';
 import { prisma } from '@/db.js';
 import { canRun, close, type Envelope, listen, register } from '@/test/http.js';
 

@@ -19,6 +19,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@relay/shared": "workspace:*",
     "@asteasolutions/zod-to-openapi": "7.3.4",
     "@prisma/client": "^6.19.3",
     "@scalar/express-api-reference": "^0.10.16",

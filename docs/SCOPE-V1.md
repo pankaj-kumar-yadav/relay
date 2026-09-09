@@ -25,7 +25,7 @@ MVP (auth, orgs, issues, teams, projects) is already done — [SCOPE-MVP.md](./S
 
 ## Circle frontend
 
-v1 still uses the [Circle](https://github.com/ln-dev7/circle) UI. Wire the API into existing screens. Do not delete Circle components. Do not rewrite a Circle page from scratch. New frontend only where Circle has no component.
+v1 still uses the [Circle](https://github.com/ln-dev7/circle) UI. Wire the API into existing screens. Do not delete Circle components. Do not rewrite a Circle page from scratch. New frontend only where Circle has no component. Wired vs leftover: [CIRCLE.md](./CIRCLE.md).
 
 ## Out (v2+)
 

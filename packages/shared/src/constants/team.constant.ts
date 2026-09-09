@@ -1,3 +1,6 @@
+export const DEFAULT_TEAM_KEY = 'CORE';
+export const DEFAULT_TEAM_NAME = 'Core';
+
 export const TEAM_KEY_MIN_LENGTH = 2;
 export const TEAM_KEY_MAX_LENGTH = 10;
 export const TEAM_KEY_PATTERN = /^[A-Z0-9]{2,10}$/;

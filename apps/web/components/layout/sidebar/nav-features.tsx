@@ -1,5 +1,7 @@
 'use client';
 
+/** Circle leftover — not mounted in AppSidebar. See docs/CIRCLE.md. */
+
 import Link from 'next/link';
 
 import {

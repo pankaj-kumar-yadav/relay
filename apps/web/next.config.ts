@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
    output: 'standalone',
    outputFileTracingRoot: path.join(__dirname, '../..'),
    devIndicators: false,
-   transpilePackages: ['emoji-picker-react'],
+   transpilePackages: ['emoji-picker-react', '@relay/shared'],
 };
 
 export default nextConfig;

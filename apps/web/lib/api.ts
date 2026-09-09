@@ -1,5 +1,5 @@
 import { AuthApiPath } from '@/constants/auth.constant';
-import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.constant';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@relay/shared/constants/http.constant';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 

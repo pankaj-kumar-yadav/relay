@@ -15,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { ApiError } from '@/lib/api';
 import { AppRoute, AUTH_SOCIAL_PROVIDERS, nextPathFromSearch } from '@/constants/auth.constant';
 import { BRAND_NAME } from '@/constants/brand.constant';
-import { NodeEnv } from '@/constants/env.constant';
+import { NodeEnv } from '@relay/shared/constants/env.constant';
 import { SEED_PASSWORD } from '@/constants/seed.constant';
 import { useLogin, useSession } from '@/hooks/use-session';
 import { useResolveHomePath } from '@/hooks/use-orgs';

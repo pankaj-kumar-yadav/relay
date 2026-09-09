@@ -1,4 +1,4 @@
-import { OrgRole } from '@/constants/org.constant.js';
+import { OrgRole } from '@relay/shared/constants/org.constant';
 import { z } from '@/openapi/zod.js';
 
 export const patchMemberBodySchema = z.object({

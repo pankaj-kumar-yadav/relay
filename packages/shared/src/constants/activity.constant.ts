@@ -7,8 +7,7 @@ export const IssueEventType = {
   CYCLE: 'cycle',
 } as const;
 
-export type IssueEventTypeValue =
-  (typeof IssueEventType)[keyof typeof IssueEventType];
+export type IssueEventTypeValue = (typeof IssueEventType)[keyof typeof IssueEventType];
 
 export const COMMENT_BODY_MAX = 16_000;
 export const ACTIVITY_LIST_LIMIT = 200;

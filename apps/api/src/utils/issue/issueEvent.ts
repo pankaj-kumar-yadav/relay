@@ -3,7 +3,7 @@ import type { Prisma } from '@/db.js';
 import {
   IssueEventType,
   type IssueEventTypeValue,
-} from '@/constants/activity.constant.js';
+} from '@relay/shared/constants/activity.constant';
 
 export type LabelEventItem = { id: string; name: string };
 

@@ -38,10 +38,9 @@ Roadmaps: [STEPS.md](./STEPS.md) → [STEPS-MVP.md](./STEPS-MVP.md) / [STEPS-V1.
 ## Constants (locked)
 
 - Reused consts live only in `constants/*.constant.ts`, **one domain per file**
-- API: `apps/api/src/constants/<domain>.constant.ts`
-- Web: `apps/web/constants/<domain>.constant.ts`
+- Shared: `packages/shared/src/constants/<domain>.constant.ts` (group by kind — later `types/`, `components/`)
+- API / web `constants/` files only for app-only extras; import shared values from `@relay/shared/constants/<domain>.constant`
 - Path builders live in the matching domain. Date/time display lives in `date.constant.ts`
-- Until `packages/shared` exists, values used on both sides are mirrored with the same keys and values
 
 ## API tests (locked)
 

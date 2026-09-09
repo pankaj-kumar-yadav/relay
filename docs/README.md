@@ -8,6 +8,7 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | [SCOPE-MVP.md](./SCOPE-MVP.md) | MVP in/out (shipped) |
 | [SCOPE-V1.md](./SCOPE-V1.md) | v1 in/out (current) |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System shape, tenancy, auth, ports |
+| [CIRCLE.md](./CIRCLE.md) | Wired vs leftover Circle UI |
 | [STEPS.md](./STEPS.md) | Steps index + current phase |
 | [STEPS-MVP.md](./STEPS-MVP.md) | MVP roadmap (steps 1–9, done) |
 | [STEPS-V1.md](./STEPS-V1.md) | v1 roadmap (steps 10–17) |

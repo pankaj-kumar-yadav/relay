@@ -1,4 +1,4 @@
-import { LABEL_IDS_MAX } from '@/constants/label.constant.js';
+import { LABEL_IDS_MAX } from '@relay/shared/constants/label.constant';
 import { prisma, type Prisma } from '@/db.js';
 import { ValidationError } from '@/utils/errors.js';
 

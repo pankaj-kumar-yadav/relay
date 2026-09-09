@@ -1,4 +1,4 @@
-import { CycleStatus } from '@/constants/cycle.constant.js';
+import { CycleStatus } from '@relay/shared/constants/cycle.constant';
 import { prisma, Prisma } from '@/db.js';
 import { ValidationError } from '@/utils/errors.js';
 

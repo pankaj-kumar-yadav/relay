@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { INBOX_LIST_LIMIT } from '@/constants/inbox.constant.js';
+import { INBOX_LIST_LIMIT } from '@relay/shared/constants/inbox.constant';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';

@@ -62,6 +62,7 @@ export function listIssuesAPI() {}   // ❌ shouty acronym — use Api
 - Comment out or hide leftover chrome; leave the component **file** in place
 - Write new frontend **only** where Circle has no component for that surface
 - Only delete a UI file if the user **explicitly** asks to remove that file
+- Wired vs leftover map: `docs/CIRCLE.md` — do not wire leftover routes; do not delete them
 
 ```tsx
 // ✅ GOOD — keep Circle chrome, wire API into it

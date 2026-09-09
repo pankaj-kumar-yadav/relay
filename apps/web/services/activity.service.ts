@@ -1,4 +1,4 @@
-import type { IssueEventTypeValue } from '@/constants/activity.constant';
+import type { IssueEventTypeValue } from '@relay/shared/constants/activity.constant';
 import { api } from '@/lib/api';
 
 export type ApiActivityActor = {

@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import { ACTIVITY_LIST_LIMIT } from '@/constants/activity.constant.js';
+import { ACTIVITY_LIST_LIMIT } from '@relay/shared/constants/activity.constant';
 import { HttpStatus } from '@/constants/http.constant.js';
-import { NotificationType } from '@/constants/inbox.constant.js';
+import { NotificationType } from '@relay/shared/constants/inbox.constant';
 import { prisma } from '@/db.js';
 import {
   createCommentBodySchema,

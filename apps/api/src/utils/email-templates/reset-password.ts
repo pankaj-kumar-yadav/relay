@@ -1,4 +1,4 @@
-import { BRAND_NAME } from '@/constants/brand.constant.js';
+import { BRAND_NAME } from '@relay/shared/constants/brand.constant';
 import {
   RESET_PASSWORD_MAIL_SUBJECT,
   RESET_PASSWORD_TTL_MS,

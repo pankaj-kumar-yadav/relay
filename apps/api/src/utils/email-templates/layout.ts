@@ -1,4 +1,4 @@
-import { BRAND_NAME } from '@/constants/brand.constant.js';
+import { BRAND_NAME } from '@relay/shared/constants/brand.constant';
 
 export type RenderedEmail = {
   subject: string;

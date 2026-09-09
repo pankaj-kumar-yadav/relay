@@ -1,4 +1,4 @@
-import { BRAND_SLUG } from '@/constants/brand.constant.js';
+import { BRAND_SLUG } from '@relay/shared/constants/brand.constant';
 
 export const COOKIE_ACCESS = `${BRAND_SLUG}_accessToken`;
 export const COOKIE_REFRESH = `${BRAND_SLUG}_refreshToken`;

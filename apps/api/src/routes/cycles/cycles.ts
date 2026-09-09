@@ -4,7 +4,7 @@ import {
   CycleStatus,
   DEFAULT_CYCLE_STATUS,
   isCycleStatus,
-} from '@/constants/cycle.constant.js';
+} from '@relay/shared/constants/cycle.constant';
 import { HttpStatus } from '@/constants/http.constant.js';
 import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';

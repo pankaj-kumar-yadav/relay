@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { isLabelColor } from '@/constants/label.constant.js';
+import { isLabelColor } from '@relay/shared/constants/label.constant';
 
 test('isLabelColor accepts #RRGGBB and rejects other values', () => {
   assert.equal(isLabelColor('#2F80ED'), true);

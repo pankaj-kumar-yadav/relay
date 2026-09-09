@@ -1,4 +1,4 @@
-import { COMMENT_REACTION_EMOJI_MAX } from '@/constants/activity.constant.js';
+import { COMMENT_REACTION_EMOJI_MAX } from '@relay/shared/constants/activity.constant';
 
 const EMOJI_CORE =
   /\p{Extended_Pictographic}|\p{Emoji_Presentation}|[\u{1F1E6}-\u{1F1FF}]|[#*0-9]\uFE0F?\u20E3/u;
