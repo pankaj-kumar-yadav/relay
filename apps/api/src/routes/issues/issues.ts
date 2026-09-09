@@ -18,6 +18,7 @@ import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { activityRouter } from '@/routes/issues/activity.js';
+import { issueAttachmentsRouter } from '@/routes/attachments/issues.js';
 import {
   createIssueBodySchema,
   patchIssueBodySchema,
@@ -30,6 +31,7 @@ import {
   ValidationError,
 } from '@/utils/errors.js';
 import { notifyIfRecipient } from '@/utils/inbox/notify.js';
+import { deliverInboxMails, type InboxMailJob } from '@/utils/inbox/inboxMail.js';
 import { ensureSubscribed, notifyWatchers } from '@/utils/issue/issueSubscribe.js';
 import { assertCycleOnTeam } from '@/utils/cycle/cycle.js';
 import { eventPayload, labelEventPayload, recordIssueEvent } from '@/utils/issue/issueEvent.js';
@@ -37,6 +39,7 @@ import { loadOrgLabels, syncIssueLabels } from '@/utils/issue/issueLabels.js';
 import { rankBetween } from '@/utils/issue/issueRank.js';
 import { issueIdentifier, parseIssueRef } from '@/utils/issue/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
+import { avatarUrlForUser } from '@/utils/storage/attachment.js';
 import { assertProjectOnTeam } from '@/utils/projects.js';
 import { ensureDefaultTeam, findTeam, UUID_RE } from '@/utils/teams.js';
 
@@ -44,6 +47,7 @@ export const issuesRouter: Router = Router({ mergeParams: true });
 
 issuesRouter.use(requireAuth, requireOrgMember);
 issuesRouter.use(activityRouter);
+issuesRouter.use(issueAttachmentsRouter);
 
 const issueSelect = {
   id: true,
@@ -60,7 +64,7 @@ const issueSelect = {
   team: { select: { id: true, key: true, name: true, icon: true } },
   project: { select: { id: true, name: true, icon: true, teamId: true } },
   cycle: { select: { id: true, name: true, status: true, teamId: true } },
-  assignee: { select: { id: true, name: true, email: true } },
+  assignee: { select: { id: true, name: true, email: true, avatarAttachment: { select: { objectKey: true, status: true } } } },
   issueLabels: {
     select: { label: { select: { id: true, name: true, color: true } } },
     orderBy: { label: { name: 'asc' } },
@@ -69,7 +73,11 @@ const issueSelect = {
 
 type IssueRow = Prisma.IssueGetPayload<{ select: typeof issueSelect }>;
 
-function publicIssue(issue: IssueRow, subscribed: boolean) {
+function publicIssue(
+  issue: IssueRow,
+  subscribed: boolean,
+  assigneeAvatarUrl: string | null,
+) {
   return {
     id: issue.id,
     identifier: issueIdentifier(issue.team.key, issue.number),
@@ -88,7 +96,14 @@ function publicIssue(issue: IssueRow, subscribed: boolean) {
       ? { id: issue.cycle.id, name: issue.cycle.name, status: issue.cycle.status }
       : null,
     team: issue.team,
-    assignee: issue.assignee,
+    assignee: issue.assignee
+      ? {
+          id: issue.assignee.id,
+          name: issue.assignee.name,
+          email: issue.assignee.email,
+          avatarUrl: assigneeAvatarUrl,
+        }
+      : null,
     labels: issue.issueLabels.map((row) => row.label),
     subscribed,
     createdAt: issue.createdAt.toISOString(),
@@ -111,7 +126,22 @@ async function mapIssuesForUser(
     select: { issueId: true },
   });
   const watched = new Set(rows.map((row) => row.issueId));
-  return issues.map((issue) => publicIssue(issue, watched.has(issue.id)));
+  const avatarByKey = new Map<string, string | null>();
+  const mapped = [];
+  for (const issue of issues) {
+    const key = issue.assignee?.avatarAttachment?.objectKey;
+    let avatarUrl: string | null = null;
+    if (issue.assignee?.avatarAttachment) {
+      if (key && avatarByKey.has(key)) {
+        avatarUrl = avatarByKey.get(key) ?? null;
+      } else {
+        avatarUrl = await avatarUrlForUser(issue.assignee.avatarAttachment);
+        if (key) avatarByKey.set(key, avatarUrl);
+      }
+    }
+    mapped.push(publicIssue(issue, watched.has(issue.id), avatarUrl));
+  }
+  return mapped;
 }
 
 async function loadIssue(organizationId: string, rawId: string) {
@@ -441,7 +471,7 @@ issuesRouter.post('/', async (req, res) => {
     sendSuccess(res, {
       status: HttpStatus.CREATED,
       message: 'Issue created',
-      data: { issue: publicIssue(issue, true) },
+      data: { issue: (await mapIssuesForUser(req.org!.id, req.user!.id, [issue]))[0] },
     });
   } catch (err) {
     sendError(res, err);
@@ -534,7 +564,9 @@ issuesRouter.put('/:issueId/subscription', async (req, res) => {
     }
 
     sendSuccess(res, {
-      data: { issue: publicIssue(existing, parsed.data.subscribed) },
+      data: {
+        issue: (await mapIssuesForUser(organizationId, userId, [existing]))[0],
+      },
     });
   } catch (err) {
     sendError(res, err);
@@ -636,7 +668,7 @@ issuesRouter.patch('/:issueId', async (req, res) => {
       rank = rankBetween(before?.rank ?? null, after?.rank ?? null);
     }
 
-    const issue = await prisma.$transaction(async (tx) => {
+    const { issue, mailJobs } = await prisma.$transaction(async (tx) => {
       const updated = await tx.issue.update({
         where: { id: existing.id },
         data: {
@@ -677,6 +709,7 @@ issuesRouter.patch('/:issueId', async (req, res) => {
           ),
         });
       }
+      const mailJobs: InboxMailJob[] = [];
       const previousAssigneeId = existing.assignee?.id ?? null;
       if (data.assigneeId !== undefined && data.assigneeId !== previousAssigneeId) {
         await recordIssueEvent(tx, {
@@ -690,13 +723,14 @@ issuesRouter.patch('/:issueId', async (req, res) => {
             data.assigneeId,
           ),
         });
-        await notifyIfRecipient(tx, {
+        const assigneeJob = await notifyIfRecipient(tx, {
           organizationId,
           issueId: existing.id,
           actorId,
           recipientId: data.assigneeId,
           type: NotificationType.ASSIGNEE,
         });
+        if (assigneeJob) mailJobs.push(assigneeJob);
         if (data.assigneeId) {
           await ensureSubscribed(tx, {
             organizationId,
@@ -708,13 +742,15 @@ issuesRouter.patch('/:issueId', async (req, res) => {
 
       const nextAssigneeId = updated.assignee?.id ?? null;
       if (data.status !== undefined && data.status !== existing.status) {
-        await notifyWatchers(tx, {
-          organizationId,
-          issueId: existing.id,
-          actorId,
-          type: NotificationType.STATUS,
-          extraRecipientId: nextAssigneeId,
-        });
+        mailJobs.push(
+          ...(await notifyWatchers(tx, {
+            organizationId,
+            issueId: existing.id,
+            actorId,
+            type: NotificationType.STATUS,
+            extraRecipientId: nextAssigneeId,
+          })),
+        );
       }
 
       const previousCycleId = existing.cycleId;
@@ -732,7 +768,15 @@ issuesRouter.patch('/:issueId', async (req, res) => {
         });
       }
 
-      return updated;
+      return { issue: updated, mailJobs };
+    });
+
+    await deliverInboxMails({
+      orgSlug: req.org!.slug,
+      identifier: issueIdentifier(issue.team.key, issue.number),
+      issueTitle: issue.title,
+      actorName: req.user!.name,
+      jobs: mailJobs,
     });
 
     sendSuccess(res, {

@@ -79,6 +79,12 @@ export class RateLimitError extends ApiError {
   }
 }
 
+export class StorageUnconfiguredError extends ApiError {
+  constructor(message = 'Object storage is not configured') {
+    super(HttpStatus.SERVICE_UNAVAILABLE, ErrorCode.STORAGE_UNCONFIGURED, message);
+  }
+}
+
 export class InternalError extends ApiError {
   constructor(message = 'Internal server error') {
     super(HttpStatus.INTERNAL, ErrorCode.INTERNAL, message);

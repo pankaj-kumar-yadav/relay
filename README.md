@@ -61,10 +61,11 @@ docker compose up --build
 - Web: http://localhost:3000
 - API: http://localhost:4000/api/v1/health
 - API docs: http://localhost:4000/docs
+- MinIO S3: http://localhost:9000 (console http://localhost:9001)
 
 Set a long random `TOKEN_SECRET` in `.env` before any real use. Rebuild the web image after changing `NEXT_PUBLIC_API_URL`.
 
-When SMTP is unset, invite and password-reset URLs print in `docker compose logs api`.
+When SMTP is unset, invite and password-reset URLs print in `docker compose logs api`. Compose includes MinIO so avatar and issue uploads work; `pnpm dev` can omit S3 env (uploads return `STORAGE_UNCONFIGURED`).
 
 **Production (HTTPS):** set `NODE_ENV=production`, `WEB_ORIGIN` to the exact web origin, `TRUST_PROXY=1` if the API sits behind a reverse proxy, and SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`). `NEXT_PUBLIC_API_URL` must be the browser-reachable API origin (rebuild web).
 

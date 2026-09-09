@@ -1,9 +1,9 @@
 import { orgPath } from '@/constants/org.constant';
-import { NotificationType, type NotificationTypeValue } from '@relay/shared/constants/inbox.constant';
 
 export {
    NotificationType,
    INBOX_LIST_LIMIT,
+   InboxNotificationCopy,
    type NotificationTypeValue,
 } from '@relay/shared/constants/inbox.constant';
 
@@ -17,9 +17,3 @@ export const InboxPath = {
 export function inboxPath(orgSlug: string): string {
    return orgPath(orgSlug, InboxPath.INBOX);
 }
-
-export const InboxNotificationCopy: Record<NotificationTypeValue, string> = {
-   [NotificationType.COMMENT]: 'commented on this issue',
-   [NotificationType.ASSIGNEE]: 'assigned this issue to you',
-   [NotificationType.STATUS]: 'changed the status',
-};

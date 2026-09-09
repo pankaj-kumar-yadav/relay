@@ -3,11 +3,15 @@
 import { queryKeys } from '@/lib/query-keys';
 import {
   changePasswordApi,
+  completeAvatarApi,
+  createAvatarIntentApi,
+  deleteAvatarApi,
   forgotPasswordApi,
   getSessionApi,
   loginApi,
   logoutApi,
   patchMeApi,
+  putAttachmentBytesApi,
   registerApi,
   resetPasswordApi,
 } from '@/services/auth.service';
@@ -78,5 +82,39 @@ export function useResetPassword() {
 export function useChangePassword() {
   return useMutation({
     mutationFn: changePasswordApi,
+  });
+}
+
+export function useUploadAvatar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const intent = await createAvatarIntentApi({
+        contentType: file.type,
+        byteSize: file.size,
+        fileName: file.name,
+      });
+      await putAttachmentBytesApi(intent.uploadUrl, file);
+      return completeAvatarApi(intent.attachment.id);
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.session, data.user);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.orgs });
+      void queryClient.invalidateQueries({ queryKey: ['members'] });
+      void queryClient.invalidateQueries({ queryKey: ['issues'] });
+    },
+  });
+}
+
+export function useDeleteAvatar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteAvatarApi,
+    onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.session, data.user);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.orgs });
+      void queryClient.invalidateQueries({ queryKey: ['members'] });
+      void queryClient.invalidateQueries({ queryKey: ['issues'] });
+    },
   });
 }

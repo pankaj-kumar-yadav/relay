@@ -1,6 +1,6 @@
 import { DEFAULT_ISSUE_STATUS } from '@/constants/issue.constant';
 import { OrgRoleLabel } from '@/constants/org.constant';
-import { DEFAULT_USER_STATUS, dicebearAvatarUrl } from '@/constants/user.constant';
+import { DEFAULT_USER_STATUS, userAvatarUrl } from '@/constants/user.constant';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
@@ -19,7 +19,7 @@ export function mapMemberToUser(member: OrgMember): User {
     id: member.id,
     name: member.name,
     email: member.email,
-    avatarUrl: dicebearAvatarUrl(member.id),
+    avatarUrl: userAvatarUrl(member),
     status: DEFAULT_USER_STATUS,
     role: OrgRoleLabel[member.role] === 'Admin' ? 'Admin' : 'Member',
     joinedDate: member.joinedAt,
@@ -34,7 +34,7 @@ export function mapAssigneeToUser(assignee: ApiAssignee): User | null {
     id: assignee.id,
     name: assignee.name,
     email: assignee.email,
-    avatarUrl: dicebearAvatarUrl(assignee.id),
+    avatarUrl: userAvatarUrl(assignee),
     status: DEFAULT_USER_STATUS,
     role: 'Member',
     joinedDate: '',

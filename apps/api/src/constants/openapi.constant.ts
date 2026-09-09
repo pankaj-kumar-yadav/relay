@@ -20,5 +20,6 @@ export const OpenApiTag = {
   CYCLES: 'Cycles',
   INBOX: 'Inbox',
   VIEWS: 'Views',
+  ATTACHMENTS: 'Attachments',
   ISSUES: 'Issues',
 } as const;

@@ -29,6 +29,8 @@ export const queryKeys = {
     detail: (orgSlug: string, issueId: string) => ['issues', orgSlug, 'detail', issueId] as const,
     activity: (orgSlug: string, issueId: string) =>
       ['issues', orgSlug, 'activity', issueId] as const,
+    attachments: (orgSlug: string, issueId: string) =>
+      ['issues', orgSlug, 'attachments', issueId] as const,
     reactions: (orgSlug: string, issueId: string) =>
       ['issues', orgSlug, 'reactions', issueId] as const,
   },

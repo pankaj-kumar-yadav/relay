@@ -1,6 +1,7 @@
 import type { Prisma, PrismaClient } from '@/db.js';
 
 import type { NotificationTypeValue } from '@relay/shared/constants/inbox.constant';
+import type { InboxMailJob } from '@/utils/inbox/inboxMail.js';
 import { notifyIfRecipient } from '@/utils/inbox/notify.js';
 
 type Tx = Prisma.TransactionClient | PrismaClient;
@@ -31,20 +32,23 @@ export async function notifyWatchers(
     type: NotificationTypeValue;
     extraRecipientId?: string | null;
   },
-) {
+): Promise<InboxMailJob[]> {
   const rows = await tx.issueSubscription.findMany({
     where: { organizationId: input.organizationId, issueId: input.issueId },
     select: { userId: true },
   });
   const recipientIds = new Set(rows.map((row) => row.userId));
   if (input.extraRecipientId) recipientIds.add(input.extraRecipientId);
+  const jobs: InboxMailJob[] = [];
   for (const recipientId of recipientIds) {
-    await notifyIfRecipient(tx, {
+    const job = await notifyIfRecipient(tx, {
       organizationId: input.organizationId,
       issueId: input.issueId,
       actorId: input.actorId,
       recipientId,
       type: input.type,
     });
+    if (job) jobs.push(job);
   }
+  return jobs;
 }

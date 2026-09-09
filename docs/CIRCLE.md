@@ -16,11 +16,11 @@ These links appear in `AppSidebar` (`NavInbox`, `NavWorkspace`, `NavTeams`, sett
 | Personal | `/inbox`, `/my-issues` |
 | Workspace | `/teams`, `/projects`, `/views`, `/members` |
 | Team | `/team/:key/overview`, `/all`, `/active`, `/backlog`, `/cycles`, `/cycle/active`, `/cycle/upcoming`, `/views` |
-| Issue | `/issue/:id` (comments, activity, labels) |
+| Issue | `/issue/:id` (comments, activity, labels, files) |
 | Project | `/projects` list; `/project/:id/issues` |
 | Settings | `/settings/preferences`, `/profile`, `/security`, `/issue-labels`; `/settings/teams`, `/settings/teams/new`, `/settings/teams/:id` |
 
-Preferences are client-only. Profile name, members role/remove, teams, labels, and password change persist via the API.
+Preferences are client-only. Profile name and photo, members role/remove, teams, labels, and password change persist via the API. Issue details attach files on the existing paperclip control.
 
 ## Hidden from live nav (keep files)
 

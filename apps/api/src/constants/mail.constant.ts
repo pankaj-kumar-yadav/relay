@@ -19,3 +19,7 @@ export function inviteMailSubject(orgName: string): string {
 }
 
 export const RESET_PASSWORD_MAIL_SUBJECT = 'Reset your password';
+
+export function issueMailPath(orgSlug: string, identifier: string): string {
+  return `/${orgSlug}/issue/${identifier}`;
+}

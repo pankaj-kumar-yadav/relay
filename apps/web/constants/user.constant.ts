@@ -31,3 +31,7 @@ export function dicebearAvatarUrl(
 ): string {
   return `${DICEBEAR_API_ORIGIN}/${style}/svg?seed=${encodeURIComponent(seed)}`;
 }
+
+export function userAvatarUrl(user: { id: string; avatarUrl?: string | null }): string {
+  return user.avatarUrl || dicebearAvatarUrl(user.id);
+}

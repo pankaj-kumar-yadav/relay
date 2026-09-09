@@ -1,6 +1,6 @@
 # Implementation steps — v2
 
-**Status:** In progress — **current: step 19 (spec/plan before code)**  
+**Status:** Done — **current: none (v2 complete).**  
 **Scope:** [SCOPE-V2.md](./SCOPE-V2.md)  
 **Design:** [2026-09-09-v2-product-design.md](./superpowers/v2/September-2026/specs/2026-09-09-v2-product-design.md)  
 **Index:** [STEPS.md](./STEPS.md)
@@ -11,15 +11,15 @@ Team daily on shipped v1 ([STEPS-V1.md](./STEPS-V1.md)).
 
 ```text
 18. Issue subscribe        ✅  (done)
-19. Inbox email            ← current
-20. Avatars + issue files
+19. Inbox email            ✅  (done)
+20. Avatars + issue files  ✅  (done)
 ```
 
 ## Checklist
 
 - [x] Step 18 — Issue subscribe
-- [ ] Step 19 — Inbox email
-- [ ] Step 20 — Avatars + issue files
+- [x] Step 19 — Inbox email
+- [x] Step 20 — Avatars + issue files
 
 Step files: [18](./steps/v2/18-subscribe.md), [19](./steps/v2/19-inbox-email.md), [20](./steps/v2/20-uploads.md).
 

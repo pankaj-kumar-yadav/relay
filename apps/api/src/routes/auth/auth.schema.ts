@@ -36,4 +36,5 @@ export const publicUserSchema = z.object({
   email: z.string().email(),
   name: z.string(),
   isSuperAdmin: z.boolean(),
+  avatarUrl: z.string().nullable(),
 });

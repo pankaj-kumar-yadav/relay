@@ -7,6 +7,7 @@ export type AuthUser = {
   email: string;
   name: string;
   isSuperAdmin: boolean;
+  avatarUrl: string | null;
 };
 
 type UserResponse = { user: AuthUser };
@@ -80,4 +81,47 @@ export async function changePasswordApi(input: {
     method: 'POST',
     body: JSON.stringify(input),
   });
+}
+
+export type ApiAttachment = {
+  id: string;
+  fileName: string;
+  contentType: string;
+  byteSize: number;
+  status: string;
+  url: string | null;
+  createdAt: string;
+};
+
+export async function createAvatarIntentApi(input: {
+  contentType: string;
+  byteSize: number;
+  fileName: string;
+}) {
+  return api<{ attachment: ApiAttachment; uploadUrl: string }>(AuthApiPath.AVATAR_INTENT, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function completeAvatarApi(attachmentId: string) {
+  return api<{ attachment: ApiAttachment; user: AuthUser }>(AuthApiPath.AVATAR_COMPLETE, {
+    method: 'POST',
+    body: JSON.stringify({ attachmentId }),
+  });
+}
+
+export async function deleteAvatarApi() {
+  return api<{ user: AuthUser }>(AuthApiPath.AVATAR, { method: 'DELETE' });
+}
+
+export async function putAttachmentBytesApi(uploadUrl: string, file: File) {
+  const res = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': file.type || 'application/octet-stream' },
+    body: file,
+  });
+  if (!res.ok) {
+    throw new Error('Upload failed');
+  }
 }

@@ -55,8 +55,8 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | Step | File | Status |
 |------|------|--------|
 | 18 | [18-subscribe.md](./steps/v2/18-subscribe.md) | Done |
-| 19 | [19-inbox-email.md](./steps/v2/19-inbox-email.md) | Planned |
-| 20 | [20-uploads.md](./steps/v2/20-uploads.md) | Planned |
+| 19 | [19-inbox-email.md](./steps/v2/19-inbox-email.md) | Done |
+| 20 | [20-uploads.md](./steps/v2/20-uploads.md) | Done |
 
 ## v1 design
 
@@ -69,3 +69,5 @@ Canonical documentation for humans and agents. Read in this order when starting 
 
 - [v2 product](./superpowers/v2/September-2026/specs/2026-09-09-v2-product-design.md)
 - [Issue subscribe (step 18)](./superpowers/v2/September-2026/specs/2026-09-09-issue-subscribe-design.md)
+- [Inbox email (step 19)](./superpowers/v2/September-2026/specs/2026-09-09-inbox-email-design.md)
+- [Avatars + issue files (step 20)](./superpowers/v2/September-2026/specs/2026-09-09-uploads-design.md)

@@ -23,6 +23,7 @@ import {
   registerRateLimit,
 } from '@/middleware/auth/authRateLimit.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
+import { avatarRouter, publicAuthUser } from '@/routes/attachments/avatar.js';
 import {
   changePasswordBodySchema,
   forgotPasswordBodySchema,
@@ -57,6 +58,7 @@ function publicUser(user: {
     email: user.email,
     name: user.name,
     isSuperAdmin: user.isSuperAdmin,
+    avatarUrl: null as string | null,
   };
 }
 
@@ -142,8 +144,8 @@ authRouter.post('/logout', requireAuth, async (req, res) => {
   }
 });
 
-authRouter.get('/session', requireAuth, (req, res) => {
-  sendSuccess(res, { data: { user: req.user } });
+authRouter.get('/session', requireAuth, async (req, res) => {
+  sendSuccess(res, { data: { user: await publicAuthUser(req.user!.id) } });
 });
 
 authRouter.patch('/me', requireAuth, async (req, res) => {
@@ -153,20 +155,14 @@ authRouter.patch('/me', requireAuth, async (req, res) => {
       throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
     }
 
-    const user = await prisma.user.update({
+    await prisma.user.update({
       where: { id: req.user!.id },
       data: { name: parsed.data.name },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        isSuperAdmin: true,
-      },
     });
 
     sendSuccess(res, {
       message: 'Profile updated',
-      data: { user: publicUser(user) },
+      data: { user: await publicAuthUser(req.user!.id) },
     });
   } catch (err) {
     sendError(res, err);
@@ -321,3 +317,5 @@ authRouter.post('/refresh', async (req, res) => {
     sendError(res, err);
   }
 });
+
+authRouter.use('/me/avatar', requireAuth, avatarRouter);

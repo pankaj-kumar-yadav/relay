@@ -8,6 +8,7 @@ import { requireOrgRole } from '@/middleware/org/requireOrgRole.js';
 import { patchMemberBodySchema } from '@/routes/members/members.schema.js';
 import { ForbiddenError, NotFoundError, sendError, ValidationError } from '@/utils/errors.js';
 import { sendSuccess } from '@/utils/response.js';
+import { avatarUrlForUser } from '@/utils/storage/attachment.js';
 
 export const membersRouter: Router = Router({ mergeParams: true });
 
@@ -17,23 +18,36 @@ const memberSelect = {
   id: true,
   role: true,
   createdAt: true,
-  user: { select: { id: true, name: true, email: true } },
+  user: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      avatarAttachment: { select: { objectKey: true, status: true } },
+    },
+  },
 } as const;
 
 type MembershipRow = {
   id: string;
   role: string;
   createdAt: Date;
-  user: { id: string; name: string; email: string };
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    avatarAttachment: { objectKey: string; status: string } | null;
+  };
 };
 
-function publicMember(m: MembershipRow) {
+async function publicMember(m: MembershipRow) {
   return {
     id: m.user.id,
     name: m.user.name,
     email: m.user.email,
     role: m.role,
     joinedAt: m.createdAt.toISOString(),
+    avatarUrl: await avatarUrlForUser(m.user.avatarAttachment),
   };
 }
 
@@ -68,7 +82,7 @@ membersRouter.get('/', async (req, res) => {
     });
 
     sendSuccess(res, {
-      data: { members: memberships.map(publicMember) },
+      data: { members: await Promise.all(memberships.map(publicMember)) },
     });
   } catch (err) {
     sendError(res, err);
@@ -97,7 +111,7 @@ membersRouter.patch('/:userId', requireOrgRole(OrgRole.ADMIN), async (req, res) 
       select: memberSelect,
     });
 
-    sendSuccess(res, { message: 'Member updated', data: { member: publicMember(updated) } });
+    sendSuccess(res, { message: 'Member updated', data: { member: await publicMember(updated) } });
   } catch (err) {
     sendError(res, err);
   }

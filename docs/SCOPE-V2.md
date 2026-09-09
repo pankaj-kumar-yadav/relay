@@ -1,6 +1,6 @@
 # Relay — v2 scope
 
-**Status:** Current (steps 18–20)  
+**Status:** Done (steps 18–20)  
 **Roadmap:** [STEPS-V2.md](./STEPS-V2.md)  
 **Design:** [superpowers/v2/September-2026/specs/2026-09-09-v2-product-design.md](./superpowers/v2/September-2026/specs/2026-09-09-v2-product-design.md)  
 **Index:** [SCOPE.md](./SCOPE.md)

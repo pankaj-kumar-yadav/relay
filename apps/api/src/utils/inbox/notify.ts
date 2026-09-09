@@ -1,6 +1,7 @@
 import type { Prisma, PrismaClient } from '@/db.js';
 
 import type { NotificationTypeValue } from '@relay/shared/constants/inbox.constant';
+import type { InboxMailJob } from '@/utils/inbox/inboxMail.js';
 
 type Tx = Prisma.TransactionClient | PrismaClient;
 
@@ -20,15 +21,16 @@ export async function notifyIfRecipient(
     recipientId: string | null | undefined;
     type: NotificationTypeValue;
   },
-) {
-  if (!shouldNotify(input.recipientId, input.actorId)) return;
+): Promise<InboxMailJob | null> {
+  if (!shouldNotify(input.recipientId, input.actorId)) return null;
   await tx.notification.create({
     data: {
       organizationId: input.organizationId,
-      userId: input.recipientId,
       issueId: input.issueId,
       actorId: input.actorId,
+      userId: input.recipientId,
       type: input.type,
     },
   });
+  return { userId: input.recipientId, type: input.type };
 }

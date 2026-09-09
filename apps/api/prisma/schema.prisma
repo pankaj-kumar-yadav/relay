@@ -29,6 +29,9 @@ model User {
   viewsOwned     View[]        @relation("ViewOwner")
   passwordResets PasswordReset[]
   issueSubscriptions IssueSubscription[]
+  avatarAttachmentId String?      @unique @map("avatar_attachment_id") @db.Uuid
+  avatarAttachment   Attachment?  @relation("UserAvatar", fields: [avatarAttachmentId], references: [id], onDelete: SetNull)
+  uploadedAttachments Attachment[] @relation("AttachmentUploader")
 
   @@map("users")
 }
@@ -83,6 +86,7 @@ model Organization {
   cycles      Cycle[]
   views       View[]
   issueSubscriptions IssueSubscription[]
+  attachments        Attachment[]
 
   @@map("organizations")
 }
@@ -186,6 +190,7 @@ model Issue {
   reactions      IssueReaction[]
   notifications  Notification[]
   subscriptions  IssueSubscription[]
+  attachments    Attachment[]
 
   @@unique([teamId, number])
   @@index([organizationId])
@@ -362,4 +367,27 @@ model View {
   @@index([organizationId])
   @@index([ownerId])
   @@map("views")
+}
+
+model Attachment {
+  id             String        @id @default(uuid()) @db.Uuid
+  organizationId String?       @map("organization_id") @db.Uuid
+  issueId        String?       @map("issue_id") @db.Uuid
+  userId         String        @map("user_id") @db.Uuid
+  kind           String
+  status         String
+  contentType    String        @map("content_type")
+  byteSize       Int           @map("byte_size")
+  fileName       String        @map("file_name")
+  objectKey      String        @map("object_key")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  issue          Issue?        @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  user           User          @relation("AttachmentUploader", fields: [userId], references: [id], onDelete: Cascade)
+  avatarOf       User?         @relation("UserAvatar")
+
+  @@index([organizationId, issueId])
+  @@index([userId, kind])
+  @@map("attachments")
 }

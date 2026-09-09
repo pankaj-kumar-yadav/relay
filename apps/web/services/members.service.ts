@@ -7,6 +7,7 @@ export type OrgMember = {
   email: string;
   role: OrgRoleValue;
   joinedAt: string;
+  avatarUrl: string | null;
 };
 
 export async function listMembersApi(orgSlug: string) {

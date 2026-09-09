@@ -7,8 +7,10 @@ import {
   ForbiddenError,
   InternalError,
   NotFoundError,
+  RateLimitError,
   sendError,
   SlugTakenError,
+  StorageUnconfiguredError,
   TeamKeyTakenError,
   UnauthorizedError,
   ValidationError,
@@ -37,6 +39,8 @@ test('sendError uses the API envelope for mapped statuses', () => {
     { err: new NotFoundError(), status: HttpStatus.NOT_FOUND, code: ErrorCode.NOT_FOUND },
     { err: new SlugTakenError(), status: HttpStatus.CONFLICT, code: ErrorCode.SLUG_TAKEN },
     { err: new TeamKeyTakenError(), status: HttpStatus.CONFLICT, code: ErrorCode.TEAM_KEY_TAKEN },
+    { err: new RateLimitError(), status: HttpStatus.TOO_MANY_REQUESTS, code: ErrorCode.RATE_LIMITED },
+    { err: new StorageUnconfiguredError(), status: HttpStatus.SERVICE_UNAVAILABLE, code: ErrorCode.STORAGE_UNCONFIGURED },
     { err: new InternalError(), status: HttpStatus.INTERNAL, code: ErrorCode.INTERNAL },
   ];
 

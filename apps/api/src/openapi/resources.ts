@@ -24,6 +24,7 @@ export const publicMemberSchema = z.object({
   email: z.string().email(),
   role: z.string(),
   joinedAt: z.string(),
+  avatarUrl: z.string().nullable(),
 });
 
 export const publicInviteSchema = z.object({
@@ -97,6 +98,7 @@ export const publicIssueSchema = z.object({
       id: z.string(),
       name: z.string(),
       email: z.string().email(),
+      avatarUrl: z.string().nullable(),
     })
     .nullable(),
   labels: z.array(issueLabelSchema),

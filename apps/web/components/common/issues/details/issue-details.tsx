@@ -1,13 +1,14 @@
 'use client';
 
 import { IssueReactions } from '@/components/common/issues/details/issue-reactions';
+import { IssueAttachments } from '@/components/common/issues/details/issue-attachments';
 import { issuePath, IssueStatusCategory } from '@/constants/issue.constant';
 import { DEFAULT_TEAM_KEY, teamHomePath } from '@/constants/team.constant';
 import { useIssue, useIssueMutations } from '@/hooks/use-issues';
 import { getIssueDetail } from '@/mock-data/issue-details';
 import { Issue } from '@/mock-data/issues';
 import { useIssuesStore } from '@/store/issues-store';
-import { Paperclip, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -93,11 +94,9 @@ export default function IssueDetails() {
                   }}
                />
 
-               <div className="flex items-center gap-3 mt-6 text-muted-foreground">
+               <div className="flex flex-wrap items-center gap-3 mt-6 text-muted-foreground">
                   <IssueReactions orgSlug={orgId} issueId={issue.identifier} />
-                  <button className="hover:text-foreground" aria-label="Attach file">
-                     <Paperclip className="size-4" />
-                  </button>
+                  <IssueAttachments orgSlug={orgId} issueId={issue.identifier} />
                </div>
 
                <div className="mt-8">

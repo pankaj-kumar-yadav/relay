@@ -8,7 +8,7 @@ Detail for each step: [`docs/steps/mvp/`](./steps/mvp/) (MVP), [`docs/steps/v1/`
 |---------|------|-------|--------|
 | MVP | [STEPS-MVP.md](./STEPS-MVP.md) | 1–9 | Done |
 | v1 | [STEPS-V1.md](./STEPS-V1.md) | 10–17 | Done |
-| v2 | [STEPS-V2.md](./STEPS-V2.md) | 18–20 | Current (19) |
+| v2 | [STEPS-V2.md](./STEPS-V2.md) | 18–20 | Done |
 
 Scope: [SCOPE.md](./SCOPE.md) → [SCOPE-MVP.md](./SCOPE-MVP.md) / [SCOPE-V1.md](./SCOPE-V1.md) / [SCOPE-V2.md](./SCOPE-V2.md).
 

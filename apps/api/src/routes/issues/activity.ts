@@ -4,6 +4,8 @@ import { ACTIVITY_LIST_LIMIT } from '@relay/shared/constants/activity.constant';
 import { HttpStatus } from '@/constants/http.constant.js';
 import { NotificationType } from '@relay/shared/constants/inbox.constant';
 import { prisma } from '@/db.js';
+import { deliverInboxMails } from '@/utils/inbox/inboxMail.js';
+import { issueIdentifier, parseIssueRef } from '@/utils/issue/issueRef.js';
 import {
   createCommentBodySchema,
   toggleReactionBodySchema,
@@ -16,7 +18,6 @@ import {
 } from '@/utils/errors.js';
 import { ensureSubscribed, notifyWatchers } from '@/utils/issue/issueSubscribe.js';
 import { aggregateCommentReactions } from '@/utils/issue/commentReaction.js';
-import { parseIssueRef } from '@/utils/issue/issueRef.js';
 import { sendSuccess } from '@/utils/response.js';
 
 export const activityRouter: Router = Router({ mergeParams: true });
@@ -31,7 +32,13 @@ async function findIssueInOrg(organizationId: string, rawId: string) {
   if (ref.kind === 'id') {
     return prisma.issue.findFirst({
       where: { id: ref.id, organizationId },
-      select: { id: true, assigneeId: true },
+      select: {
+        id: true,
+        assigneeId: true,
+        title: true,
+        number: true,
+        team: { select: { key: true } },
+      },
     });
   }
 
@@ -41,7 +48,13 @@ async function findIssueInOrg(organizationId: string, rawId: string) {
       number: ref.number,
       team: { key: ref.teamKey, organizationId },
     },
-    select: { id: true, assigneeId: true },
+    select: {
+      id: true,
+      assigneeId: true,
+      title: true,
+      number: true,
+      team: { select: { key: true } },
+    },
   });
 }
 
@@ -170,14 +183,24 @@ activityRouter.post('/:issueId/comments', async (req, res) => {
         issueId: issue.id,
         userId: req.user!.id,
       });
-      await notifyWatchers(tx, {
-        organizationId,
-        issueId: issue.id,
-        actorId: req.user!.id,
-        type: NotificationType.COMMENT,
-        extraRecipientId: issue.assigneeId,
-      });
-      return created;
+      return {
+        comment: created,
+        jobs: await notifyWatchers(tx, {
+          organizationId,
+          issueId: issue.id,
+          actorId: req.user!.id,
+          type: NotificationType.COMMENT,
+          extraRecipientId: issue.assigneeId,
+        }),
+      };
+    });
+
+    await deliverInboxMails({
+      orgSlug: req.org!.slug,
+      identifier: issueIdentifier(issue.team.key, issue.number),
+      issueTitle: issue.title,
+      actorName: req.user!.name,
+      jobs: comment.jobs,
     });
 
     sendSuccess(res, {
@@ -185,10 +208,10 @@ activityRouter.post('/:issueId/comments', async (req, res) => {
       message: 'Comment created',
       data: {
         comment: {
-          id: comment.id,
-          body: comment.body,
-          author: publicActor(comment.author),
-          createdAt: comment.createdAt.toISOString(),
+          id: comment.comment.id,
+          body: comment.comment.body,
+          author: publicActor(comment.comment.author),
+          createdAt: comment.comment.createdAt.toISOString(),
           reactions: [],
         },
       },

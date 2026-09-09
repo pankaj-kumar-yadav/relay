@@ -1,4 +1,5 @@
 import '@/openapi/paths/activity.js';
+import '@/openapi/paths/attachments.js';
 import '@/openapi/paths/auth.js';
 import '@/openapi/paths/cycles.js';
 import '@/openapi/paths/health.js';

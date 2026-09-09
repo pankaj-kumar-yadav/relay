@@ -21,12 +21,58 @@ services:
       dockerfile: apps/api/Dockerfile
     env_file:
       - .env
+    environment:
+      S3_ENDPOINT: http://minio:9000
+      S3_PUBLIC_ENDPOINT: http://localhost:9000
+      S3_REGION: us-east-1
+      S3_BUCKET: relay
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-relay}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-relayrelay}
+      S3_FORCE_PATH_STYLE: "true"
     ports:
       - "4000:4000"
     depends_on:
       db:
         condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
     restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-relay}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-relayrelay}
+    volumes:
+      - relay_minio:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    volumes:
+      - ./deploy/minio/cors.json:/cors.json:ro
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
+      mc mb -p local/relay &&
+      mc cors set local/relay /cors.json
+      "
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-relay}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-relayrelay}
 
   web:
     build:
@@ -43,3 +89,4 @@ services:
 
 volumes:
   relay_pg:
+  relay_minio:

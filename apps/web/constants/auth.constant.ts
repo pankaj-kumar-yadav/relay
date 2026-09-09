@@ -37,6 +37,9 @@ export const AuthApiPath = {
   FORGOT_PASSWORD: '/auth/forgot-password',
   RESET_PASSWORD: '/auth/reset-password',
   CHANGE_PASSWORD: '/auth/change-password',
+  AVATAR_INTENT: '/auth/me/avatar/intent',
+  AVATAR_COMPLETE: '/auth/me/avatar/complete',
+  AVATAR: '/auth/me/avatar',
 } as const;
 
 export type AuthApiPathValue = (typeof AuthApiPath)[keyof typeof AuthApiPath];

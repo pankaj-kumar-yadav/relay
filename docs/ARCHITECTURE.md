@@ -3,11 +3,10 @@
 ## Shape
 
 ```text
-Browser → apps/web (Next.js :3000)
-                ↓ HTTP (credentials: include)
-         apps/api (Express :4000)
-                ↓ Prisma
-            PostgreSQL
+Browser → Next.js :3000 → Express :4000 → Prisma → PostgreSQL
+Email: API → nodemailer SMTP
+Files: Browser ─presigned PUT/GET─► MinIO / S3 / Backblaze
+Inbox: TanStack Query polling
 ```
 
 - **Monorepo**: pnpm workspaces + Turborepo at repo root
@@ -74,8 +73,9 @@ Development and production: Scalar at `GET /docs` and the generated spec at `GET
 | Web     | 3000    |
 | API     | 4000 (`/api/v1`; docs at `/docs`) |
 | Postgres| 5432 |
+| MinIO   | 9000 (S3 API; console 9001) |
 
-`docker compose up --build` runs **web + API + Postgres**. Local `pnpm dev` still expects Postgres on `localhost:5432` (compose `db` or the full stack).
+`docker compose up --build` runs **web + API + Postgres + MinIO**. Local `pnpm dev` still expects Postgres on `localhost:5432` (compose `db` or the full stack). S3 env is optional for `pnpm dev`; unset storage returns `STORAGE_UNCONFIGURED` on upload.
 
 ## CORS and cookies
 
@@ -92,7 +92,11 @@ JSON request bodies are capped at `256kb` (`JSON_BODY_LIMIT`).
 
 ## Email (v1, step 16)
 
-Transactional mail is SMTP via nodemailer (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`). If SMTP is unset in development, the API logs the link (same pattern as invite URLs today). Inbox notifications stay in-app only (polling).
+Transactional mail is SMTP via nodemailer (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`). If SMTP is unset in development, the API logs the link. Inbox events also email after the notify transaction commits (step 19).
+
+## Files (v2, step 20)
+
+S3-compatible object store (`S3_ENDPOINT`, `S3_PUBLIC_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_FORCE_PATH_STYLE`). Browser uses presigned PUT/GET; Express stores metadata only. Compose adds MinIO. Unset credentials → `STORAGE_UNCONFIGURED`.
 
 ## Implementation steps
 

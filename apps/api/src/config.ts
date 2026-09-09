@@ -18,6 +18,18 @@ export const config = {
     pass: process.env.SMTP_PASS ?? '',
     from: process.env.SMTP_FROM ?? '',
   },
+  s3: {
+    endpoint: process.env.S3_ENDPOINT ?? '',
+    publicEndpoint: process.env.S3_PUBLIC_ENDPOINT ?? '',
+    region: process.env.S3_REGION || 'us-east-1',
+    bucket: process.env.S3_BUCKET ?? '',
+    accessKey: process.env.S3_ACCESS_KEY ?? '',
+    secretKey: process.env.S3_SECRET_KEY ?? '',
+    forcePathStyle:
+      process.env.S3_FORCE_PATH_STYLE === '1' ||
+      process.env.S3_FORCE_PATH_STYLE === 'true' ||
+      Boolean(process.env.S3_ENDPOINT),
+  },
   tokenInfo: {
     secret: process.env.TOKEN_SECRET ?? '',
     issuer: process.env.TOKEN_ISSUER ?? '',

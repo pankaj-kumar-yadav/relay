@@ -8,6 +8,7 @@ export type ApiAssignee = {
   id: string;
   name: string;
   email: string;
+  avatarUrl: string | null;
 } | null;
 
 export type ApiIssue = {

@@ -8,7 +8,7 @@ Scope is split by release so MVP, v1, and v2 stay readable:
 |---------|------|--------|
 | MVP | [SCOPE-MVP.md](./SCOPE-MVP.md) | Shipped (steps 1–9) |
 | v1 | [SCOPE-V1.md](./SCOPE-V1.md) | Shipped (steps 10–17) |
-| v2 | [SCOPE-V2.md](./SCOPE-V2.md) | Current (steps 18–20) |
+| v2 | [SCOPE-V2.md](./SCOPE-V2.md) | Shipped (steps 18–20) |
 
 Roadmaps: [STEPS.md](./STEPS.md) → [STEPS-MVP.md](./STEPS-MVP.md) / [STEPS-V1.md](./STEPS-V1.md) / [STEPS-V2.md](./STEPS-V2.md).
 
