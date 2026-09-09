@@ -2,12 +2,12 @@
 
 Multi-tenant project management for teams. Linear-inspired UI, custom Node API.
 
-Scope is split by release so MVP (shipped) and v1 (in progress) stay readable:
+Scope is split by release so MVP (shipped) and v1 (shipped) stay readable:
 
 | Release | File | Status |
 |---------|------|--------|
 | MVP | [SCOPE-MVP.md](./SCOPE-MVP.md) | Shipped (steps 1–9) |
-| v1 | [SCOPE-V1.md](./SCOPE-V1.md) | In progress (steps 10–17) |
+| v1 | [SCOPE-V1.md](./SCOPE-V1.md) | Shipped (steps 10–17) |
 
 Roadmaps: [STEPS.md](./STEPS.md) → [STEPS-MVP.md](./STEPS-MVP.md) / [STEPS-V1.md](./STEPS-V1.md).
 

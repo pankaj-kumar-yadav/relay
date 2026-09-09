@@ -45,11 +45,11 @@ Canonical documentation for humans and agents. Read in this order when starting 
 | 14 | [14-saved-views.md](./steps/14-saved-views.md) | Done |
 | 15 | [15-settings-chrome.md](./steps/15-settings-chrome.md) | Done |
 | 16 | [16-email-auth.md](./steps/16-email-auth.md) | Done |
-| 17 | [17-self-host.md](./steps/17-self-host.md) | Planned |
+| 17 | [17-self-host.md](./steps/17-self-host.md) | Done |
 
 ## v1 design
 
 - [v1 product](./superpowers/specs/2026-08-27-v1-product-design.md)
 - [Comments + activity (step 10)](./superpowers/specs/2026-08-27-issue-comments-activity-design.md)
 - [Issue labels (step 11)](./superpowers/specs/2026-08-27-issue-labels-design.md)
-- [Email + auth polish (step 16)](./superpowers/specs/2026-08-31-email-auth-design.md)
+- [Self-host pack (step 17)](./superpowers/specs/2026-09-08-self-host-design.md)

@@ -2,7 +2,7 @@
 
 Read these before changing code:
 
-1. [docs/SCOPE.md](docs/SCOPE.md) — then [SCOPE-V1.md](docs/SCOPE-V1.md) (current) or [SCOPE-MVP.md](docs/SCOPE-MVP.md) (shipped)
+1. [docs/SCOPE.md](docs/SCOPE.md) — then [SCOPE-V1.md](docs/SCOPE-V1.md) (shipped) or [SCOPE-MVP.md](docs/SCOPE-MVP.md) (shipped)
 2. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system shape and tenancy rules
 3. [docs/STEPS.md](docs/STEPS.md) — then [STEPS-V1.md](docs/STEPS-V1.md); only the **current** file under [docs/steps/](docs/steps/)
 4. [docs/README.md](docs/README.md) — docs index
@@ -51,4 +51,5 @@ pnpm dev
 pnpm --filter @relay/web dev
 pnpm --filter @relay/api dev
 pnpm db:studio
+docker compose up --build
 ```

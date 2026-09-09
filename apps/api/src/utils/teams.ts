@@ -1,7 +1,5 @@
-import type { Prisma, PrismaClient } from '@/generated/prisma/client.js';
-
 import { DEFAULT_TEAM_KEY, DEFAULT_TEAM_NAME } from '@/constants/issue.js';
-import { prisma } from '@/db.js';
+import { prisma, type Prisma, type PrismaClient } from '@/db.js';
 
 type TeamDb = PrismaClient | Prisma.TransactionClient;
 

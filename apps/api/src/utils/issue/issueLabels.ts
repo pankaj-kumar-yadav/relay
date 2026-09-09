@@ -1,7 +1,5 @@
-import type { Prisma } from '@/generated/prisma/client.js';
-
 import { LABEL_IDS_MAX } from '@/constants/label.constant.js';
-import { prisma } from '@/db.js';
+import { prisma, type Prisma } from '@/db.js';
 import { ValidationError } from '@/utils/errors.js';
 
 type Tx = Prisma.TransactionClient;

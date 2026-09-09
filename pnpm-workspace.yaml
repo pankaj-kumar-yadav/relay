@@ -5,3 +5,8 @@ packages:
 ignoredBuiltDependencies:
   - esbuild
   - sharp
+
+onlyBuiltDependencies:
+  - prisma
+  - '@prisma/client'
+  - '@prisma/engines'

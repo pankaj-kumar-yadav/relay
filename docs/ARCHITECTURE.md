@@ -73,7 +73,9 @@ Development and production: Scalar at `GET /docs` and the generated spec at `GET
 |---------|---------|
 | Web     | 3000    |
 | API     | 4000 (`/api/v1`; docs at `/docs`) |
-| Postgres| 5432 (`docker compose up -d`) |
+| Postgres| 5432 |
+
+`docker compose up --build` runs **web + API + Postgres**. Local `pnpm dev` still expects Postgres on `localhost:5432` (compose `db` or the full stack).
 
 ## CORS and cookies
 
@@ -94,4 +96,4 @@ Transactional mail is SMTP via nodemailer (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`
 
 ## Implementation steps
 
-Follow [STEPS.md](./STEPS.md) ([MVP](./STEPS-MVP.md) done, [v1](./STEPS-V1.md) current). Detail in [steps/](./steps/). Current step: [17-self-host.md](./steps/17-self-host.md). Do not skip auth/tenancy before wiring real issue data into the UI.
+Follow [STEPS.md](./STEPS.md) ([MVP](./STEPS-MVP.md) done, [v1](./STEPS-V1.md) done). Detail in [steps/](./steps/). Do not skip auth/tenancy before wiring real issue data into the UI.

@@ -1,6 +1,6 @@
 # Step 17 — Self-host pack
 
-**Status:** Planned
+**Status:** Done
 
 ## Goal
 
@@ -16,11 +16,11 @@ One-command bring-up of web + API + Postgres. Production env documented. Smoke t
 
 ## Done when
 
-- [ ] `docker-compose.yml` runs `db`, `api`, and `web`
-- [ ] `.env.example` lists `WEB_ORIGIN`, `NODE_ENV=production`, `TRUST_PROXY`, SMTP
-- [ ] Root README documents one-command bring-up
-- [ ] Smoke on a clean compose stack: register → invite email → comment → label → cycle → inbox → save view
-- [ ] Leftover Circle routes still hidden from live nav
+- [x] `docker-compose.yml` runs `db`, `api`, and `web`
+- [x] `.env.example` lists `WEB_ORIGIN`, `NODE_ENV=production`, `TRUST_PROXY`, SMTP
+- [x] Root README documents one-command bring-up
+- [x] Smoke on a clean compose stack: register → invite email → comment → label → cycle → inbox → save view
+- [x] Leftover Circle routes still hidden from live nav
 
 ## Out of scope
 

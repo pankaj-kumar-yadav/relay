@@ -37,6 +37,7 @@ relay/
 |-----|------|---------|
 | API | `apps/api/.env` | `NODE_ENV` (`development` or `production`), `PORT`, `WEB_ORIGIN`, `DATABASE_URL`, `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` (optional `ACCESS_TOKEN_VALIDITY_SEC`, `REFRESH_TOKEN_VALIDITY_SEC`, `TRUST_PROXY`) |
 | Web | `apps/web/.env.local` | `NEXT_PUBLIC_API_URL` |
+| Compose | `.env` (from `.env.example`) | Same API vars plus `NEXT_PUBLIC_API_URL`. `DATABASE_URL` host is `db`. |
 
 Never commit real secrets. Keep `.env.example` files updated when new vars are added.
 
@@ -48,4 +49,4 @@ Never commit real secrets. Keep `.env.example` files updated when new vars are a
 
 ## Next
 
-Current work is [13-cycles.md](./13-cycles.md). Do not implement later v1 slices early.
+v1 (steps 10–17) is done. See [SCOPE-V1.md](../SCOPE-V1.md) “Out” before adding billing, SSO, realtime, uploads, or AI.

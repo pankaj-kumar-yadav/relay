@@ -1,7 +1,5 @@
-import { Prisma } from '@/generated/prisma/client.js';
-
 import { CycleStatus } from '@/constants/cycle.constant.js';
-import { prisma } from '@/db.js';
+import { prisma, Prisma } from '@/db.js';
 import { ValidationError } from '@/utils/errors.js';
 
 export function parseCycleInstant(raw: string, field: string): Date {

@@ -1,4 +1,3 @@
-import { Prisma } from '@/generated/prisma/client.js';
 import { Router } from 'express';
 
 import { HttpStatus } from '@/constants/http.js';
@@ -8,7 +7,7 @@ import {
   LABEL_NAME_MAX,
 } from '@/constants/label.constant.js';
 import { OrgRole } from '@/constants/org.js';
-import { prisma } from '@/db.js';
+import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { requireOrgRole } from '@/middleware/org/requireOrgRole.js';

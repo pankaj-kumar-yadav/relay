@@ -50,6 +50,9 @@ importers:
       nodemailer:
         specifier: ^9.1.0
         version: 9.1.0
+      prisma:
+        specifier: ^6.19.3
+        version: 6.19.3(typescript@5.9.3)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -75,9 +78,6 @@ importers:
       '@types/nodemailer':
         specifier: ^8.0.1
         version: 8.0.1
-      prisma:
-        specifier: ^6.19.3
-        version: 6.19.3(typescript@5.9.3)
       tsc-alias:
         specifier: ^1.9.2
         version: 1.9.2

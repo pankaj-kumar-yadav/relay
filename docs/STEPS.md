@@ -7,13 +7,13 @@ Detail for each step: [`docs/steps/`](./steps/).
 | Release | File | Steps | Status |
 |---------|------|-------|--------|
 | MVP | [STEPS-MVP.md](./STEPS-MVP.md) | 1–9 | Done |
-| v1 | [STEPS-V1.md](./STEPS-V1.md) | 10–17 | **Current: step 17 — self-host pack** |
+| v1 | [STEPS-V1.md](./STEPS-V1.md) | 10–17 | Done |
 
 Scope: [SCOPE.md](./SCOPE.md) → [SCOPE-MVP.md](./SCOPE-MVP.md) / [SCOPE-V1.md](./SCOPE-V1.md).
 
 ## Rules while executing steps
 
-1. Stay inside the **current** scope file ([SCOPE-V1.md](./SCOPE-V1.md) until v1 ships) — no billing, SSO, AI, or realtime.
+1. Stay inside the **current** scope file ([SCOPE-V1.md](./SCOPE-V1.md) — v1 shipped; no billing, SSO, AI, or realtime until a later scope)
 2. Respect [ARCHITECTURE.md](./ARCHITECTURE.md) — web is UI-only; API owns auth + DB.
 3. Every org-owned query must be scoped by membership, never by URL alone.
 4. Prefer small PRs/commits per step; verify the step’s “Done when” before moving on.

@@ -1,8 +1,7 @@
-import { Prisma } from '@/generated/prisma/client.js';
 import { Router } from 'express';
 
 import { HttpStatus } from '@/constants/http.js';
-import { prisma } from '@/db.js';
+import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import {

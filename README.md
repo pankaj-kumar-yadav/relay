@@ -49,7 +49,24 @@ pnpm --filter @relay/api dev
 pnpm --filter @relay/api db:seed
 ```
 
-Sign in at http://localhost:3000/login with `owner@relay.local` / `password` (org slug `acme`). Full seed accounts: [apps/api/README.md](apps/api/README.md).
+Sign in at http://localhost:3000/login with `owner@relay.local` / `password` (org slug `acme`). Full seed accounts: [apps/api/README.md](apps/api/README.md). Do not use seed accounts in production.
+
+## Self-host (Docker)
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+- Web: http://localhost:3000
+- API: http://localhost:4000/api/v1/health
+- API docs: http://localhost:4000/docs
+
+Set a long random `TOKEN_SECRET` in `.env` before any real use. Rebuild the web image after changing `NEXT_PUBLIC_API_URL`.
+
+When SMTP is unset, invite and password-reset URLs print in `docker compose logs api`.
+
+**Production (HTTPS):** set `NODE_ENV=production`, `WEB_ORIGIN` to the exact web origin, `TRUST_PROXY=1` if the API sits behind a reverse proxy, and SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`). `NEXT_PUBLIC_API_URL` must be the browser-reachable API origin (rebuild web).
 
 ## Docs
 

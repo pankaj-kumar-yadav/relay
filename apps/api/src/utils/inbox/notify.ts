@@ -1,4 +1,4 @@
-import type { Prisma } from '@/generated/prisma/client.js';
+import type { Prisma } from '@/db.js';
 
 import type { NotificationTypeValue } from '@/constants/inbox.constant.js';
 
