@@ -3,7 +3,7 @@ import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { validateTokenData } from '@/auth/authUtils.js';
 import { findActiveKeyStore } from '@/auth/keyStore.js';
 import { config } from '@/config.js';
-import { COOKIE_ACCESS } from '@/constants/auth.js';
+import { COOKIE_ACCESS } from '@/constants/auth.constant.js';
 import { prisma } from '@/db.js';
 import {
   sendError,

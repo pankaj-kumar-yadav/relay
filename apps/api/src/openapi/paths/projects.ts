@@ -1,4 +1,4 @@
-import { HttpStatus } from '@/constants/http.js';
+import { HttpStatus } from '@/constants/http.constant.js';
 import { OpenApiTag } from '@/constants/openapi.constant.js';
 import {
   cookieAuth,
@@ -16,7 +16,7 @@ import {
   createProjectBodySchema,
   listProjectsQuerySchema,
   patchProjectBodySchema,
-} from '@/routes/projects.js';
+} from '@/routes/projects/projects.js';
 
 const projectIdParams = orgParams({ projectId: z.string() });
 const deletedIdSchema = successEnvelopeSchema(z.object({ id: z.string() }));

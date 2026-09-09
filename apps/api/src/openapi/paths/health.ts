@@ -1,4 +1,4 @@
-import { HttpStatus } from '@/constants/http.js';
+import { HttpStatus } from '@/constants/http.constant.js';
 import { OpenApiTag } from '@/constants/openapi.constant.js';
 import { jsonResponse, successEnvelopeSchema } from '@/openapi/envelope.js';
 import { registry } from '@/openapi/registry.js';

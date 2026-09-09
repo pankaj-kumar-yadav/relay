@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import { HttpStatus } from '@/constants/http.js';
-import { OrgRole } from '@/constants/org.js';
+import { HttpStatus } from '@/constants/http.constant.js';
+import { OrgRole } from '@/constants/org.constant.js';
 import { inviteMailPath } from '@/constants/mail.constant.js';
 import { config } from '@/config.js';
 import { prisma } from '@/db.js';

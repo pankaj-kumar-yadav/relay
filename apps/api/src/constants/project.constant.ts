@@ -1,4 +1,4 @@
-import { IssueStatus, isIssueStatus, type IssueStatusValue } from './issue.js';
+import { IssueStatus, isIssueStatus, type IssueStatusValue } from './issue.constant.js';
 
 export const ProjectStatus = IssueStatus;
 export type ProjectStatusValue = IssueStatusValue;

@@ -13,8 +13,8 @@ import {
 } from '@/auth/passwordResetToken.js';
 import { clearAuthCookies, createAndSetTokens } from '@/auth/tokenHelpers.js';
 import { config } from '@/config.js';
-import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.js';
-import { HttpStatus } from '@/constants/http.js';
+import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.constant.js';
+import { HttpStatus } from '@/constants/http.constant.js';
 import { resetPasswordMailPath } from '@/constants/mail.constant.js';
 import { prisma } from '@/db.js';
 import {

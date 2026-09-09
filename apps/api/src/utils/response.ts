@@ -1,6 +1,6 @@
 import type { Response } from 'express';
 
-import { HttpStatus } from '@/constants/http.js';
+import { HttpStatus } from '@/constants/http.constant.js';
 
 export type ApiErrorBody = {
   code: string;

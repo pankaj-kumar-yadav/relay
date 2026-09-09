@@ -11,7 +11,7 @@ import {
   IssueStatus,
   IssueStatusCategory,
   type IssueStatusValue,
-} from '../src/constants/issue.js';
+} from '../src/constants/issue.constant.js';
 import { IssueEventType } from '../src/constants/activity.constant.js';
 import { CycleStatus } from '../src/constants/cycle.constant.js';
 import { NotificationType } from '../src/constants/inbox.constant.js';
@@ -19,7 +19,7 @@ import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,
 } from '../src/constants/project.constant.js';
-import { OrgRole, type OrgRoleValue } from '../src/constants/org.js';
+import { OrgRole, type OrgRoleValue } from '../src/constants/org.constant.js';
 import {
   SEED_LABELS,
   SEED_PASSWORD,

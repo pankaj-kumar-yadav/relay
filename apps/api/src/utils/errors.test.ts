@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { Response } from 'express';
 
-import { ErrorCode, HttpStatus } from '@/constants/http.js';
+import { ErrorCode, HttpStatus } from '@/constants/http.constant.js';
 import {
   ForbiddenError,
   InternalError,

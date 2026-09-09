@@ -1,6 +1,6 @@
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
-import { COOKIE_ACCESS } from '@/constants/auth.js';
+import { COOKIE_ACCESS } from '@/constants/auth.constant.js';
 
 export const registry = new OpenAPIRegistry();
 

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { config } from '@/config.js';
-import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.js';
-import { API_PREFIX, HttpStatus } from '@/constants/http.js';
+import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.constant.js';
+import { API_PREFIX, HttpStatus } from '@/constants/http.constant.js';
 import { prisma } from '@/db.js';
 import { canRun, close, cookieHeader, listen, register } from '@/test/http.js';
 import JWT, { JWTPayload } from '@/utils/jwt.js';

@@ -54,7 +54,7 @@ import { teamHomePath, DateFormat, OrgRole } from '@/constants/route.constant';
 
 Do not inline roles, path strings (`router.push` / `replace` / `redirect` / `Link href`), or date-fns patterns. Do not invent a file per screen. `new Date()` for timestamps/sorting is fine. One-off UI copy stays inline.
 
-Until `packages/shared` exists, values used on both sides are mirrored with the **same keys and values**. New files use `*.constant.ts`; rename older API files (`org.ts`) when you next touch them.
+Until `packages/shared` exists, values used on both sides are mirrored with the **same keys and values**. Files use `*.constant.ts`.
 
 ## NODE_ENV
 

@@ -26,7 +26,7 @@ Browser → apps/web (Next.js :3000)
 - Membership via `memberships` join (not `organization_id` on `users`); public route id is org **slug**
 - Org-scoped handlers: `requireAuth` → `requireOrgMember` → query with `req.org.id` (never raw route/body org ids alone)
 - Invites: admin `POST /api/v1/orgs/:slug/invites`; accept `POST /api/v1/invites/:token/accept` (email must match)
-- Detail: [steps/05-multi-tenant.md](./steps/05-multi-tenant.md); design: [superpowers/specs/2026-08-21-organizations-memberships-design.md](./superpowers/specs/2026-08-21-organizations-memberships-design.md)
+- Detail: [steps/mvp/05-multi-tenant.md](./steps/mvp/05-multi-tenant.md); design: [superpowers/mvp/August-2026/specs/2026-08-21-organizations-memberships-design.md](./superpowers/mvp/August-2026/specs/2026-08-21-organizations-memberships-design.md)
 
 ## Roles
 
@@ -46,7 +46,7 @@ Browser → apps/web (Next.js :3000)
 - CORS allows `WEB_ORIGIN` with credentials
 - Passwords hashed with `bcryptjs`
 - Env: `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` (optional `ACCESS_TOKEN_VALIDITY_SEC` / `REFRESH_TOKEN_VALIDITY_SEC`)
-- Detail: [steps/04-auth.md](./steps/04-auth.md); design: [superpowers/specs/2026-08-21-access-refresh-keystore-design.md](./superpowers/specs/2026-08-21-access-refresh-keystore-design.md)
+- Detail: [steps/mvp/04-auth.md](./steps/mvp/04-auth.md); design: [superpowers/mvp/August-2026/specs/2026-08-21-access-refresh-keystore-design.md](./superpowers/mvp/August-2026/specs/2026-08-21-access-refresh-keystore-design.md)
 
 ## API response shape
 
@@ -96,4 +96,4 @@ Transactional mail is SMTP via nodemailer (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`
 
 ## Implementation steps
 
-Follow [STEPS.md](./STEPS.md) ([MVP](./STEPS-MVP.md) done, [v1](./STEPS-V1.md) done). Detail in [steps/](./steps/). Do not skip auth/tenancy before wiring real issue data into the UI.
+Follow [STEPS.md](./STEPS.md) ([MVP](./STEPS-MVP.md) done, [v1](./STEPS-V1.md) done). Detail in [steps/mvp/](./steps/mvp/) and [steps/v1/](./steps/v1/). Do not skip auth/tenancy before wiring real issue data into the UI.

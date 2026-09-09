@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { IssueEventType } from '@/constants/activity.constant.js';
-import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
-import { OrgRole } from '@/constants/org.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.constant.js';
+import { OrgRole } from '@/constants/org.constant.js';
 import { prisma } from '@/db.js';
 import { canRun, close, type Envelope, listen, register } from '@/test/http.js';
 

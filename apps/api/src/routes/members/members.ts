@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { OrgRole } from '@/constants/org.js';
+import { OrgRole } from '@/constants/org.constant.js';
 import { prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';

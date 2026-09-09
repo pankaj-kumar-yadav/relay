@@ -6,7 +6,7 @@ import {
   generatePasswordResetToken,
   hashPasswordResetToken,
 } from '@/auth/passwordResetToken.js';
-import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.constant.js';
 import { prisma } from '@/db.js';
 import { canRun, close, cookieHeader, type Envelope, listen, register } from '@/test/http.js';
 import { verifyPassword } from '@/utils/passwords.js';

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { createApp } from '@/app.js';
-import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.constant.js';
 import {
   OPENAPI_DOCS_PATH,
   OPENAPI_HTTP_CLIENT,

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.constant.js';
 import { prisma } from '@/db.js';
 import { canRun, close, listen, register } from '@/test/http.js';
 

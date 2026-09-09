@@ -1,19 +1,19 @@
 import { Router } from 'express';
 
-import { HttpStatus } from '@/constants/http.js';
-import { OrgRole } from '@/constants/org.js';
+import { HttpStatus } from '@/constants/http.constant.js';
+import { OrgRole } from '@/constants/org.constant.js';
 import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { z } from '@/openapi/zod.js';
 import { issuesRouter } from '@/routes/issues/issues.js';
 import { notificationsRouter } from '@/routes/inbox/notifications.js';
-import { labelsRouter } from '@/routes/labels.js';
+import { labelsRouter } from '@/routes/labels/labels.js';
 import { membersRouter } from '@/routes/members/members.js';
 import { viewsRouter } from '@/routes/views/views.js';
 import { orgsInvitesRouter } from '@/routes/invites.js';
-import { projectsRouter } from '@/routes/projects.js';
-import { teamsRouter } from '@/routes/teams.js';
+import { projectsRouter } from '@/routes/projects/projects.js';
+import { teamsRouter } from '@/routes/teams/teams.js';
 import { createDefaultTeam, publicTeam } from '@/utils/teams.js';
 import {
   sendError,

@@ -1,4 +1,4 @@
-import { HttpStatus } from '@/constants/http.js';
+import { HttpStatus } from '@/constants/http.constant.js';
 import { OpenApiTag } from '@/constants/openapi.constant.js';
 import {
   cookieAuth,
@@ -12,7 +12,7 @@ import {
 import { registry } from '@/openapi/registry.js';
 import { publicLabelSchema } from '@/openapi/resources.js';
 import { z } from '@/openapi/zod.js';
-import { createLabelBodySchema, patchLabelBodySchema } from '@/routes/labels.js';
+import { createLabelBodySchema, patchLabelBodySchema } from '@/routes/labels/labels.js';
 
 const labelIdParams = orgParams({ labelId: z.string() });
 

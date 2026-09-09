@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 import { createApp } from '@/app.js';
 import { assertAuthConfig, config } from '@/config.js';
-import { API_PREFIX } from '@/constants/http.js';
+import { API_PREFIX } from '@/constants/http.constant.js';
 import { OPENAPI_DOCS_PATH } from '@/constants/openapi.constant.js';
 
 assertAuthConfig();

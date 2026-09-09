@@ -4,7 +4,7 @@ Read these before changing code:
 
 1. [docs/SCOPE.md](docs/SCOPE.md) — then [SCOPE-V1.md](docs/SCOPE-V1.md) (shipped) or [SCOPE-MVP.md](docs/SCOPE-MVP.md) (shipped)
 2. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system shape and tenancy rules
-3. [docs/STEPS.md](docs/STEPS.md) — then [STEPS-V1.md](docs/STEPS-V1.md); only the **current** file under [docs/steps/](docs/steps/)
+3. [docs/STEPS.md](docs/STEPS.md) — then [STEPS-V1.md](docs/STEPS-V1.md); only the **current** file under [docs/steps/mvp/](docs/steps/mvp/) or [docs/steps/v1/](docs/steps/v1/)
 4. [docs/README.md](docs/README.md) — docs index
 5. [docs/project-rules/](docs/project-rules/) — coding conventions (git, shared, web, api)
 

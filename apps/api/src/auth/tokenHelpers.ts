@@ -4,7 +4,7 @@ import type { Response } from 'express';
 import { createTokens } from '@/auth/authUtils.js';
 import { createKeyStore } from '@/auth/keyStore.js';
 import { config } from '@/config.js';
-import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.js';
+import { COOKIE_ACCESS, COOKIE_REFRESH } from '@/constants/auth.constant.js';
 
 function cookieBase() {
   return {

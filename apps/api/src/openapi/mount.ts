@@ -1,7 +1,7 @@
 import type { Express, IRouter } from 'express';
 import { apiReference } from '@scalar/express-api-reference';
 
-import { API_PREFIX } from '@/constants/http.js';
+import { API_PREFIX } from '@/constants/http.constant.js';
 import {
   OPENAPI_DOCS_PATH,
   OPENAPI_HTTP_CLIENT,

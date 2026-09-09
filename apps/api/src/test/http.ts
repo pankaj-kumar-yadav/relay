@@ -5,7 +5,7 @@ import type { AddressInfo } from 'node:net';
 import type { Express } from 'express';
 
 import { createApp } from '@/app.js';
-import { API_PREFIX, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, HttpStatus } from '@/constants/http.constant.js';
 
 export const canRun = Boolean(
   process.env.DATABASE_URL &&

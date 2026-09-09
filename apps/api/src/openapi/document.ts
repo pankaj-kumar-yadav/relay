@@ -1,7 +1,7 @@
 import { OpenApiGeneratorV31 } from '@asteasolutions/zod-to-openapi';
 
 import { BRAND_NAME } from '@/constants/brand.constant.js';
-import { API_PREFIX } from '@/constants/http.js';
+import { API_PREFIX } from '@/constants/http.constant.js';
 import { OPENAPI_VERSION } from '@/constants/openapi.constant.js';
 import { registry } from '@/openapi/registry.js';
 import '@/openapi/paths/index.js';

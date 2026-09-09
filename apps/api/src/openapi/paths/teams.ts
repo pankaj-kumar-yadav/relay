@@ -1,4 +1,4 @@
-import { HttpStatus } from '@/constants/http.js';
+import { HttpStatus } from '@/constants/http.constant.js';
 import { OpenApiTag } from '@/constants/openapi.constant.js';
 import {
   cookieAuth,
@@ -12,7 +12,7 @@ import {
 import { registry } from '@/openapi/registry.js';
 import { publicTeamSchema } from '@/openapi/resources.js';
 import { z } from '@/openapi/zod.js';
-import { createTeamBodySchema, patchTeamBodySchema } from '@/routes/teams.js';
+import { createTeamBodySchema, patchTeamBodySchema } from '@/routes/teams/teams.js';
 
 const teamIdParams = orgParams({ teamId: z.string() });
 

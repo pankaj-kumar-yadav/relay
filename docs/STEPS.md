@@ -2,7 +2,7 @@
 
 Follow steps **in order**. Do not skip tenancy/auth before wiring the UI to real data. Do not implement a later slice before the current step’s “Done when”.
 
-Detail for each step: [`docs/steps/`](./steps/).
+Detail for each step: [`docs/steps/mvp/`](./steps/mvp/) (MVP) and [`docs/steps/v1/`](./steps/v1/) (v1).
 
 | Release | File | Steps | Status |
 |---------|------|-------|--------|
@@ -24,5 +24,5 @@ Scope: [SCOPE.md](./SCOPE.md) → [SCOPE-MVP.md](./SCOPE-MVP.md) / [SCOPE-V1.md]
 1. [SCOPE.md](./SCOPE.md) then the **current** release scope ([SCOPE-V1.md](./SCOPE-V1.md))
 2. [ARCHITECTURE.md](./ARCHITECTURE.md)
 3. This file, then [STEPS-V1.md](./STEPS-V1.md)
-4. The **current** step file under `steps/` (do not implement future steps early)
-5. That step’s design spec under [superpowers/specs/](./superpowers/specs/) when one exists
+4. The **current** step file under `steps/mvp/` or `steps/v1/` (do not implement future steps early)
+5. That step’s design spec under [superpowers/mvp/](./superpowers/mvp/) or [superpowers/v1/](./superpowers/v1/) (`Month-Year/specs/`) when one exists

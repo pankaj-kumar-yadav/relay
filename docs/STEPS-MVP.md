@@ -32,7 +32,7 @@ Shipped core: monorepo, Circle UI, auth, tenancy, issues, teams, projects, harde
 - [x] Step 8 — Projects + teams API + remaining pages
 - [x] Step 9 — Hardening (seed, errors, CORS/prod notes, smoke tests)
 
-Step files: [01](./steps/01-monorepo.md) … [09](./steps/09-hardening.md). Overview: [00-overview.md](./steps/00-overview.md).
+Step files: [01](./steps/mvp/01-monorepo.md) … [09](./steps/mvp/09-hardening.md). Overview: [00-overview.md](./steps/mvp/00-overview.md).
 
 ## Next
 

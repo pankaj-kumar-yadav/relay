@@ -1,6 +1,6 @@
 import type { Response } from 'express';
 
-import { ErrorCode, type ErrorCodeValue, HttpStatus } from '@/constants/http.js';
+import { ErrorCode, type ErrorCodeValue, HttpStatus } from '@/constants/http.constant.js';
 
 export class ApiError extends Error {
   constructor(

@@ -2,10 +2,10 @@ import 'dotenv/config';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus } from '@/constants/http.constant.js';
 import { NotificationType } from '@/constants/inbox.constant.js';
-import { IssueStatus } from '@/constants/issue.js';
-import { OrgRole } from '@/constants/org.js';
+import { IssueStatus } from '@/constants/issue.constant.js';
+import { OrgRole } from '@/constants/org.constant.js';
 import { prisma } from '@/db.js';
 import { canRun, close, type Envelope, listen, register } from '@/test/http.js';
 

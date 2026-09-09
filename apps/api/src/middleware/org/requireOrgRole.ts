@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
 
-import { type OrgRoleValue } from '@/constants/org.js';
+import { type OrgRoleValue } from '@/constants/org.constant.js';
 import { ForbiddenError, sendError } from '@/utils/errors.js';
 
 export function requireOrgRole(...roles: OrgRoleValue[]): RequestHandler {

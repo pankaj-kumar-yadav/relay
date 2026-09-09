@@ -3,7 +3,7 @@ import cors from 'cors';
 import express, { type ErrorRequestHandler, type Express } from 'express';
 
 import { config } from '@/config.js';
-import { API_PREFIX, JSON_BODY_LIMIT } from '@/constants/http.js';
+import { API_PREFIX, JSON_BODY_LIMIT } from '@/constants/http.constant.js';
 import { mountOpenApiDocs } from '@/openapi/mount.js';
 import { authRouter } from '@/routes/auth/auth.js';
 import { invitesRouter } from '@/routes/invites.js';

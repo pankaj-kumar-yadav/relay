@@ -74,6 +74,6 @@ When SMTP is unset, invite and password-reset URLs print in `docker compose logs
 - [SCOPE](docs/SCOPE.md) — index; [MVP](docs/SCOPE-MVP.md) / [v1](docs/SCOPE-V1.md)
 - [ARCHITECTURE](docs/ARCHITECTURE.md) — system design
 - [STEPS](docs/STEPS.md) — index; [MVP](docs/STEPS-MVP.md) / [v1](docs/STEPS-V1.md)
-- [Step details](docs/steps/) — how to execute each step
+- [Step details](docs/steps/) — [MVP](docs/steps/mvp/) / [v1](docs/steps/v1/)
 - [Project rules](docs/project-rules/) — coding conventions
 - [AGENTS](AGENTS.md) — agent entrypoint

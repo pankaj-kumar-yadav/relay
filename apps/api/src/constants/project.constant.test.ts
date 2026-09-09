@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { IssueStatus } from './issue.js';
+import { IssueStatus } from './issue.constant.js';
 import {
   DEFAULT_PROJECT_HEALTH,
   DEFAULT_PROJECT_STATUS,

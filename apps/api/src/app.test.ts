@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { API_PREFIX, ErrorCode, HttpStatus, JSON_BODY_LIMIT } from '@/constants/http.js';
+import { API_PREFIX, ErrorCode, HttpStatus, JSON_BODY_LIMIT } from '@/constants/http.constant.js';
 import { close, listen } from '@/test/http.js';
 
 test('GET /api/v1/health is versioned; unprefixed /health is not found', async () => {

@@ -107,7 +107,7 @@ res.status(401).json({ error: { code, message } }); // missing success/message/d
 
 The contract lives in code, not a handwritten catalog. Auth, tenancy, and CORS stay in `docs/ARCHITECTURE.md` — do not copy them into every handler.
 
-- **Source of truth:** Zod on the route (body/query), `sendSuccess` / `sendError` (envelope), `ErrorCode` in `constants/http.ts` (failure identity)
+- **Source of truth:** Zod on the route (body/query), `sendSuccess` / `sendError` (envelope), `ErrorCode` in `constants/http.constant.ts` (failure identity)
 - **Generated OpenAPI:** register paths from those Zod schemas (`openapi/paths/`, `@asteasolutions/zod-to-openapi`). All HTTP routes live under `API_PREFIX` (`/api/v1`). OpenAPI `servers` is that prefix; path items are unprefixed (`/health`, `/auth/login`). Scalar at `GET /docs` and the spec at `GET /api/v1/openapi.json` in every environment (`createApp({ docs: false })` omits them)
 - **No parallel catalog:** do not add `docs/api/*.md` per resource or a handwritten OpenAPI file
 - **Versioned first-party API:** cookie session routes are `/api/v1/...` for `apps/web`. A later partner API (API keys / OAuth) is still a **new surface**, not a relabel of this one

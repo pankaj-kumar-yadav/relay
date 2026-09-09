@@ -4,8 +4,8 @@ import { test } from 'node:test';
 
 import { IssueEventType } from '@/constants/activity.constant.js';
 import { CycleStatus } from '@/constants/cycle.constant.js';
-import { API_PREFIX, HttpStatus } from '@/constants/http.js';
-import { DEFAULT_TEAM_KEY } from '@/constants/issue.js';
+import { API_PREFIX, HttpStatus } from '@/constants/http.constant.js';
+import { DEFAULT_TEAM_KEY } from '@/constants/issue.constant.js';
 import { prisma } from '@/db.js';
 import { canRun, close, type Envelope, listen, register } from '@/test/http.js';
 

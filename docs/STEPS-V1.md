@@ -2,7 +2,7 @@
 
 **Status:** Done — **current: none (v1 complete)**  
 **Scope:** [SCOPE-V1.md](./SCOPE-V1.md)  
-**Design:** [2026-08-27-v1-product-design.md](./superpowers/specs/2026-08-27-v1-product-design.md)  
+**Design:** [2026-08-27-v1-product-design.md](./superpowers/v1/August-2026/specs/2026-08-27-v1-product-design.md)  
 **Index:** [STEPS.md](./STEPS.md)
 
 Self-hosted Linear-lite on top of shipped MVP ([STEPS-MVP.md](./STEPS-MVP.md)).
@@ -33,7 +33,7 @@ Self-hosted Linear-lite on top of shipped MVP ([STEPS-MVP.md](./STEPS-MVP.md)).
 - [x] Step 16 — Email + auth polish
 - [x] Step 17 — Self-host pack
 
-Step files: [10](./steps/10-comments-activity.md) … [12](./steps/12-inbox.md), [12a](./steps/12a-api-docs.md), [13](./steps/13-cycles.md) … [17](./steps/17-self-host.md).
+Step files: [10](./steps/v1/10-comments-activity.md) … [12](./steps/v1/12-inbox.md), [12a](./steps/v1/12a-api-docs.md), [13](./steps/v1/13-cycles.md) … [17](./steps/v1/17-self-host.md).
 
 ## Rules (v1)
 

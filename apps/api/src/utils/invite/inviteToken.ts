@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 
-import { INVITE_EXPIRY_MS, INVITE_TOKEN_BYTES } from '@/constants/invite.js';
+import { INVITE_EXPIRY_MS, INVITE_TOKEN_BYTES } from '@/constants/invite.constant.js';
 
 export function generateInviteToken(): string {
   return randomBytes(INVITE_TOKEN_BYTES).toString('base64url');

@@ -1,5 +1,5 @@
 import { BRAND_NAME } from '@/constants/brand.constant.js';
-import { INVITE_EXPIRY_MS } from '@/constants/invite.js';
+import { INVITE_EXPIRY_MS } from '@/constants/invite.constant.js';
 import { inviteMailSubject } from '@/constants/mail.constant.js';
 import {
   type RenderedEmail,

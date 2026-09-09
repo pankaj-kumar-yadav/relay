@@ -2,7 +2,7 @@
 
 **Status:** Done (steps 10–17)  
 **Roadmap:** [STEPS-V1.md](./STEPS-V1.md)  
-**Design:** [superpowers/specs/2026-08-27-v1-product-design.md](./superpowers/specs/2026-08-27-v1-product-design.md)  
+**Design:** [superpowers/v1/August-2026/specs/2026-08-27-v1-product-design.md](./superpowers/v1/August-2026/specs/2026-08-27-v1-product-design.md)  
 **Index:** [SCOPE.md](./SCOPE.md)
 
 ## Goal

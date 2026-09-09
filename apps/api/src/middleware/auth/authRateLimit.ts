@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'express';
 import { rateLimit } from 'express-rate-limit';
 
-import { LOGIN_RATE_LIMIT, REGISTER_RATE_LIMIT, FORGOT_PASSWORD_RATE_LIMIT } from '@/constants/auth.js';
+import { LOGIN_RATE_LIMIT, REGISTER_RATE_LIMIT, FORGOT_PASSWORD_RATE_LIMIT } from '@/constants/auth.constant.js';
 import { RateLimitError, sendError } from '@/utils/errors.js';
 
 const passthrough: RequestHandler = (_req, _res, next) => {
