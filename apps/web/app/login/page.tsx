@@ -15,14 +15,14 @@ import { Separator } from '@/components/ui/separator';
 import { ApiError } from '@/lib/api';
 import { AppRoute, AUTH_SOCIAL_PROVIDERS, nextPathFromSearch } from '@/constants/auth.constant';
 import { BRAND_NAME } from '@/constants/brand.constant';
-import { SEED_PASSWORD } from '@/constants/seed.constant';
+import { SEED_PASSWORD, SeedEmail } from '@/constants/seed.constant';
 import { useLogin, useSession } from '@/hooks/use-session';
 import { useResolveHomePath } from '@/hooks/use-orgs';
 
 export default function LoginPage() {
    const router = useRouter();
-   const [email, setEmail] = useState('');
-   const [password, setPassword] = useState('');
+   const [email, setEmail] = useState<string>(SeedEmail.TECHAP_ADMIN);
+   const [password, setPassword] = useState(SEED_PASSWORD);
    const [showPassword, setShowPassword] = useState(false);
    const [error, setError] = useState<string | null>(null);
    const { data: user, isFetched } = useSession();
