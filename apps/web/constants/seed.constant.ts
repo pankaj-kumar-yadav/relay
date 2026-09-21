@@ -4,7 +4,7 @@ import { SEED_PASSWORD, SeedOrgSlug, SeedEmail } from '@relay/shared/constants/s
 export { SEED_PASSWORD, SeedOrgSlug, SeedEmail };
 
 export const SEED_ORGS = [
-   { slug: SeedOrgSlug.ACME, name: 'Acme' },
+   // { slug: SeedOrgSlug.ACME, name: 'Acme' },
    { slug: SeedOrgSlug.TECHAP, name: 'Techap' },
    { slug: SeedOrgSlug.STRATXG, name: 'StratXG' },
 ] as const;
@@ -26,12 +26,12 @@ export const SEED_ACCOUNTS: {
    email: string;
    role: SeedAccountRole;
 }[] = [
-      {
-         org: SeedOrgSlug.ACME,
-         name: 'Relay Owner',
-         email: SeedEmail.SUPER_ADMIN,
-         role: 'super-admin',
-      },
+      // {
+      //    org: SeedOrgSlug.ACME,
+      //    name: 'Relay Owner',
+      //    email: SeedEmail.SUPER_ADMIN,
+      //    role: 'super-admin',
+      // },
       {
          org: SeedOrgSlug.TECHAP,
          name: 'Asha Patel',
