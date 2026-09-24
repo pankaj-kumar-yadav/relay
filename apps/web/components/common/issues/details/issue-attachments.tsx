@@ -2,6 +2,8 @@
 
 import {
   ISSUE_CONTENT_TYPES,
+  isAvatarContentType,
+  normalizeContentType,
 } from '@relay/shared/constants/attachment.constant';
 import {
   useDeleteIssueAttachment,
@@ -10,9 +12,37 @@ import {
 } from '@/hooks/use-attachments';
 import { ApiError } from '@/lib/api';
 import { ErrorCode } from '@relay/shared/constants/http.constant';
-import { Paperclip, X } from 'lucide-react';
+import type { ApiAttachment } from '@/services/attachments.service';
+import { File, FileArchive, FileText, Paperclip, X } from 'lucide-react';
 import { useRef } from 'react';
 import { toast } from 'sonner';
+
+function AttachmentThumb({ file }: { file: ApiAttachment }) {
+   const contentType = normalizeContentType(file.contentType);
+   const isImage = isAvatarContentType(contentType);
+   const thumbClass =
+      'size-8 shrink-0 rounded border border-border/50 bg-muted/40 object-cover';
+
+   if (isImage && file.url) {
+      return (
+         // eslint-disable-next-line @next/next/no-img-element -- presigned S3 URL; not a static asset
+         <img src={file.url} alt="" className={thumbClass} />
+      );
+   }
+
+   const Icon =
+      contentType === 'application/zip'
+         ? FileArchive
+         : contentType === 'application/pdf' || contentType === 'text/plain'
+           ? FileText
+           : File;
+
+   return (
+      <span className={`${thumbClass} inline-flex items-center justify-center text-muted-foreground`}>
+         <Icon className="size-4" aria-hidden />
+      </span>
+   );
+}
 
 export function IssueAttachments({
    orgSlug,
@@ -66,7 +96,7 @@ export function IssueAttachments({
             <Paperclip className="size-4" />
          </button>
          {attachments.length > 0 ? (
-            <ul className="basis-full space-y-1 text-sm text-foreground">
+            <ul className="basis-full space-y-1.5 text-sm text-foreground">
                {attachments.map((file) => (
                   <li key={file.id} className="flex items-center gap-2 min-w-0">
                      {file.url ? (
@@ -74,16 +104,20 @@ export function IssueAttachments({
                            href={file.url}
                            target="_blank"
                            rel="noreferrer"
-                           className="truncate hover:underline"
+                           className="flex items-center gap-2 min-w-0 hover:underline"
                         >
-                           {file.fileName}
+                           <AttachmentThumb file={file} />
+                           <span className="truncate">{file.fileName}</span>
                         </a>
                      ) : (
-                        <span className="truncate">{file.fileName}</span>
+                        <span className="flex items-center gap-2 min-w-0">
+                           <AttachmentThumb file={file} />
+                           <span className="truncate">{file.fileName}</span>
+                        </span>
                      )}
                      <button
                         type="button"
-                        className="shrink-0 text-muted-foreground hover:text-foreground"
+                        className="shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
                         aria-label={`Remove ${file.fileName}`}
                         disabled={remove.isPending}
                         onClick={() => {

@@ -2,7 +2,6 @@
 
 import { CyclePlayIcon } from '@/components/common/cycles/cycle-line';
 import { ProjectSelector } from '@/components/layout/sidebar/create-new-issue/project-selector';
-import { LabelSelector } from '@/components/layout/sidebar/create-new-issue/label-selector';
 import { TeamSelector } from '@/components/layout/sidebar/create-new-issue/team-selector';
 import { useIssueMutations } from '@/hooks/use-issues';
 import { IssueDetail } from '@/mock-data/issue-details';
@@ -34,7 +33,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  */
 export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProps) {
    const cycleName = issue.cycleName;
-   const { updateIssueProject, updateIssueTeam, updateIssueLabels } = useIssueMutations();
+   const { updateIssueProject, updateIssueTeam } = useIssueMutations();
    const teamKey = issue.identifier.split('-')[0] ?? issue.project?.teamId ?? '';
 
    return (
@@ -70,10 +69,7 @@ export function IssuePropertiesPanel({ issue, detail }: IssuePropertiesPanelProp
 
          <Section title="Labels">
             <div className="flex items-center flex-wrap gap-1.5">
-               <LabelSelector
-                  selectedLabels={issue.labels}
-                  onChange={(labels) => updateIssueLabels(issue.id, labels)}
-               />
+               {/* LabelSelector (tag + color dots) — not in Circle original details */}
                <LabelBadge label={issue.labels} />
             </div>
          </Section>
