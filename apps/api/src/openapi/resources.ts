@@ -18,6 +18,11 @@ export const publicActorSchema = z.object({
   name: z.string(),
 });
 
+/** Actor/author with resolved avatar (comments, activity). */
+export const publicActorWithAvatarSchema = publicActorSchema.extend({
+  avatarUrl: z.string().nullable(),
+});
+
 export const publicMemberSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -116,7 +121,7 @@ export const reactionAggregateSchema = z.object({
 export const publicCommentSchema = z.object({
   id: z.string(),
   body: z.string(),
-  author: publicActorSchema,
+  author: publicActorWithAvatarSchema,
   createdAt: z.string(),
   reactions: z.array(reactionAggregateSchema),
 });

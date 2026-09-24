@@ -1,0 +1,22 @@
+---
+description: Never launch sub-agents unless the user explicitly asks
+alwaysApply: true
+---
+
+# No sub-agents unless asked
+
+## Hard rule
+
+- **Never** launch sub-agents (`Task`, explore/generalPurpose/best-of-n runners, Bugbot, Security Review, or any parallel agent) unless the user **explicitly** asks in this turn (e.g. “use a sub-agent”, “spawn agents”, “run Bugbot”, “security review”).
+- Skills, plans, checklists, or “use parallel agents” habits do **not** override this — **user instructions win**.
+- Do the work yourself in the main agent session.
+
+## Allowed without an ask
+
+- Normal tools: Read, Grep, Shell, edits, lints, browser, MCP
+- Continuing a sub-agent the user already started in this turn
+
+## When the user does ask
+
+- Use only what they named (or the smallest set that matches their ask)
+- Do not spawn extra agents beyond what they requested

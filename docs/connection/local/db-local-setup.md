@@ -82,19 +82,33 @@ pnpm --filter @relay/api db:studio
 
 ## Useful commands
 
-Check DB container status:
+Docker has two modes (same `docker-compose.yml`). Do not run full Docker and `pnpm dev` together — both use `:3000` / `:4000`.
+
+DB only (pair with `pnpm dev` for web + API):
+
+```bash
+docker compose up -d db
+```
+
+Full stack (web + API + DB):
+
+```bash
+docker compose up --build
+```
+
+Check container status:
 
 ```bash
 docker compose ps
 ```
 
-Stop DB:
+Stop containers:
 
 ```bash
 docker compose down
 ```
 
-Stop DB + delete data volume (full reset):
+Stop + delete data volume (full reset):
 
 ```bash
 docker compose down -v

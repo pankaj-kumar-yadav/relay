@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 export type ApiActivityActor = {
   id: string;
   name: string;
+  avatarUrl: string | null;
 };
 
 export type ApiActivityEvent = {

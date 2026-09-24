@@ -10,7 +10,7 @@ import {
 } from '@/openapi/envelope.js';
 import { registry } from '@/openapi/registry.js';
 import {
-  publicActorSchema,
+  publicActorWithAvatarSchema,
   publicCommentSchema,
   reactionAggregateSchema,
 } from '@/openapi/resources.js';
@@ -28,7 +28,7 @@ const activityItemSchema = z.union([
     kind: z.literal('event'),
     id: z.string(),
     type: z.string(),
-    actor: publicActorSchema,
+    actor: publicActorWithAvatarSchema,
     payload: z.object({}).passthrough(),
     createdAt: z.string(),
   }),
@@ -36,7 +36,7 @@ const activityItemSchema = z.union([
     kind: z.literal('comment'),
     id: z.string(),
     body: z.string(),
-    author: publicActorSchema,
+    author: publicActorWithAvatarSchema,
     createdAt: z.string(),
     reactions: z.array(reactionAggregateSchema),
   }),

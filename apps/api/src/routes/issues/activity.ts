@@ -18,12 +18,23 @@ import {
 } from '@/utils/errors.js';
 import { ensureSubscribed, notifyWatchers } from '@/utils/issue/issueSubscribe.js';
 import { aggregateCommentReactions } from '@/utils/issue/commentReaction.js';
+import { avatarUrlForUser } from '@/utils/storage/attachment.js';
 import { sendSuccess } from '@/utils/response.js';
 
 export const activityRouter: Router = Router({ mergeParams: true });
 
-const actorSelect = { id: true, name: true } as const;
+const actorSelect = {
+  id: true,
+  name: true,
+  avatarAttachment: { select: { objectKey: true, status: true } },
+} as const;
 const reactionSelect = { emoji: true, userId: true } as const;
+
+type ActorRow = {
+  id: string;
+  name: string;
+  avatarAttachment: { objectKey: string; status: string } | null;
+};
 
 async function findIssueInOrg(organizationId: string, rawId: string) {
   const ref = parseIssueRef(rawId);
@@ -58,8 +69,21 @@ async function findIssueInOrg(organizationId: string, rawId: string) {
   });
 }
 
-function publicActor(user: { id: string; name: string }) {
-  return { id: user.id, name: user.name };
+async function publicActor(
+  user: ActorRow,
+  cache: Map<string, string | null>,
+) {
+  const key = user.avatarAttachment?.objectKey;
+  let avatarUrl: string | null = null;
+  if (user.avatarAttachment) {
+    if (key && cache.has(key)) {
+      avatarUrl = cache.get(key) ?? null;
+    } else {
+      avatarUrl = await avatarUrlForUser(user.avatarAttachment);
+      if (key) cache.set(key, avatarUrl);
+    }
+  }
+  return { id: user.id, name: user.name, avatarUrl };
 }
 
 async function loadIssueReactions(
@@ -120,23 +144,28 @@ activityRouter.get('/:issueId/activity', async (req, res) => {
       }),
     ]);
 
+    const avatarCache = new Map<string, string | null>();
     const items = [
-      ...events.map((event) => ({
-        kind: 'event' as const,
-        id: event.id,
-        type: event.type,
-        actor: publicActor(event.actor),
-        payload: (event.payload ?? {}) as Record<string, unknown>,
-        createdAt: event.createdAt.toISOString(),
-      })),
-      ...comments.map((comment) => ({
-        kind: 'comment' as const,
-        id: comment.id,
-        body: comment.body,
-        author: publicActor(comment.author),
-        createdAt: comment.createdAt.toISOString(),
-        reactions: aggregateCommentReactions(comment.reactions, req.user!.id),
-      })),
+      ...(await Promise.all(
+        events.map(async (event) => ({
+          kind: 'event' as const,
+          id: event.id,
+          type: event.type,
+          actor: await publicActor(event.actor, avatarCache),
+          payload: (event.payload ?? {}) as Record<string, unknown>,
+          createdAt: event.createdAt.toISOString(),
+        })),
+      )),
+      ...(await Promise.all(
+        comments.map(async (comment) => ({
+          kind: 'comment' as const,
+          id: comment.id,
+          body: comment.body,
+          author: await publicActor(comment.author, avatarCache),
+          createdAt: comment.createdAt.toISOString(),
+          reactions: aggregateCommentReactions(comment.reactions, req.user!.id),
+        })),
+      )),
     ].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
     const page =
@@ -210,7 +239,7 @@ activityRouter.post('/:issueId/comments', async (req, res) => {
         comment: {
           id: comment.comment.id,
           body: comment.comment.body,
-          author: publicActor(comment.comment.author),
+          author: await publicActor(comment.comment.author, new Map()),
           createdAt: comment.comment.createdAt.toISOString(),
           reactions: [],
         },

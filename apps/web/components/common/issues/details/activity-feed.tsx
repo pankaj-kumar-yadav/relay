@@ -8,7 +8,7 @@ import { formatRelativeTime } from '@/constants/date.constant';
 import { useCreateComment, useIssueActivity } from '@/hooks/use-activity';
 import { useIssue, usePutIssueSubscription } from '@/hooks/use-issues';
 import { isIssueSubscribed } from '@/lib/mappers';
-import { dicebearAvatarUrl } from '@/constants/user.constant';
+import { userAvatarUrl } from '@/constants/user.constant';
 import type { ApiActivityComment, ApiActivityEvent } from '@/services/activity.service';
 import { CircleDot, PenLine, Plus, Repeat, Tag, UserRound } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
@@ -90,7 +90,7 @@ function CommentCard({
     <div className="my-2 rounded-lg border border-border/60 bg-container p-3.5">
       <div className="flex items-center gap-2 mb-1.5">
         <Avatar className="size-5">
-          <AvatarImage src={dicebearAvatarUrl(item.author.id)} alt={item.author.name} />
+          <AvatarImage src={userAvatarUrl(item.author)} alt={item.author.name} />
           <AvatarFallback>{item.author.name[0]}</AvatarFallback>
         </Avatar>
         <span className="text-sm font-medium">{item.author.name}</span>
