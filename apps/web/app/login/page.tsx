@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
+import { AuthSessionLoading } from '@/components/common/auth/auth-session-loading';
 import { AuthShell } from '@/components/common/auth/auth-shell';
 import { SocialProviderIcon } from '@/components/common/auth/social-provider-icons';
 import { SeedAccountPrefill } from '@/components/common/auth/seed-account-prefill';
@@ -64,7 +65,7 @@ export default function LoginPage() {
    }
 
    if (checking) {
-      return <div className="min-h-svh bg-background" />;
+      return <AuthSessionLoading />;
    }
 
    return (

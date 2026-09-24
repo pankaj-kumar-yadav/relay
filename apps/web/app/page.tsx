@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { AuthSessionLoading } from '@/components/common/auth/auth-session-loading';
 import { AppRoute } from '@/constants/auth.constant';
 import { useSession } from '@/hooks/use-session';
 import { useResolveHomePath } from '@/hooks/use-orgs';
@@ -12,8 +13,8 @@ export default function Home() {
   const { mutateAsync: resolveHomePath } = useResolveHomePath();
 
   useEffect(() => {
-    if (!isFetched || isError) return;
-    if (!user) {
+    if (!isFetched) return;
+    if (!user || isError) {
       router.replace(AppRoute.LOGIN);
       return;
     }
@@ -30,5 +31,5 @@ export default function Home() {
     };
   }, [isFetched, isError, user, router, resolveHomePath]);
 
-  return <div className="min-h-svh bg-background" />;
+  return <AuthSessionLoading />;
 }

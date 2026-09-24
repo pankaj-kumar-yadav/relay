@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { AuthSessionLoading } from '@/components/common/auth/auth-session-loading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -52,7 +53,7 @@ export default function RegisterPage() {
    }
 
    if (checking) {
-      return <div className="min-h-svh bg-background" />;
+      return <AuthSessionLoading />;
    }
 
    return (

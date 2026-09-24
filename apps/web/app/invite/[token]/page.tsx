@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { AuthSessionLoading } from '@/components/common/auth/auth-session-loading';
 import { Button } from '@/components/ui/button';
 import { ApiError } from '@/lib/api';
 import { useSession } from '@/hooks/use-session';
@@ -44,7 +45,7 @@ export default function AcceptInvitePage() {
   }
 
   if (!isFetched || !user) {
-    return <div className="min-h-svh bg-background" />;
+    return <AuthSessionLoading />;
   }
 
   const accepting = acceptInvite.isPending || Boolean(orgSlug);
