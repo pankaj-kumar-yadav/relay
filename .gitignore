@@ -9,10 +9,11 @@ out
 build
 *.tsbuildinfo
 
-# env
+# env (never commit secrets — keep at each level)
 .env
 .env*.local
 .env.production
+**/.env.production
 
 # generated Prisma client (pnpm --filter @relay/api db:generate)
 apps/api/src/generated/

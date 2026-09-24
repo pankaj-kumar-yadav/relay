@@ -26,15 +26,17 @@ DATABASE_URL=postgresql://relay:relay@localhost:5432/relay
 From repo root:
 
 ```bash
-docker compose up -d
+docker compose up -d db
 ```
 
-This uses `docker-compose.yml` and starts:
+This uses `docker-compose.yml` and starts Postgres only:
 
 - host: `localhost`
 - port: `5432`
 - db: `relay`
 - user/password: `relay` / `relay`
+
+Full stack (`web` + `api` + `db`) uses `apps/api/.env` for API secrets; root `.env` is only `NEXT_PUBLIC_API_URL`.
 
 ## 3) Run migrations + Prisma client generation
 

@@ -17,7 +17,7 @@ v1 (self-host, comments, labels, inbox, cycles, views, invite/reset SMTP, Docker
 - Inbox email for the existing notification types (comment / assignee / status), including subscribers
 - Profile avatars (Dicebear fallback)
 - Issue file attachments
-- S3-compatible storage (MinIO in Compose; AWS or Backblaze via env)
+- S3-compatible storage (AWS / Backblaze via `apps/api/.env`; optional MinIO Compose profile)
 
 ## Circle frontend
 
@@ -45,6 +45,6 @@ Unused Circle/UI is still in scope to **keep**: do not delete components, screen
 
 - A member can subscribe, receive matching inbox email, set an avatar, and attach a file to an issue without mock data on those screens
 - Data from org A is never visible to org B
-- Compose includes MinIO so uploads work without a cloud account
+- Uploads work with `S3_*` in `apps/api/.env` (or optional Compose MinIO profile)
 - Hidden Circle routes do not appear in live nav
 - Web talks only to Express API on wired v2 screens

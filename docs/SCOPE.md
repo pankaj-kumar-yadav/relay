@@ -18,7 +18,7 @@ Roadmaps: [STEPS.md](./STEPS.md) → [STEPS-MVP.md](./STEPS-MVP.md) / [STEPS-V1.
 - API: Node.js + Express + TypeScript
 - DB: PostgreSQL
 - Email (v1+): nodemailer SMTP (optional in development; log the link if unset)
-- Files (v2): S3-compatible object store (MinIO in Compose; AWS or Backblaze via env)
+- Files (v2): S3-compatible object store (AWS / Backblaze via `apps/api/.env`; optional MinIO Compose profile)
 
 ## Web API client (locked)
 

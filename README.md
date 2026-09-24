@@ -21,8 +21,8 @@ Circle is MIT-licensed. Original repository: [github.com/ln-dev7/circle](https:/
 - **Inbox** — in-app notifications; optional email for comments, assignees, and status changes
 - **Saved views** — filtered issue lists
 - **Auth** — register, login, session refresh, password reset, email invites
-- **Files** — S3-compatible storage (MinIO locally; AWS or Backblaze in production)
-- **Self-host** — Docker Compose for web, API, Postgres, and MinIO
+- **Files** — S3-compatible storage (AWS / Backblaze via `apps/api/.env`; optional MinIO Compose profile)
+- **Self-host** — Docker Compose for web, API, and Postgres
 
 Some Circle screens remain in the repository but are hidden from live navigation. Wired versus leftover surfaces: [docs/CIRCLE.md](docs/CIRCLE.md).
 
@@ -95,6 +95,7 @@ Sign in at http://localhost:3000/login with `owner@relay.local` / `password` (or
 
 ```bash
 cp .env.example .env
+cp apps/api/.env.example apps/api/.env
 docker compose up --build
 ```
 
@@ -103,13 +104,12 @@ docker compose up --build
 | Web | http://localhost:3000 |
 | API | http://localhost:4000/api/v1/health |
 | API docs | http://localhost:4000/docs |
-| MinIO S3 | http://localhost:9000 (console http://localhost:9001) |
 
-Set a long random `TOKEN_SECRET` in `.env` before any real use. Rebuild the web image after changing `NEXT_PUBLIC_API_URL`.
+Root `.env` only needs `NEXT_PUBLIC_API_URL`. API secrets (including `TOKEN_SECRET` and `S3_*`) live in `apps/api/.env`. Compose loads that file and overrides `DATABASE_URL` to use host `db`. Rebuild the web image after changing `NEXT_PUBLIC_API_URL`.
 
-When SMTP is unset, invite and password-reset URLs print in `docker compose logs api`. Compose includes MinIO so avatar and issue uploads work; `pnpm dev` can omit S3 env (uploads return `STORAGE_UNCONFIGURED`).
+When SMTP is unset, invite and password-reset URLs print in `docker compose logs api`. Set `S3_*` in `apps/api/.env` for uploads; unset → `STORAGE_UNCONFIGURED`. Optional local MinIO: `docker compose --profile minio up` (then point `S3_*` at `http://localhost:9000` / `http://minio:9000`).
 
-**Production (HTTPS):** set `NODE_ENV=production`, `WEB_ORIGIN` to the exact web origin, `TRUST_PROXY=1` if the API sits behind a reverse proxy, and SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`). `NEXT_PUBLIC_API_URL` must be the browser-reachable API origin (rebuild web).
+**Production (HTTPS):** set `NODE_ENV=production`, `WEB_ORIGIN` to the exact web origin, `TRUST_PROXY=1` if the API sits behind a reverse proxy, and SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`) in `apps/api/.env` (or the host env). `NEXT_PUBLIC_API_URL` must be the browser-reachable API origin (rebuild web).
 
 ## Docs
 

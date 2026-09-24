@@ -4,7 +4,7 @@
 
 ## Goal
 
-S3-compatible object store. Presigned PUT for profile avatars and issue attachments. MinIO in Compose.
+S3-compatible object store. Presigned PUT for profile avatars and issue attachments. `S3_*` in `apps/api/.env`; optional MinIO Compose profile.
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ S3-compatible object store. Presigned PUT for profile avatars and issue attachme
 
 ## Done when
 
-- [x] MinIO in `docker-compose.yml`; S3 env documented (AWS / Backblaze / MinIO)
+- [x] S3 env in `apps/api/.env` (AWS / Backblaze); optional MinIO via Compose profile `minio`
 - [x] Intent → presigned PUT → complete; presigned GET for reads
 - [x] Profile avatar wired; Dicebear fallback when unset
 - [x] Issue attachments on existing details UI

@@ -5,7 +5,7 @@
 ```text
 Browser → Next.js :3000 → Express :4000 → Prisma → PostgreSQL
 Email: API → nodemailer SMTP
-Files: Browser ─presigned PUT/GET─► MinIO / S3 / Backblaze
+Files: Browser ─presigned PUT/GET─► S3 / Backblaze (optional MinIO)
 Inbox: TanStack Query polling
 ```
 
@@ -73,9 +73,9 @@ Development and production: Scalar at `GET /docs` and the generated spec at `GET
 | Web     | 3000    |
 | API     | 4000 (`/api/v1`; docs at `/docs`) |
 | Postgres| 5432 |
-| MinIO   | 9000 (S3 API; console 9001) |
+| MinIO (optional profile) | 9000 (S3 API; console 9001) |
 
-`docker compose up --build` runs **web + API + Postgres + MinIO**. Local `pnpm dev` still expects Postgres on `localhost:5432` (compose `db` or the full stack). S3 env is optional for `pnpm dev`; unset storage returns `STORAGE_UNCONFIGURED` on upload.
+`docker compose up --build` runs **web + API + Postgres**. API env comes from `apps/api/.env` (root `.env` is `NEXT_PUBLIC_API_URL` only). Local `pnpm dev` expects Postgres on `localhost:5432`. S3 env is optional; unset storage returns `STORAGE_UNCONFIGURED` on upload. Optional MinIO: `docker compose --profile minio up`.
 
 ## CORS and cookies
 
@@ -96,7 +96,7 @@ Transactional mail is SMTP via nodemailer (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`
 
 ## Files (v2, step 20)
 
-S3-compatible object store (`S3_ENDPOINT`, `S3_PUBLIC_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_FORCE_PATH_STYLE`). Browser uses presigned PUT/GET; Express stores metadata only. Compose adds MinIO. Unset credentials → `STORAGE_UNCONFIGURED`.
+S3-compatible object store (`S3_ENDPOINT`, `S3_PUBLIC_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_FORCE_PATH_STYLE`) in `apps/api/.env`. Browser uses presigned PUT/GET; Express stores metadata only. Unset credentials → `STORAGE_UNCONFIGURED`. Optional MinIO via Compose profile `minio`.
 
 ## Implementation steps
 

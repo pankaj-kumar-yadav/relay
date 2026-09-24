@@ -35,9 +35,9 @@ relay/
 
 | App | File | Purpose |
 |-----|------|---------|
-| API | `apps/api/.env` | `NODE_ENV` (`development` or `production`), `PORT`, `WEB_ORIGIN`, `DATABASE_URL`, `TOKEN_SECRET`, `TOKEN_ISSUER`, `TOKEN_AUDIENCE` (optional `ACCESS_TOKEN_VALIDITY_SEC`, `REFRESH_TOKEN_VALIDITY_SEC`, `TRUST_PROXY`) |
+| API | `apps/api/.env` | App, Database, Auth, Storage (`S3_*`), Email (`SMTP_*`). Compose loads this file and overrides `DATABASE_URL` host to `db`. |
 | Web | `apps/web/.env.local` | `NEXT_PUBLIC_API_URL` |
-| Compose | `.env` (from `.env.example`) | Same API vars plus `NEXT_PUBLIC_API_URL`. `DATABASE_URL` host is `db`. |
+| Compose | `.env` (from `.env.example`) | `NEXT_PUBLIC_API_URL` only (web image build arg). |
 
 Never commit real secrets. Keep `.env.example` files updated when new vars are added.
 

@@ -17,7 +17,7 @@ One-command bring-up of web + API + Postgres. Production env documented. Smoke t
 ## Done when
 
 - [x] `docker-compose.yml` runs `db`, `api`, and `web`
-- [x] `.env.example` lists `WEB_ORIGIN`, `NODE_ENV=production`, `TRUST_PROXY`, SMTP
+- [x] `.env.example` (root) has `NEXT_PUBLIC_API_URL`; `apps/api/.env.example` lists API vars (`WEB_ORIGIN`, `TOKEN_*`, SMTP, `S3_*`, etc.)
 - [x] Root README documents one-command bring-up
 - [x] Smoke on a clean compose stack: register → invite email → comment → label → cycle → inbox → save view
 - [x] Leftover Circle routes still hidden from live nav
