@@ -12,7 +12,7 @@ import {
 import { registry } from '@/openapi/registry.js';
 import { publicTeamSchema } from '@/openapi/resources.js';
 import { z } from '@/openapi/zod.js';
-import { createTeamBodySchema, patchTeamBodySchema } from '@/routes/teams/teams.js';
+import { createTeamBodySchema, patchTeamBodySchema } from '@/routes/teams/teams.routes.js';
 
 const teamIdParams = orgParams({ teamId: z.string() });
 

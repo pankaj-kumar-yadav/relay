@@ -12,12 +12,14 @@ middleware/auth/authRateLimit.test.ts
 middleware/org/requireOrgMember.ts
 middleware/org/requireOrgRole.ts
 middleware/org/requireOrgRole.test.ts
-routes/auth/auth.ts
+routes/auth/auth.routes.ts
 routes/auth/auth.schema.ts
 routes/auth/auth.integration.test.ts
 routes/index.ts
-routes/issues/issues.ts
+routes/issues/issues.routes.ts
+routes/issues/activity.routes.ts
 routes/issues/issues.schema.ts
+routes/orgs.routes.ts
 openapi/paths/health.ts
 openapi/paths/auth.ts
 openapi/paths/orgs.ts
@@ -27,17 +29,31 @@ utils/issue/issueRank.ts
 utils/issue/issueRef.test.ts
 test/http.ts
 
-# ❌ BAD — flat layer mixes domains and tests
+# ❌ BAD — flat layer mixes domains and tests; router without *.routes.ts
 middleware/requireAuth.ts
 middleware/authRateLimit.ts
 middleware/authRateLimit.test.ts
 middleware/requireOrgRole.ts
 routes/auth.ts
+routes/auth/auth.ts
 routes/auth.integration.test.ts
 ```
 
+### Route file naming
+
+Express routers that export a `Router` use the **`*.routes.ts`** suffix. Pair with `*.schema.ts` when the domain has Zod. The mount map stays `routes/index.ts`.
+
+| Kind | Pattern | Example |
+|------|---------|---------|
+| Router | `<domain>.routes.ts` | `auth.routes.ts`, `orgs.routes.ts` |
+| Zod / OpenAPI input | `<domain>.schema.ts` | `auth.schema.ts` |
+| Tests | `<domain>.*.test.ts` | `auth.integration.test.ts` |
+| Mount map | `routes/index.ts` | not a domain router |
+
+Export names stay `authRouter` / `issuesRouter` — the suffix is on the **file**, not the symbol.
+
 - A **single** standalone file may stay at the layer root (`utils/passwords.ts`, `utils/response.ts`)
-- HTTP mount map: `routes/index.ts` (`mountV1Routes`) for top-level `/auth`, `/orgs`, `/invites`. Nested mounts stay on the parent router (`orgs.ts`, `teams.ts`)
+- HTTP mount map: `routes/index.ts` (`mountV1Routes`) for top-level `/auth`, `/orgs`, `/invites`. Nested mounts stay on the parent router (`orgs.routes.ts`, `teams.routes.ts`)
 - Do **not** invert the tree (`auth/middleware/…`)
 - Do **not** invent a folder for one file (`utils/passwords/passwords.ts`). `test/` is a layer (shared harness, excluded from `dist`) — keep helpers there even if it is one file today
 - New files follow this. When you next touch a flat domain that already has 2+ files, nest them. Do not mass-move unrelated folders in the same change.

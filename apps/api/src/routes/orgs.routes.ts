@@ -6,14 +6,14 @@ import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { z } from '@/openapi/zod.js';
-import { issuesRouter } from '@/routes/issues/issues.js';
-import { notificationsRouter } from '@/routes/inbox/notifications.js';
-import { labelsRouter } from '@/routes/labels/labels.js';
-import { membersRouter } from '@/routes/members/members.js';
-import { viewsRouter } from '@/routes/views/views.js';
-import { orgsInvitesRouter } from '@/routes/invites.js';
-import { projectsRouter } from '@/routes/projects/projects.js';
-import { teamsRouter } from '@/routes/teams/teams.js';
+import { issuesRouter } from '@/routes/issues/issues.routes.js';
+import { notificationsRouter } from '@/routes/inbox/notifications.routes.js';
+import { labelsRouter } from '@/routes/labels/labels.routes.js';
+import { membersRouter } from '@/routes/members/members.routes.js';
+import { viewsRouter } from '@/routes/views/views.routes.js';
+import { orgsInvitesRouter } from '@/routes/invites.routes.js';
+import { projectsRouter } from '@/routes/projects/projects.routes.js';
+import { teamsRouter } from '@/routes/teams/teams.routes.js';
 import { createDefaultTeam, publicTeam } from '@/utils/teams.js';
 import {
   sendError,

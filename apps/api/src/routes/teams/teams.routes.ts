@@ -6,7 +6,7 @@ import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
 import { z } from '@/openapi/zod.js';
-import { cyclesRouter } from '@/routes/cycles/cycles.js';
+import { cyclesRouter } from '@/routes/cycles/cycles.routes.js';
 import {
   NotFoundError,
   sendError,

@@ -16,7 +16,7 @@ import {
   createProjectBodySchema,
   listProjectsQuerySchema,
   patchProjectBodySchema,
-} from '@/routes/projects/projects.js';
+} from '@/routes/projects/projects.routes.js';
 
 const projectIdParams = orgParams({ projectId: z.string() });
 const deletedIdSchema = successEnvelopeSchema(z.object({ id: z.string() }));

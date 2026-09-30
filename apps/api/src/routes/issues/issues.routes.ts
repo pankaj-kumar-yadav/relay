@@ -17,8 +17,8 @@ import { ListLimit } from '@/constants/list.constant.js';
 import { prisma, Prisma } from '@/db.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
 import { requireOrgMember } from '@/middleware/org/requireOrgMember.js';
-import { activityRouter } from '@/routes/issues/activity.js';
-import { issueAttachmentsRouter } from '@/routes/attachments/issues.js';
+import { activityRouter } from '@/routes/issues/activity.routes.js';
+import { issueAttachmentsRouter } from '@/routes/attachments/issues.routes.js';
 import {
   createIssueBodySchema,
   patchIssueBodySchema,

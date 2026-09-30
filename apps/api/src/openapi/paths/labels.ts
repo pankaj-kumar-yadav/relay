@@ -12,7 +12,7 @@ import {
 import { registry } from '@/openapi/registry.js';
 import { publicLabelSchema } from '@/openapi/resources.js';
 import { z } from '@/openapi/zod.js';
-import { createLabelBodySchema, patchLabelBodySchema } from '@/routes/labels/labels.js';
+import { createLabelBodySchema, patchLabelBodySchema } from '@/routes/labels/labels.routes.js';
 
 const labelIdParams = orgParams({ labelId: z.string() });
 

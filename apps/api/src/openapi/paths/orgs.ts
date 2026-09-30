@@ -14,7 +14,7 @@ import { registry } from '@/openapi/registry.js';
 import { publicMemberSchema, publicOrgSchema, publicTeamSchema } from '@/openapi/resources.js';
 import { z } from '@/openapi/zod.js';
 import { patchMemberBodySchema } from '@/routes/members/members.schema.js';
-import { createOrgBodySchema } from '@/routes/orgs.js';
+import { createOrgBodySchema } from '@/routes/orgs.routes.js';
 
 const orgWithRoleSchema = publicOrgSchema.extend({ role: z.string() });
 

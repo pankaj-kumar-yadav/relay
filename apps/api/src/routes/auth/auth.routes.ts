@@ -23,7 +23,7 @@ import {
   registerRateLimit,
 } from '@/middleware/auth/authRateLimit.js';
 import { requireAuth } from '@/middleware/auth/requireAuth.js';
-import { avatarRouter, publicAuthUser } from '@/routes/attachments/avatar.js';
+import { avatarRouter, publicAuthUser } from '@/routes/attachments/avatar.routes.js';
 import {
   changePasswordBodySchema,
   forgotPasswordBodySchema,

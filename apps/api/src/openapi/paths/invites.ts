@@ -11,7 +11,7 @@ import {
 import { registry } from '@/openapi/registry.js';
 import { publicInviteSchema, publicOrgSchema } from '@/openapi/resources.js';
 import { z } from '@/openapi/zod.js';
-import { createInviteBodySchema } from '@/routes/invites.js';
+import { createInviteBodySchema } from '@/routes/invites.routes.js';
 
 registry.registerPath({
   method: 'post',
